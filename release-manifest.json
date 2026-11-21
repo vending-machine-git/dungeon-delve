@@ -1,0 +1,172 @@
+{
+  "version": "0.17.1",
+  "protocol": 28,
+  "api_version": 1,
+  "platform": "windows-x64",
+  "distribution": "github-combined-portable",
+  "game_version": "5.0.2",
+  "game_sha256": "8566da37bc39ea5a1ed08a8ad57608af4f019fb415869258fb3c1d310b4419e4",
+  "runtime_sha256": "08042793c635c3f920af626657ba252dd608efde5d2a597a9e598278b8355c2e",
+  "game_dlls": [
+    {
+      "name": "glew32.dll",
+      "sha256": "eabb3dfec3a95f0282f10f5ba4b633e681aa5aff19995cad069e6e954a9cea12"
+    },
+    {
+      "name": "libfreetype-6.dll",
+      "sha256": "8e263fd9257e8e83bafda0c943184a498c07424c4d558321fdb48c9a197e58a4"
+    },
+    {
+      "name": "libpng16-16.dll",
+      "sha256": "e688b4a4d18f4b6ccc99c6ca4980f51218cb825610775192d9b60b2f05eff2d5"
+    },
+    {
+      "name": "physfs.dll",
+      "sha256": "24f70adbce5a1c73b3cd34537fbfaaffe23b5d6f04ecdc04f3260cc7903449af"
+    },
+    {
+      "name": "SDL2.dll",
+      "sha256": "2bf218b8c9337238e81ea3d37cc0d7487fbed3dc3827c51c21bad2e096f694d0"
+    },
+    {
+      "name": "SDL2_image.dll",
+      "sha256": "1e364af75fee0c83506fbdfd4d5b0e386c4e9c6a33ddbddac61ddb131e360194"
+    },
+    {
+      "name": "SDL2_net.dll",
+      "sha256": "50511650d7f1c761898bd35d2e21be94d0793aa961837e14c0897be9289a5dbd"
+    },
+    {
+      "name": "SDL2_ttf.dll",
+      "sha256": "507dc8a977d543b3e06bd3fce41f5759d64b2b21ae829cd2ef41b77bf66968c4"
+    },
+    {
+      "name": "zlib1.dll",
+      "sha256": "b1f58a17f3bfd55523e7bef685acf5b32d1c2a6f25abdcd442681266fd26ab08"
+    }
+  ],
+  "bundled_content": [
+    {
+      "id": "vending_machine_framework",
+      "files": [
+        {
+          "path": "data/rmf/framework.json",
+          "sha256": "2986b4cc1f381230ddc63d81f0d198c00182eda64f04b966327a73daaaebb15a"
+        },
+        {
+          "path": "LICENSE.txt",
+          "sha256": "40d75614d82331c6937cd663f541bf585ca1d8dd2985cd8848b7d61a858c87ed"
+        },
+        {
+          "path": "mod.json",
+          "sha256": "ef89a6362ecedbfabe150d2a745f2eba3fa796423bd34ec57937915c3f030505"
+        },
+        {
+          "path": "preview.png",
+          "sha256": "deafc2a2f75d7dc7bc19fa69690e859dd9be8e3197239f77085be53b4fef5ead"
+        },
+        {
+          "path": "README.md",
+          "sha256": "68fff433f0d5be80e8ae49202fbcf138f3785a3c4756321087774d7f21314dd7"
+        }
+      ]
+    },
+    {
+      "id": "extraction-raid",
+      "files": [
+        {
+          "path": "data/rmf/class_builds.json",
+          "sha256": "e5bfdcaa634f1f5d1717aef59e78f1656bc450f7351e45305a331bda16e82403"
+        },
+        {
+          "path": "data/rmf/intro-floor-2.json",
+          "sha256": "6fca2e6c742b527995aa709bd8d5aa114f9580c59c3ef0adb5d624fa9a131d9c"
+        },
+        {
+          "path": "data/rmf/intro-floor-2.srt",
+          "sha256": "0539b1ccf427f9ede2b2eb661ba9d66b5a573f9c785c597e3e0a27bd77f23db6"
+        },
+        {
+          "path": "data/rmf/intro-floor-3.json",
+          "sha256": "fa905dcc4849280bbc984db5c982acd2a5364a358d4aa75a02b369e424c3c4cc"
+        },
+        {
+          "path": "data/rmf/intro-floor-3.srt",
+          "sha256": "975eefd265e3fa19b1632ee0152bb0549220fa61fe92c47b7631f13802634b2d"
+        },
+        {
+          "path": "data/rmf/intro.json",
+          "sha256": "9cb26bf64b793929075ef689421953c9017890553df3259be953069af5f2f581"
+        },
+        {
+          "path": "data/rmf/intro.srt",
+          "sha256": "c9d19f7478b48ce7dc88047bb319492e581715cd52b33cd9fa6257acd434b66c"
+        },
+        {
+          "path": "data/rmf/raid.json",
+          "sha256": "2f45fcf73ecb3e8a9f00950d3216b8ee8f47c140084a7edf0b9efbaab75f4ad0"
+        },
+        {
+          "path": "images/rmf/cooldown-disc.png",
+          "sha256": "158e680cb9466f53f5737da28b4b9ccebd90082049079bf56797f09ea0f6c892"
+        },
+        {
+          "path": "images/rmf/cooldown-ring.png",
+          "sha256": "507fe3dc7d4150a44bf209a4b8796f5356c142f9168db29e6c0e0281614bf0b3"
+        },
+        {
+          "path": "images/rmf/rarity-slot.png",
+          "sha256": "73480b19fe3f17d8ce686a1a84f4c238b1ca824c4d9fc8b410f26e91ee0bb006"
+        },
+        {
+          "path": "images/rmf/rarity-smoke.png",
+          "sha256": "840186ddc39edbe658bfd2288d574940df4b974c08cf6b4414a4084fef73d4e2"
+        },
+        {
+          "path": "LICENSE.txt",
+          "sha256": "40d75614d82331c6937cd663f541bf585ca1d8dd2985cd8848b7d61a858c87ed"
+        },
+        {
+          "path": "maps/delve1.lmp",
+          "sha256": "5831b4f31cd0fc7f3a46f10ffeb4a2c49e05cf4f0608e0ae86f76be04326fed2"
+        },
+        {
+          "path": "maps/delve2.lmp",
+          "sha256": "16f42f3537ea034b4843b9cd947241c5d019b36e0475f69c484aaf1abd291ca4"
+        },
+        {
+          "path": "maps/delve3.lmp",
+          "sha256": "927cea67e6ec64f5857fa15b383d20438bf94ca55ac3a68d4b1007e014ac909e"
+        },
+        {
+          "path": "mod.json",
+          "sha256": "395b78c43cf8beb72e9725881aa39da56446facaac87cddbad49750af49e3e22"
+        },
+        {
+          "path": "music/rmf/dungeon-floor-2.wav",
+          "sha256": "8074ddf09fec5d9659bfa4148dc4b8ed695aaa88f8081700c2a240d096046e70"
+        },
+        {
+          "path": "music/rmf/dungeon-floor-3.wav",
+          "sha256": "f0923182c0f7052aeb09dabbc1808228bc0f69d8b7895fc1671ec72e2f1dfa6a"
+        },
+        {
+          "path": "music/rmf/dungeon-intro.wav",
+          "sha256": "32ece1b9af89cadd74df43b66faa27e40729711d749b4024b5073d1f7e33b06a"
+        },
+        {
+          "path": "music/rmf/embers-before-the-delve.wav",
+          "sha256": "00175b084517b3138aa9aeb38cb0b18d2d5b710c1462ccca209861098579f34f"
+        },
+        {
+          "path": "preview.png",
+          "sha256": "41f6d0f4340a3625b8a54e3c6523ae583c6539dd27a82ef626db1a60d9fa2d61"
+        },
+        {
+          "path": "README.md",
+          "sha256": "117895cdc4d9e5d3873b2ef3ff09f5b74cc2a0784d72eae7dabc71ae83782dd2"
+        }
+      ]
+    }
+  ]
+}

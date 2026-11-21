@@ -1,0 +1,2790 @@
+{
+  "version": 2,
+  "classes": [
+    {
+      "name": "Barbarian",
+      "perks": [
+        {
+          "name": "Breacher",
+          "kind": "Breacher",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 3.75,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "A fully charged melee strike breaks an ordinary wooden door and grants 10% movement speed for 3.75s. 10s recovery."
+        },
+        {
+          "name": "Blood Trail",
+          "kind": "Kill",
+          "reward": "Heal",
+          "value": 6,
+          "duration": 0.0,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "A direct hostile kill restores 6 HP. 12s recovery; no allied-summon farming."
+        },
+        {
+          "name": "Rolling Thunder",
+          "kind": "MeleeCombo",
+          "reward": "Physical",
+          "value": 5,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "Three melee hits within 6.25s prime your next melee hit for +5 physical damage. 8s recovery."
+        },
+        {
+          "name": "Roaring Heart",
+          "kind": "Ability",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 12,
+          "filter": 7,
+          "description": "War Cry grants a 6-point barrier for 5s. 12s recovery."
+        },
+        {
+          "name": "Battle Scars",
+          "kind": "ControlEnd",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 15,
+          "filter": -1,
+          "description": "When hostile control ends, gain a 6-point barrier for 5s. 15s recovery."
+        },
+        {
+          "name": "Heavy Reprisal",
+          "kind": "WoundedBlock",
+          "reward": "Physical",
+          "value": 5,
+          "duration": 0.0,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "Blocking below half HP primes a +5 physical melee counter against that attacker only. One charge; 8s recovery."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Bloodrage",
+          "rules": {
+            "cd": "32",
+            "self": "POTION_STR:6.25,FAST:5"
+          },
+          "description": "32s cooldown; strength for 6.25s (self); haste for 5s (self)."
+        },
+        {
+          "name": "War Cry",
+          "rules": {
+            "cd": "28",
+            "manaCost": "4",
+            "range": "64",
+            "arc": "360",
+            "control": "FEAR:2.5"
+          },
+          "description": "28s cooldown; 4 MP cost; 64 range / 360 degree arc; fear for 2.5s on hit."
+        },
+        {
+          "name": "Cleave",
+          "rules": {
+            "cd": "18",
+            "range": "40",
+            "arc": "100",
+            "damage": "17",
+            "kind": "physical"
+          },
+          "description": "18s cooldown; 17 base physical damage; 40 range / 100 degree arc."
+        },
+        {
+          "name": "Second Wind",
+          "rules": {
+            "cd": "45",
+            "heal": "14",
+            "cleanse": "1"
+          },
+          "description": "45s cooldown; 14 HP restored; cures poison, bleeding, slow, web, confusion, fear, sleep and paralysis (self)."
+        }
+      ]
+    },
+    {
+      "name": "Warrior",
+      "perks": [
+        {
+          "name": "Riposte",
+          "kind": "BlockCharge",
+          "reward": "Physical",
+          "value": 4,
+          "duration": 0.0,
+          "cooldown": 6,
+          "filter": -1,
+          "description": "A real block primes your next melee hit for +4 physical damage. One charge; 6s recovery."
+        },
+        {
+          "name": "Shield Momentum",
+          "kind": "BlockHaste",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 2.5,
+          "cooldown": 6,
+          "filter": -1,
+          "description": "A real block grants 10% movement speed for 2.5s. 6s recovery."
+        },
+        {
+          "name": "Follow Through",
+          "kind": "ComboSwitch",
+          "reward": "Physical",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 0,
+          "filter": -1,
+          "description": "Hit the same enemy twice within 5s, then hit a different enemy within 5s for +6 physical damage."
+        },
+        {
+          "name": "Arms Rotation",
+          "kind": "WeaponWeave",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "Melee hits with two different weapon categories within 6.25s grant a 6-point barrier for 5s. 10s recovery."
+        },
+        {
+          "name": "Hold the Line",
+          "kind": "Guard",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 0.0,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "Stand still while defending for 1.25s to ready 6 points of mitigation against the next direct hostile hit. Lower guard to rearm; 10s recovery."
+        },
+        {
+          "name": "Challenge Accepted",
+          "kind": "AbilityMark",
+          "reward": "Heal",
+          "value": 3,
+          "duration": 6.25,
+          "cooldown": 0,
+          "filter": 9,
+          "description": "Challenge marks a damaged enemy for 6.25s. Your next melee hit on it consumes the mark to restore 3 HP."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Shield Advance",
+          "rules": {
+            "cd": "26",
+            "self": "FAST:5,MAGICRESIST:6.25"
+          },
+          "description": "26s cooldown; haste for 5s (self); magic resistance for 6.25s (self)."
+        },
+        {
+          "name": "Sweeping Strike",
+          "rules": {
+            "cd": "20",
+            "range": "44",
+            "arc": "120",
+            "damage": "15",
+            "kind": "physical"
+          },
+          "description": "20s cooldown; 15 base physical damage; 44 range / 120 degree arc."
+        },
+        {
+          "name": "Iron Resolve",
+          "rules": {
+            "cd": "38",
+            "self": "HP_REGEN:5",
+            "cleanse": "1"
+          },
+          "description": "38s cooldown; health regeneration for 5s (self); cures poison, bleeding, slow, web, confusion, fear, sleep and paralysis (self)."
+        },
+        {
+          "name": "Challenge",
+          "rules": {
+            "cd": "30",
+            "range": "72",
+            "arc": "75",
+            "damage": "8",
+            "kind": "physical",
+            "control": "SLOW:3.75"
+          },
+          "description": "30s cooldown; 8 base physical damage; 72 range / 75 degree arc; slow for 3.75s on hit."
+        }
+      ]
+    },
+    {
+      "name": "Healer",
+      "perks": [
+        {
+          "name": "Overflow",
+          "kind": "Overflow",
+          "reward": "Barrier",
+          "value": 10,
+          "duration": 7.5,
+          "cooldown": 0,
+          "filter": -1,
+          "description": "Excess direct self-healing becomes a barrier, capped at 10 points, lasting 7.5s. No max-HP change."
+        },
+        {
+          "name": "Aftercare",
+          "kind": "HealHaste",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 3.75,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "A direct self-heal restoring at least 5 HP grants 10% movement speed for 3.75s. 12s recovery."
+        },
+        {
+          "name": "Clean Slate",
+          "kind": "CleanseBarrier",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 6.25,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "Actually cleansing a harmful effect grants a 6-point barrier for 6.25s. 12s recovery."
+        },
+        {
+          "name": "Recovery Strike",
+          "kind": "RecoveryStrike",
+          "reward": "Discount",
+          "value": 2,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "A paid self-heal restoring missing HP primes a melee hit for 6.25s. Hitting refunds up to 2 MP paid for that heal. 8s recovery."
+        },
+        {
+          "name": "Combat Dressing",
+          "kind": "Dressing",
+          "reward": "Barrier",
+          "value": 4,
+          "duration": 5.0,
+          "cooldown": 15,
+          "filter": -1,
+          "description": "A successful healing drink also removes bleeding and grants a 4-point barrier for 5s. 15s recovery."
+        },
+        {
+          "name": "Stabilize",
+          "kind": "Stabilize",
+          "reward": "Heal",
+          "value": 6,
+          "duration": 3.75,
+          "cooldown": 40,
+          "filter": -1,
+          "description": "Direct hostile damage crossing below 30% HP starts 6 HP of recovery over 3s. Cannot revive; 40s recovery."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Emergency Mend",
+          "rules": {
+            "cd": "32",
+            "manaCost": "8",
+            "heal": "20"
+          },
+          "description": "32s cooldown; 8 MP cost; 20 HP restored."
+        },
+        {
+          "name": "Purifying Breath",
+          "rules": {
+            "cd": "24",
+            "manaCost": "3",
+            "cleanse": "1",
+            "self": "MAGICRESIST:5"
+          },
+          "description": "24s cooldown; 3 MP cost; magic resistance for 5s (self); cures poison, bleeding, slow, web, confusion, fear, sleep and paralysis (self)."
+        },
+        {
+          "name": "Life Ward",
+          "rules": {
+            "cd": "40",
+            "manaCost": "8",
+            "self": "HP_REGEN:6.25,MAGICRESIST:7.5"
+          },
+          "description": "40s cooldown; 8 MP cost; health regeneration for 6.25s (self); magic resistance for 7.5s (self)."
+        },
+        {
+          "name": "Merciful Rebuke",
+          "rules": {
+            "cd": "22",
+            "manaCost": "5",
+            "range": "88",
+            "arc": "25",
+            "damage": "14",
+            "control": "SLOW:2.5"
+          },
+          "description": "22s cooldown; 5 MP cost; 14 base magic damage; 88 range / 25 degree arc; slow for 2.5s on hit."
+        }
+      ]
+    },
+    {
+      "name": "Rogue",
+      "perks": [
+        {
+          "name": "Ambusher",
+          "kind": "Ambush",
+          "reward": "Physical",
+          "value": 6,
+          "duration": 3.75,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "Leaving invisibility primes one melee hit for +6 physical damage for 3.75s. 10s recovery."
+        },
+        {
+          "name": "Slip Away",
+          "kind": "RearHaste",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 2.5,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "A direct rear melee hit grants 10% movement speed for 2.5s. Works on hostile players and monsters; 8s recovery."
+        },
+        {
+          "name": "Trap Sense",
+          "kind": "TrapSense",
+          "reward": "Barrier",
+          "value": 0,
+          "duration": 0.0,
+          "cooldown": 0,
+          "filter": -1,
+          "description": "See a close, visible trap warning and disarm reachable spear traps with Interact. Bear traps retain their native pickup interaction."
+        },
+        {
+          "name": "Silent Entry",
+          "kind": "Unlock",
+          "reward": "Barrier",
+          "value": 0,
+          "duration": 0.0,
+          "cooldown": 0,
+          "filter": -1,
+          "description": "Interact to unlock ordinary chests without a lockpick. Guarded relic objective locks remain protected."
+        },
+        {
+          "name": "Knife and Shadow",
+          "kind": "ThrowMark",
+          "reward": "Recovery",
+          "value": 2,
+          "duration": 6.25,
+          "cooldown": 10,
+          "filter": 6,
+          "description": "A thrown weapon marks its target for 6.25s. A melee follow-up removes up to 2s of Vanish cooldown. 10s recovery."
+        },
+        {
+          "name": "Clean Getaway",
+          "kind": "CacheEscape",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 2.5,
+          "cooldown": 20,
+          "filter": -1,
+          "description": "Opening a distinct cache stores one escape charge. The next direct hostile hit grants 10% movement speed for 2.5s. 20s recovery."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Vanish",
+          "rules": {
+            "cd": "34",
+            "manaCost": "4",
+            "self": "INVISIBLE:7.8125"
+          },
+          "description": "34s cooldown; 4 MP cost; invisibility for 7.8125s (self)."
+        },
+        {
+          "name": "Dirty Cut",
+          "rules": {
+            "cd": "18",
+            "range": "32",
+            "arc": "65",
+            "damage": "12",
+            "kind": "physical",
+            "control": "SLOW:5"
+          },
+          "description": "18s cooldown; 12 base physical damage; 32 range / 65 degree arc; slow for 5s on hit."
+        },
+        {
+          "name": "Quickstep",
+          "rules": {
+            "cd": "20",
+            "self": "FAST:3.75",
+            "cleanse": "1"
+          },
+          "description": "20s cooldown; haste for 3.75s (self); cures poison, bleeding, slow, web, confusion, fear, sleep and paralysis (self)."
+        },
+        {
+          "name": "Pocket Sand",
+          "rules": {
+            "cd": "28",
+            "range": "40",
+            "arc": "85",
+            "control": "CONFUSED:3.75"
+          },
+          "description": "28s cooldown; 40 range / 85 degree arc; confusion for 3.75s on hit."
+        }
+      ]
+    },
+    {
+      "name": "Wanderer",
+      "perks": [
+        {
+          "name": "Trail Memory",
+          "kind": "Explore",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 3.75,
+          "cooldown": 15,
+          "filter": -1,
+          "description": "Entering a new 8-tile exploration region grants 10% movement speed for 3.75s. 15s recovery; regions count once per floor."
+        },
+        {
+          "name": "Forager",
+          "kind": "Cache",
+          "reward": "Heal",
+          "value": 4,
+          "duration": 0.0,
+          "cooldown": 15,
+          "filter": -1,
+          "description": "First opening a distinct cache restores 4 HP. 15s recovery."
+        },
+        {
+          "name": "Adaptable Hunter",
+          "kind": "WeaponWeave",
+          "reward": "Physical",
+          "value": 5,
+          "duration": 6.25,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "Melee hits with different weapon categories within 6.25s prime your next melee hit for +5 physical damage. 10s recovery."
+        },
+        {
+          "name": "Trail Remedy",
+          "kind": "Ability",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 6.25,
+          "cooldown": 15,
+          "filter": 7,
+          "description": "Camp Remedy also grants a 6-point barrier for 6.25s. 15s recovery."
+        },
+        {
+          "name": "Campfire Quiet",
+          "kind": "Quiet",
+          "reward": "Heal",
+          "value": 3,
+          "duration": 0.0,
+          "cooldown": 20,
+          "filter": -1,
+          "description": "After 10s without dealing or receiving hostile damage, restore 3 HP. Triggers at most once per 20s of active play."
+        },
+        {
+          "name": "Hunting Pace",
+          "kind": "Ranged",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 2.5,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "A direct ranged hit grants 10% movement speed for 2.5s. 12s recovery."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Trailblaze",
+          "rules": {
+            "cd": "25",
+            "self": "FAST:6.25"
+          },
+          "description": "25s cooldown; haste for 6.25s (self)."
+        },
+        {
+          "name": "Camp Remedy",
+          "rules": {
+            "cd": "42",
+            "heal": "12",
+            "mana": "8"
+          },
+          "description": "42s cooldown; 12 HP restored; 8 MP restored."
+        },
+        {
+          "name": "Hunter's Sweep",
+          "rules": {
+            "cd": "20",
+            "range": "50",
+            "arc": "100",
+            "damage": "13",
+            "kind": "physical"
+          },
+          "description": "20s cooldown; 13 base physical damage; 50 range / 100 degree arc."
+        },
+        {
+          "name": "Read the Wild",
+          "rules": {
+            "cd": "35",
+            "manaCost": "3",
+            "self": "TELEPATH:8.75,MAGICRESIST:3.75"
+          },
+          "description": "35s cooldown; 3 MP cost; telepathy for 8.75s (self); magic resistance for 3.75s (self)."
+        }
+      ]
+    },
+    {
+      "name": "Cleric",
+      "perks": [
+        {
+          "name": "Consecrated Rhythm",
+          "kind": "Spellblade",
+          "reward": "Magic",
+          "value": 4,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "A paid damaging spell primes a melee hit for +4 magic damage within 6.25s; that hit readies a discount up to 2 MP on your next paid cast. 8s recovery."
+        },
+        {
+          "name": "Sacred Water",
+          "kind": "CleanDrink",
+          "reward": "Barrier",
+          "value": 0,
+          "duration": 0.0,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "A successful beneficial drink removes poison or bleeding. 8s recovery."
+        },
+        {
+          "name": "Liturgical Echo",
+          "kind": "AbilityWeave",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "Using two different equipped abilities within 10s grants a 6-point barrier for 5s. 12s recovery."
+        },
+        {
+          "name": "Temple Overflow",
+          "kind": "Overflow",
+          "reward": "Barrier",
+          "value": 8,
+          "duration": 7.5,
+          "cooldown": 0,
+          "filter": -1,
+          "description": "Excess direct self-healing becomes an 8-point capped barrier lasting 7.5s."
+        },
+        {
+          "name": "Sanctuary Reprisal",
+          "kind": "BlockCharge",
+          "reward": "Magic",
+          "value": 4,
+          "duration": 0.0,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "A real block primes your next melee hit for +4 magic damage. One charge; 8s recovery."
+        },
+        {
+          "name": "Pilgrim Step",
+          "kind": "CleanseBarrier",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 3.75,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "Actually cleansing a harmful effect grants 10% movement speed for 3.75s. 12s recovery."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Lay on Hands",
+          "rules": {
+            "cd": "38",
+            "manaCost": "6",
+            "heal": "16",
+            "cleanse": "1"
+          },
+          "description": "38s cooldown; 6 MP cost; 16 HP restored; cures poison, bleeding, slow, web, confusion, fear, sleep and paralysis (self)."
+        },
+        {
+          "name": "Hallowed Guard",
+          "rules": {
+            "cd": "32",
+            "manaCost": "6",
+            "self": "MAGICRESIST:8.75,HP_REGEN:3.75"
+          },
+          "description": "32s cooldown; 6 MP cost; magic resistance for 8.75s (self); health regeneration for 3.75s (self)."
+        },
+        {
+          "name": "Judgment",
+          "rules": {
+            "cd": "24",
+            "manaCost": "7",
+            "range": "80",
+            "arc": "30",
+            "damage": "19"
+          },
+          "description": "24s cooldown; 7 MP cost; 19 base magic damage; 80 range / 30 degree arc."
+        },
+        {
+          "name": "Pilgrim's March",
+          "rules": {
+            "cd": "28",
+            "manaCost": "4",
+            "self": "FAST:5,LEVITATING:3.75"
+          },
+          "description": "28s cooldown; 4 MP cost; haste for 5s (self); levitation for 3.75s (self)."
+        }
+      ]
+    },
+    {
+      "name": "Merchant",
+      "perks": [
+        {
+          "name": "Finders Keepers",
+          "kind": "Cache",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 7.5,
+          "cooldown": 15,
+          "filter": -1,
+          "description": "First opening a distinct cache grants a 6-point barrier for 7.5s. 15s recovery."
+        },
+        {
+          "name": "Buyers Confidence",
+          "kind": "Explore",
+          "reward": "Physical",
+          "value": 5,
+          "duration": 0.0,
+          "cooldown": 20,
+          "filter": -1,
+          "description": "Entering a new 8-tile trade-route region primes your next melee hit for +5 physical damage. One charge; 20s recovery."
+        },
+        {
+          "name": "Hard Counteroffer",
+          "kind": "Cache",
+          "reward": "Recovery",
+          "value": 2,
+          "duration": 0.0,
+          "cooldown": 8,
+          "filter": 7,
+          "description": "First opening a distinct cache removes up to 2s of Caravan Sprint cooldown. 8s recovery."
+        },
+        {
+          "name": "Liquid Assets",
+          "kind": "DrinkCharge",
+          "reward": "Magic",
+          "value": 4,
+          "duration": 6.25,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "A beneficial drink primes a melee hit for +4 magic damage for 6.25s. 10s recovery."
+        },
+        {
+          "name": "Caravan Momentum",
+          "kind": "Ability",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 6.25,
+          "cooldown": 12,
+          "filter": 7,
+          "description": "Caravan Sprint grants a 6-point barrier for 6.25s. 12s recovery."
+        },
+        {
+          "name": "Insurance Rider",
+          "kind": "HealHaste",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 3.75,
+          "cooldown": 15,
+          "filter": -1,
+          "description": "A direct self-heal restoring at least 5 HP grants 10% movement speed for 3.75s. 15s recovery."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Hostile Negotiation",
+          "rules": {
+            "cd": "30",
+            "manaCost": "4",
+            "range": "64",
+            "arc": "60",
+            "control": "CONFUSED:3.75",
+            "damage": "6"
+          },
+          "description": "30s cooldown; 4 MP cost; 6 base magic damage; 64 range / 60 degree arc; confusion for 3.75s on hit."
+        },
+        {
+          "name": "Caravan Sprint",
+          "rules": {
+            "cd": "24",
+            "self": "FAST:5"
+          },
+          "description": "24s cooldown; haste for 5s (self)."
+        },
+        {
+          "name": "Insurance Policy",
+          "rules": {
+            "cd": "48",
+            "heal": "18",
+            "self": "MAGICRESIST:3.75"
+          },
+          "description": "48s cooldown; 18 HP restored; magic resistance for 3.75s (self)."
+        },
+        {
+          "name": "Flash Buyout",
+          "rules": {
+            "cd": "26",
+            "manaCost": "6",
+            "self": "INVISIBLE:4.6875,TELEPATH:6.25"
+          },
+          "description": "26s cooldown; 6 MP cost; invisibility for 4.6875s (self); telepathy for 6.25s (self)."
+        }
+      ]
+    },
+    {
+      "name": "Wizard",
+      "perks": [
+        {
+          "name": "Shatter",
+          "kind": "Shatter",
+          "reward": "Physical",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 6,
+          "filter": -1,
+          "description": "Your cold hit or Frost Ring primes its target for 5s. Your next direct physical hit on it adds 6 damage and consumes the primer. 6s recovery."
+        },
+        {
+          "name": "Arcane Cadence",
+          "kind": "Cadence",
+          "reward": "Discount",
+          "value": 2,
+          "duration": 6.25,
+          "cooldown": 6,
+          "filter": -1,
+          "description": "Hit with two different damaging spells within 6.25s to refund up to 2 MP actually paid for the second cast. Once per cast; 6s recovery."
+        },
+        {
+          "name": "Cinderwake",
+          "kind": "Cinder",
+          "reward": "Magic",
+          "value": 5,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "Your fire spell or Arcane Lance primes an ember for 6.25s. A different spell hit on that target adds 5 magic damage. 8s recovery; no recursive burst."
+        },
+        {
+          "name": "Spellblade",
+          "kind": "Spellblade",
+          "reward": "Magic",
+          "value": 4,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "A paid damaging cast primes a melee hit for +4 magic damage within 6.25s. That hit readies a discount up to 2 MP on your next paid cast. 8s recovery."
+        },
+        {
+          "name": "Reactive Frost",
+          "kind": "ReactiveFrost",
+          "reward": "Barrier",
+          "value": 0,
+          "duration": 0.9375,
+          "cooldown": 15,
+          "filter": -1,
+          "description": "A direct melee attacker is slowed for up to 0.9375s after hitting you. The original hit still hurts; PvP recovery applies. 15s recovery."
+        },
+        {
+          "name": "Ley Reserve",
+          "kind": "SpendReserve",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 0,
+          "filter": 9,
+          "description": "Spend 10 actual MP to store one reserve. Ley Siphon consumes it to grant a 6-point barrier for 5s."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Arcane Lance",
+          "rules": {
+            "cd": "18",
+            "manaCost": "8",
+            "range": "128",
+            "arc": "12",
+            "damage": "24"
+          },
+          "description": "18s cooldown; 8 MP cost; 24 base magic damage; 128 range / 12 degree arc."
+        },
+        {
+          "name": "Frost Ring",
+          "rules": {
+            "cd": "28",
+            "manaCost": "10",
+            "range": "52",
+            "arc": "360",
+            "damage": "8",
+            "control": "SLOW:5"
+          },
+          "description": "28s cooldown; 10 MP cost; 8 base magic damage; 52 range / 360 degree arc; slow for 5s on hit."
+        },
+        {
+          "name": "Mirror Ward",
+          "rules": {
+            "cd": "40",
+            "manaCost": "10",
+            "self": "MAGICREFLECT:5"
+          },
+          "description": "40s cooldown; 10 MP cost; spell reflection for 5s (self)."
+        },
+        {
+          "name": "Ley Siphon",
+          "rules": {
+            "cd": "45",
+            "mana": "18"
+          },
+          "description": "45s cooldown; 18 MP restored."
+        }
+      ]
+    },
+    {
+      "name": "Arcanist",
+      "perks": [
+        {
+          "name": "Runic Magazine",
+          "kind": "SpellMark",
+          "reward": "Magic",
+          "value": 5,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "A paid cast readies your next ranged hit within 6.25s for +5 magic damage. 8s recovery."
+        },
+        {
+          "name": "Battle Circuit",
+          "kind": "Ranged",
+          "reward": "Discount",
+          "value": 2,
+          "duration": 10.0,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "A direct ranged hit readies a discount of up to 2 MP on your next paid cast within 10s. 8s recovery."
+        },
+        {
+          "name": "Crossfire Circuit",
+          "kind": "WeaponWeave",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "Melee hits with different weapon categories within 6.25s grant a 6-point barrier for 5s. 10s recovery."
+        },
+        {
+          "name": "Charged Shelter",
+          "kind": "Ability",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 12,
+          "filter": 8,
+          "description": "Charged Break grants a 6-point barrier for 5s. 12s recovery."
+        },
+        {
+          "name": "Runic Cadence",
+          "kind": "Crossfire",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "Hit an enemy with a damaging spell, then a ranged weapon within 6.25s to gain a 6-point barrier for 5s. The target must match; 8s recovery."
+        },
+        {
+          "name": "Field Recharger",
+          "kind": "Cache",
+          "reward": "Discount",
+          "value": 2,
+          "duration": 10.0,
+          "cooldown": 15,
+          "filter": -1,
+          "description": "First opening a distinct cache readies a discount up to 2 MP on your next paid cast within 10s. 15s recovery."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Runic Bolt",
+          "rules": {
+            "cd": "20",
+            "manaCost": "6",
+            "range": "112",
+            "arc": "16",
+            "damage": "20"
+          },
+          "description": "20s cooldown; 6 MP cost; 20 base magic damage; 112 range / 16 degree arc."
+        },
+        {
+          "name": "Spellguard",
+          "rules": {
+            "cd": "30",
+            "manaCost": "5",
+            "self": "MAGICRESIST:7.5,FAST:2.5"
+          },
+          "description": "30s cooldown; 5 MP cost; magic resistance for 7.5s (self); haste for 2.5s (self)."
+        },
+        {
+          "name": "Charged Break",
+          "rules": {
+            "cd": "28",
+            "manaCost": "7",
+            "range": "64",
+            "arc": "55",
+            "damage": "12",
+            "control": "WEBBED:2.5"
+          },
+          "description": "28s cooldown; 7 MP cost; 12 base magic damage; 64 range / 55 degree arc; web for 2.5s on hit."
+        },
+        {
+          "name": "Battle Recharge",
+          "rules": {
+            "cd": "40",
+            "mana": "12",
+            "self": "MAGICAMPLIFY:3.75"
+          },
+          "description": "40s cooldown; 12 MP restored; spell amplification for 3.75s (self)."
+        }
+      ]
+    },
+    {
+      "name": "Joker",
+      "perks": [
+        {
+          "name": "Misdirection",
+          "kind": "Ability",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 3.75,
+          "cooldown": 12,
+          "filter": 7,
+          "description": "Punchline grants 10% movement speed for 3.75s. 12s recovery."
+        },
+        {
+          "name": "Variety Act",
+          "kind": "WeaponWeave",
+          "reward": "Magic",
+          "value": 4,
+          "duration": 6.25,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "Melee hits with different weapon categories within 6.25s prime your next melee hit for +4 magic damage. 10s recovery."
+        },
+        {
+          "name": "Encore Rhythm",
+          "kind": "AbilityWeave",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "Using two different equipped abilities within 10s grants a 6-point barrier for 5s. 12s recovery."
+        },
+        {
+          "name": "Tricksters Exit",
+          "kind": "Variety",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 3.75,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "Hit using three distinct attack channels within 6.25s to gain 10% movement speed for 3.75s. Repeating a channel does not advance the act; 10s recovery."
+        },
+        {
+          "name": "Juggling Tempo",
+          "kind": "Ranged",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 2.5,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "A direct ranged hit grants 10% movement speed for 2.5s. 12s recovery."
+        },
+        {
+          "name": "Hidden Pocket",
+          "kind": "Distill",
+          "reward": "Heal",
+          "value": 4,
+          "duration": 0.0,
+          "cooldown": 0,
+          "filter": -1,
+          "description": "A distinct cache stores one drink booster: +4 healing or +2 MP for the next restorative drink. One stored booster; three earned per floor."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Vanishing Act",
+          "rules": {
+            "cd": "30",
+            "manaCost": "5",
+            "self": "INVISIBLE:4.6875,FAST:3.75"
+          },
+          "description": "30s cooldown; 5 MP cost; invisibility for 4.6875s (self); haste for 3.75s (self)."
+        },
+        {
+          "name": "Punchline",
+          "rules": {
+            "cd": "24",
+            "manaCost": "4",
+            "range": "56",
+            "arc": "100",
+            "damage": "8",
+            "control": "CONFUSED:3.75"
+          },
+          "description": "24s cooldown; 4 MP cost; 8 base magic damage; 56 range / 100 degree arc; confusion for 3.75s on hit."
+        },
+        {
+          "name": "Juggler's Flurry",
+          "rules": {
+            "cd": "18",
+            "range": "72",
+            "arc": "70",
+            "damage": "13",
+            "kind": "physical"
+          },
+          "description": "18s cooldown; 13 base physical damage; 72 range / 70 degree arc."
+        },
+        {
+          "name": "Encore",
+          "rules": {
+            "cd": "48",
+            "heal": "10",
+            "mana": "10",
+            "cleanse": "1"
+          },
+          "description": "48s cooldown; 10 HP restored; 10 MP restored; cures poison, bleeding, slow, web, confusion, fear, sleep and paralysis (self)."
+        }
+      ]
+    },
+    {
+      "name": "Sexton",
+      "perks": [
+        {
+          "name": "Grave Token",
+          "kind": "Kill",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 7.5,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "A direct hostile kill grants a 6-point barrier for 7.5s. 12s recovery."
+        },
+        {
+          "name": "Wakeful Guard",
+          "kind": "ControlledKill",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 15,
+          "filter": -1,
+          "description": "Personally finish a sleeping, frightened or paralyzed enemy to gain a 6-point barrier for 5s. 15s recovery."
+        },
+        {
+          "name": "Burial Rhythm",
+          "kind": "MeleeCombo",
+          "reward": "Magic",
+          "value": 4,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "Three melee hits within 6.25s prime your next melee hit for +4 magic damage. 8s recovery."
+        },
+        {
+          "name": "Dream Harvest",
+          "kind": "Ability",
+          "reward": "Discount",
+          "value": 2,
+          "duration": 10.0,
+          "cooldown": 12,
+          "filter": 6,
+          "description": "Grave Silence readies a discount up to 2 MP on your next paid cast within 10s. 12s recovery."
+        },
+        {
+          "name": "Graveyard Survey",
+          "kind": "Explore",
+          "reward": "Barrier",
+          "value": 5,
+          "duration": 6.25,
+          "cooldown": 18,
+          "filter": -1,
+          "description": "Entering a new 8-tile region grants a 5-point barrier for 6.25s. 18s recovery."
+        },
+        {
+          "name": "Ashen Opening",
+          "kind": "Ambush",
+          "reward": "Magic",
+          "value": 5,
+          "duration": 3.75,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "Leaving invisibility primes one melee hit for +5 magic damage for 3.75s. 12s recovery."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Grave Silence",
+          "rules": {
+            "cd": "32",
+            "manaCost": "7",
+            "range": "64",
+            "arc": "70",
+            "control": "ASLEEP:3.75"
+          },
+          "description": "32s cooldown; 7 MP cost; 64 range / 70 degree arc; sleep for 3.75s on hit."
+        },
+        {
+          "name": "Ashen Ward",
+          "rules": {
+            "cd": "32",
+            "manaCost": "6",
+            "self": "MAGICRESIST:6.25,INVISIBLE:3.125"
+          },
+          "description": "32s cooldown; 6 MP cost; magic resistance for 6.25s (self); invisibility for 3.125s (self)."
+        },
+        {
+          "name": "Gravestone Blow",
+          "rules": {
+            "cd": "22",
+            "range": "36",
+            "arc": "70",
+            "damage": "17",
+            "kind": "physical",
+            "control": "SLOW:2.5"
+          },
+          "description": "22s cooldown; 17 base physical damage; 36 range / 70 degree arc; slow for 2.5s on hit."
+        },
+        {
+          "name": "Wake the Dead",
+          "rules": {
+            "cd": "44",
+            "mana": "14",
+            "self": "TELEPATH:7.5"
+          },
+          "description": "44s cooldown; 14 MP restored; telepathy for 7.5s (self)."
+        }
+      ]
+    },
+    {
+      "name": "Ninja",
+      "perks": [
+        {
+          "name": "Smoke Thread",
+          "kind": "Ambush",
+          "reward": "Physical",
+          "value": 5,
+          "duration": 5.0,
+          "cooldown": 10,
+          "filter": 1,
+          "description": "Leaving invisibility primes one melee or thrown-weapon hit for +5 physical damage for 5s. 10s recovery."
+        },
+        {
+          "name": "Shadow Route",
+          "kind": "ThrownRear",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 2.5,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "A thrown weapon striking an enemy from behind grants 10% movement speed for 2.5s. Melee attacks do not trigger it; 8s recovery."
+        },
+        {
+          "name": "Shuriken Thread",
+          "kind": "ThrowMark",
+          "reward": "Recovery",
+          "value": 2,
+          "duration": 6.25,
+          "cooldown": 10,
+          "filter": 6,
+          "description": "A thrown weapon marks its target for 6.25s. A melee follow-up removes up to 2s of Smoke Veil cooldown. 10s recovery."
+        },
+        {
+          "name": "Flowing Palm",
+          "kind": "MeleeCombo",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "Three melee hits within 6.25s grant a 6-point barrier for 5s. 10s recovery."
+        },
+        {
+          "name": "Wind Echo",
+          "kind": "AbilityWeave",
+          "reward": "Physical",
+          "value": 5,
+          "duration": 6.25,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "Using two different equipped abilities within 10s primes your next melee hit for +5 physical damage for 6.25s. 12s recovery."
+        },
+        {
+          "name": "Ninja Trapcraft",
+          "kind": "TrapSense",
+          "reward": "Barrier",
+          "value": 0,
+          "duration": 0.0,
+          "cooldown": 0,
+          "filter": -1,
+          "description": "See a close, visible trap warning and disarm reachable spear traps with Interact. Bear traps retain their native pickup interaction."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Smoke Veil",
+          "rules": {
+            "cd": "28",
+            "self": "INVISIBLE:6.25"
+          },
+          "description": "28s cooldown; invisibility for 6.25s (self)."
+        },
+        {
+          "name": "Shuriken Fan",
+          "rules": {
+            "cd": "18",
+            "range": "80",
+            "arc": "75",
+            "damage": "14",
+            "kind": "physical"
+          },
+          "description": "18s cooldown; 14 base physical damage; 80 range / 75 degree arc."
+        },
+        {
+          "name": "Nerve Strike",
+          "rules": {
+            "cd": "30",
+            "range": "30",
+            "arc": "45",
+            "damage": "8",
+            "kind": "physical",
+            "control": "PARALYZED:1.875"
+          },
+          "description": "30s cooldown; 8 base physical damage; 30 range / 45 degree arc; paralysis for 1.875s on hit."
+        },
+        {
+          "name": "Wind Step",
+          "rules": {
+            "cd": "24",
+            "self": "FAST:5,LEVITATING:2.5"
+          },
+          "description": "24s cooldown; haste for 5s (self); levitation for 2.5s (self)."
+        }
+      ]
+    },
+    {
+      "name": "Monk",
+      "perks": [
+        {
+          "name": "Flowing Hands",
+          "kind": "MeleeCombo",
+          "reward": "Heal",
+          "value": 4,
+          "duration": 0.0,
+          "cooldown": 8,
+          "filter": 1,
+          "description": "Three unarmed hits within 6.25s restore 4 HP. 8s recovery."
+        },
+        {
+          "name": "Centered Counter",
+          "kind": "UnarmedCounter",
+          "reward": "Magic",
+          "value": 4,
+          "duration": 0.0,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "Block while unarmed to ready a +4 magic counter. Only an unarmed melee hit consumes it; 8s recovery."
+        },
+        {
+          "name": "Breath Shelter",
+          "kind": "Ability",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 6.25,
+          "cooldown": 12,
+          "filter": 7,
+          "description": "Centering Breath grants a 6-point barrier for 6.25s. 12s recovery."
+        },
+        {
+          "name": "Wind Rhythm",
+          "kind": "AbilityWeave",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 3.75,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "Using two different equipped abilities within 10s grants 10% movement speed for 3.75s. 12s recovery."
+        },
+        {
+          "name": "Patient Focus",
+          "kind": "Quiet",
+          "reward": "Discount",
+          "value": 2,
+          "duration": 10.0,
+          "cooldown": 20,
+          "filter": -1,
+          "description": "After 10s without hostile combat, ready a discount up to 2 MP on your next paid cast within 10s. 20s recovery."
+        },
+        {
+          "name": "Purified Flow",
+          "kind": "CleanseBarrier",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "Actually cleansing a harmful effect grants a 6-point barrier for 5s. 12s recovery."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Palm Shock",
+          "rules": {
+            "cd": "20",
+            "range": "34",
+            "arc": "75",
+            "damage": "16",
+            "kind": "physical",
+            "control": "SLOW:2.5"
+          },
+          "description": "20s cooldown; 16 base physical damage; 34 range / 75 degree arc; slow for 2.5s on hit."
+        },
+        {
+          "name": "Centering Breath",
+          "rules": {
+            "cd": "40",
+            "heal": "12",
+            "mana": "6",
+            "cleanse": "1"
+          },
+          "description": "40s cooldown; 12 HP restored; 6 MP restored; cures poison, bleeding, slow, web, confusion, fear, sleep and paralysis (self)."
+        },
+        {
+          "name": "Wind Walk",
+          "rules": {
+            "cd": "30",
+            "manaCost": "4",
+            "self": "FAST:5,LEVITATING:5"
+          },
+          "description": "30s cooldown; 4 MP cost; haste for 5s (self); levitation for 5s (self)."
+        },
+        {
+          "name": "Diamond Skin",
+          "rules": {
+            "cd": "34",
+            "manaCost": "5",
+            "self": "MAGICRESIST:8.75"
+          },
+          "description": "34s cooldown; 5 MP cost; magic resistance for 8.75s (self)."
+        }
+      ]
+    },
+    {
+      "name": "Conjurer",
+      "perks": [
+        {
+          "name": "Coordinated Assault",
+          "kind": "SummonBond",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "You and an owned summon hitting the same enemy within 6.25s grant you a 6-point barrier for 5s. 10s recovery."
+        },
+        {
+          "name": "Binding Harvest",
+          "kind": "Ability",
+          "reward": "Discount",
+          "value": 2,
+          "duration": 10.0,
+          "cooldown": 12,
+          "filter": 6,
+          "description": "Binding Pulse readies a discount up to 2 MP on your next paid cast within 10s. 12s recovery."
+        },
+        {
+          "name": "Summoners Shelter",
+          "kind": "SummonCast",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 6.25,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "A paid native Summon cast grants a 6-point barrier for 6.25s. 12s recovery."
+        },
+        {
+          "name": "Soul Cadence",
+          "kind": "SummonEcho",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "A paid damaging cast opens a relay for 6.25s. Your owned summon hitting an enemy during it grants you a 6-point barrier for 6.25s. One relay; 8s recovery."
+        },
+        {
+          "name": "Masters Reprisal",
+          "kind": "BlockCharge",
+          "reward": "Magic",
+          "value": 4,
+          "duration": 0.0,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "A real block primes your next melee hit for +4 magic damage. One charge; 8s recovery."
+        },
+        {
+          "name": "Spectral Return",
+          "kind": "Ambush",
+          "reward": "Magic",
+          "value": 5,
+          "duration": 3.75,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "Leaving invisibility primes one melee hit for +5 magic damage for 3.75s. 12s recovery."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Binding Pulse",
+          "rules": {
+            "cd": "28",
+            "manaCost": "8",
+            "range": "64",
+            "arc": "110",
+            "damage": "9",
+            "control": "WEBBED:2.5"
+          },
+          "description": "28s cooldown; 8 MP cost; 9 base magic damage; 64 range / 110 degree arc; web for 2.5s on hit."
+        },
+        {
+          "name": "Master's Aegis",
+          "rules": {
+            "cd": "36",
+            "manaCost": "7",
+            "self": "MAGICRESIST:7.5,HP_REGEN:2.5"
+          },
+          "description": "36s cooldown; 7 MP cost; magic resistance for 7.5s (self); health regeneration for 2.5s (self)."
+        },
+        {
+          "name": "Soul Exchange",
+          "rules": {
+            "cd": "42",
+            "mana": "22"
+          },
+          "description": "42s cooldown; 22 MP restored."
+        },
+        {
+          "name": "Spectral Survey",
+          "rules": {
+            "cd": "30",
+            "manaCost": "4",
+            "self": "TELEPATH:10,INVISIBLE:3.125"
+          },
+          "description": "30s cooldown; 4 MP cost; telepathy for 10s (self); invisibility for 3.125s (self)."
+        }
+      ]
+    },
+    {
+      "name": "Accursed",
+      "perks": [
+        {
+          "name": "Crimson Thread",
+          "kind": "AbilityMark",
+          "reward": "Heal",
+          "value": 3,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": 7,
+          "description": "Crimson Drain marks a damaged enemy for 6.25s. A melee follow-up consumes it to restore 3 HP. 8s recovery."
+        },
+        {
+          "name": "Night Return",
+          "kind": "BloodHunt",
+          "reward": "Heal",
+          "value": 3,
+          "duration": 0.0,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "A direct melee hit while below half HP restores 3 HP. No health cost and no summon triggers; 10s recovery."
+        },
+        {
+          "name": "Blood Rhythm",
+          "kind": "MeleeCombo",
+          "reward": "Heal",
+          "value": 3,
+          "duration": 0.0,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "Three melee hits within 6.25s restore 3 HP. 10s recovery; no health cost."
+        },
+        {
+          "name": "Dread Shelter",
+          "kind": "Ability",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 12,
+          "filter": 9,
+          "description": "Dread Pulse grants a 6-point barrier for 5s. 12s recovery."
+        },
+        {
+          "name": "Occult Overflow",
+          "kind": "Overflow",
+          "reward": "Barrier",
+          "value": 8,
+          "duration": 6.25,
+          "cooldown": 0,
+          "filter": -1,
+          "description": "Excess direct self-healing becomes an 8-point capped barrier for 6.25s."
+        },
+        {
+          "name": "Forbidden Circuit",
+          "kind": "Spellblade",
+          "reward": "Magic",
+          "value": 4,
+          "duration": 6.25,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "A paid damaging cast primes a melee hit for +4 magic damage within 6.25s; hitting readies a discount up to 2 MP on your next paid cast. 10s recovery."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Blood Price",
+          "rules": {
+            "cd": "28",
+            "self": "POTION_STR:5,FAST:3.75"
+          },
+          "description": "28s cooldown; strength for 5s (self); haste for 3.75s (self)."
+        },
+        {
+          "name": "Crimson Drain",
+          "rules": {
+            "cd": "25",
+            "manaCost": "6",
+            "range": "64",
+            "arc": "25",
+            "damage": "16",
+            "leech": "50"
+          },
+          "description": "25s cooldown; 6 MP cost; 16 base magic damage; 64 range / 25 degree arc; 50% of damage dealt restored as HP."
+        },
+        {
+          "name": "Night Shroud",
+          "rules": {
+            "cd": "34",
+            "manaCost": "5",
+            "self": "INVISIBLE:6.25,MAGICRESIST:3.75"
+          },
+          "description": "34s cooldown; 5 MP cost; invisibility for 6.25s (self); magic resistance for 3.75s (self)."
+        },
+        {
+          "name": "Dread Pulse",
+          "rules": {
+            "cd": "34",
+            "range": "52",
+            "arc": "360",
+            "damage": "5",
+            "control": "FEAR:2.5"
+          },
+          "description": "34s cooldown; 5 base magic damage; 52 range / 360 degree arc; fear for 2.5s on hit."
+        }
+      ]
+    },
+    {
+      "name": "Mesmer",
+      "perks": [
+        {
+          "name": "Fracture Primer",
+          "kind": "AbilityMark",
+          "reward": "Magic",
+          "value": 5,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": 6,
+          "description": "Mind Fracture marks its damaged target for 6.25s. Your next melee hit consumes it for +5 magic damage. 8s recovery."
+        },
+        {
+          "name": "False Footing",
+          "kind": "ControlEnd",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 3.75,
+          "cooldown": 15,
+          "filter": -1,
+          "description": "When hostile control on you ends, gain 10% movement speed for 3.75s. 15s recovery."
+        },
+        {
+          "name": "Illusion Opening",
+          "kind": "ControlledStrike",
+          "reward": "Magic",
+          "value": 5,
+          "duration": 0.0,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "A direct melee hit against a confused or frightened enemy deals +5 magic damage. 10s recovery."
+        },
+        {
+          "name": "Cold Reason",
+          "kind": "Shatter",
+          "reward": "Physical",
+          "value": 5,
+          "duration": 5.0,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "Your cold hit or Cold Snap primes that enemy for 5s. Your next direct physical hit consumes it for +5 damage. 8s recovery."
+        },
+        {
+          "name": "Mental Cadence",
+          "kind": "Cadence",
+          "reward": "Discount",
+          "value": 2,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "Two different damaging spell hits within 6.25s refund up to 2 MP paid for the second cast. Once per cast; 8s recovery."
+        },
+        {
+          "name": "Bastion Echo",
+          "kind": "AbilityWeave",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "Using two different equipped abilities within 10s grants a 6-point barrier for 5s. 12s recovery."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Mind Fracture",
+          "rules": {
+            "cd": "28",
+            "manaCost": "6",
+            "range": "96",
+            "arc": "20",
+            "damage": "10",
+            "control": "CONFUSED:3.75"
+          },
+          "description": "28s cooldown; 6 MP cost; 10 base magic damage; 96 range / 20 degree arc; confusion for 3.75s on hit."
+        },
+        {
+          "name": "False Opening",
+          "rules": {
+            "cd": "30",
+            "manaCost": "6",
+            "self": "INVISIBLE:4.6875,FAST:5"
+          },
+          "description": "30s cooldown; 6 MP cost; invisibility for 4.6875s (self); haste for 5s (self)."
+        },
+        {
+          "name": "Cold Snap",
+          "rules": {
+            "cd": "22",
+            "manaCost": "7",
+            "range": "80",
+            "arc": "50",
+            "damage": "14",
+            "control": "SLOW:3.75"
+          },
+          "description": "22s cooldown; 7 MP cost; 14 base magic damage; 80 range / 50 degree arc; slow for 3.75s on hit."
+        },
+        {
+          "name": "Psychic Bastion",
+          "rules": {
+            "cd": "38",
+            "manaCost": "8",
+            "self": "MAGICREFLECT:3.75,TELEPATH:6.25"
+          },
+          "description": "38s cooldown; 8 MP cost; spell reflection for 3.75s (self); telepathy for 6.25s (self)."
+        }
+      ]
+    },
+    {
+      "name": "Brewer",
+      "perks": [
+        {
+          "name": "Chaser",
+          "kind": "DrinkCharge",
+          "reward": "Physical",
+          "value": 5,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "A successful beneficial drink primes your next melee hit for +5 physical damage for 6.25s. 8s recovery."
+        },
+        {
+          "name": "Splashback",
+          "kind": "PotionBarrier",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "A thrown harmful potion damaging a hostile target grants a 6-point barrier for 5s. Once per throw; 10s recovery."
+        },
+        {
+          "name": "Clean Finish",
+          "kind": "CleanDrink",
+          "reward": "Barrier",
+          "value": 0,
+          "duration": 0.0,
+          "cooldown": 0,
+          "filter": -1,
+          "description": "A successful beneficial drink removes poison or bleeding from yourself, without consuming an extra item."
+        },
+        {
+          "name": "Bottle Rhythm",
+          "kind": "DrinkWeave",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 3.75,
+          "cooldown": 15,
+          "filter": -1,
+          "description": "Two different beneficial drink types within 10s grant 10% movement speed for 3.75s. 15s recovery."
+        },
+        {
+          "name": "Lingering Recipe",
+          "kind": "Recipe",
+          "reward": "Magic",
+          "value": 4,
+          "duration": 7.5,
+          "cooldown": 12,
+          "filter": 6,
+          "description": "Combat Tonic stores a recipe for 7.5s. Your next direct harmful-potion hit consumes it for +4 magic damage. Once per throw; 12s recovery."
+        },
+        {
+          "name": "Field Distillation",
+          "kind": "Distill",
+          "reward": "Heal",
+          "value": 4,
+          "duration": 0.0,
+          "cooldown": 0,
+          "filter": -1,
+          "description": "A distinct cache stores one drink booster: +4 healing or +2 MP for the next restorative drink. One stored booster; three earned per floor."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Combat Tonic",
+          "rules": {
+            "cd": "38",
+            "heal": "10",
+            "self": "POTION_STR:3.75"
+          },
+          "description": "38s cooldown; 10 HP restored; strength for 3.75s (self)."
+        },
+        {
+          "name": "Caustic Splash",
+          "rules": {
+            "cd": "24",
+            "manaCost": "4",
+            "range": "64",
+            "arc": "90",
+            "damage": "16"
+          },
+          "description": "24s cooldown; 4 MP cost; 16 base magic damage; 64 range / 90 degree arc."
+        },
+        {
+          "name": "Antidote Batch",
+          "rules": {
+            "cd": "28",
+            "cleanse": "1",
+            "self": "HP_REGEN:3.75"
+          },
+          "description": "28s cooldown; health regeneration for 3.75s (self); cures poison, bleeding, slow, web, confusion, fear, sleep and paralysis (self)."
+        },
+        {
+          "name": "Rocket Brew",
+          "rules": {
+            "cd": "30",
+            "self": "FAST:6.25,MAGICRESIST:3.75"
+          },
+          "description": "30s cooldown; haste for 6.25s (self); magic resistance for 3.75s (self)."
+        }
+      ]
+    },
+    {
+      "name": "Machinist",
+      "perks": [
+        {
+          "name": "Reload Screen",
+          "kind": "Ranged",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "A confirmed direct ranged hit grants a 6-point barrier for 5s. 12s recovery; re-equipping alone never triggers it."
+        },
+        {
+          "name": "Conductive Target",
+          "kind": "AbilityMark",
+          "reward": "Magic",
+          "value": 5,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": 9,
+          "description": "Arc Discharge marks a damaged enemy for 6.25s. Your next ranged hit consumes it for +5 magic damage. 8s recovery."
+        },
+        {
+          "name": "Ballistic Circuit",
+          "kind": "SpellMark",
+          "reward": "Magic",
+          "value": 5,
+          "duration": 6.25,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "A paid cast readies your next ranged hit within 6.25s for +5 magic damage. 10s recovery."
+        },
+        {
+          "name": "Insulated Counter",
+          "kind": "BlockCharge",
+          "reward": "Physical",
+          "value": 4,
+          "duration": 0.0,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "A real block primes your next melee hit for +4 physical damage. One charge; 8s recovery."
+        },
+        {
+          "name": "Workshop Reserve",
+          "kind": "Distill",
+          "reward": "Heal",
+          "value": 4,
+          "duration": 0.0,
+          "cooldown": 0,
+          "filter": -1,
+          "description": "A distinct cache stores one drink booster: +4 healing or +2 MP for the next restorative drink. One stored booster; three earned per floor."
+        },
+        {
+          "name": "Overcharge Rhythm",
+          "kind": "AbilityWeave",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 3.75,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "Using two different equipped abilities within 10s grants 10% movement speed for 3.75s. 12s recovery."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Overcharge",
+          "rules": {
+            "cd": "30",
+            "manaCost": "6",
+            "self": "FAST:3.75,MAGICAMPLIFY:5"
+          },
+          "description": "30s cooldown; 6 MP cost; haste for 3.75s (self); spell amplification for 5s (self)."
+        },
+        {
+          "name": "Scatter Volley",
+          "rules": {
+            "cd": "20",
+            "range": "96",
+            "arc": "65",
+            "damage": "16",
+            "kind": "physical"
+          },
+          "description": "20s cooldown; 16 base physical damage; 96 range / 65 degree arc."
+        },
+        {
+          "name": "Insulation Field",
+          "rules": {
+            "cd": "36",
+            "manaCost": "6",
+            "self": "MAGICRESIST:8.75",
+            "cleanse": "1"
+          },
+          "description": "36s cooldown; 6 MP cost; magic resistance for 8.75s (self); cures poison, bleeding, slow, web, confusion, fear, sleep and paralysis (self)."
+        },
+        {
+          "name": "Arc Discharge",
+          "rules": {
+            "cd": "30",
+            "manaCost": "8",
+            "range": "56",
+            "arc": "360",
+            "damage": "12",
+            "control": "SLOW:2.5"
+          },
+          "description": "30s cooldown; 8 MP cost; 12 base magic damage; 56 range / 360 degree arc; slow for 2.5s on hit."
+        }
+      ]
+    },
+    {
+      "name": "Punisher",
+      "perks": [
+        {
+          "name": "Verdict",
+          "kind": "AbilityMark",
+          "reward": "Physical",
+          "value": 6,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": 6,
+          "description": "Sentence marks its damaged target for 6.25s. Your next melee hit consumes it for +6 physical damage. 8s recovery."
+        },
+        {
+          "name": "Pursuit Token",
+          "kind": "Kill",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 3.75,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "A direct hostile kill grants 10% movement speed for 3.75s. 12s recovery."
+        },
+        {
+          "name": "Chain Rhythm",
+          "kind": "Execution",
+          "reward": "Physical",
+          "value": 5,
+          "duration": 0.0,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "A direct melee hit against an enemy already below 30% HP deals +5 physical damage. 10s recovery."
+        },
+        {
+          "name": "Dread Reprisal",
+          "kind": "BlockCharge",
+          "reward": "Physical",
+          "value": 5,
+          "duration": 0.0,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "A real block primes your next melee hit for +5 physical damage. One charge; 8s recovery."
+        },
+        {
+          "name": "Relentless Shelter",
+          "kind": "Ability",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 12,
+          "filter": 7,
+          "description": "Relentless Chase grants a 6-point barrier for 5s. 12s recovery."
+        },
+        {
+          "name": "Pain Transformed",
+          "kind": "ControlEnd",
+          "reward": "Physical",
+          "value": 5,
+          "duration": 6.25,
+          "cooldown": 15,
+          "filter": -1,
+          "description": "When hostile control on you ends, prime a melee hit for +5 physical damage for 6.25s. 15s recovery."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Sentence",
+          "rules": {
+            "cd": "26",
+            "range": "40",
+            "arc": "55",
+            "damage": "24",
+            "kind": "physical"
+          },
+          "description": "26s cooldown; 24 base physical damage; 40 range / 55 degree arc."
+        },
+        {
+          "name": "Relentless Chase",
+          "rules": {
+            "cd": "26",
+            "self": "FAST:6.25",
+            "cleanse": "1"
+          },
+          "description": "26s cooldown; haste for 6.25s (self); cures poison, bleeding, slow, web, confusion, fear, sleep and paralysis (self)."
+        },
+        {
+          "name": "Chain Snare",
+          "rules": {
+            "cd": "30",
+            "manaCost": "5",
+            "range": "88",
+            "arc": "18",
+            "damage": "6",
+            "kind": "physical",
+            "control": "WEBBED:2.5"
+          },
+          "description": "30s cooldown; 5 MP cost; 6 base physical damage; 88 range / 18 degree arc; web for 2.5s on hit."
+        },
+        {
+          "name": "Dread Verdict",
+          "rules": {
+            "cd": "34",
+            "manaCost": "6",
+            "range": "60",
+            "arc": "100",
+            "control": "FEAR:2.5",
+            "self": "POTION_STR:3.75"
+          },
+          "description": "34s cooldown; 6 MP cost; 60 range / 100 degree arc; fear for 2.5s on hit; strength for 3.75s (self)."
+        }
+      ]
+    },
+    {
+      "name": "Shaman",
+      "perks": [
+        {
+          "name": "Spirit Cycle",
+          "kind": "Spellblade",
+          "reward": "Magic",
+          "value": 4,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "A paid damaging cast primes a melee hit for +4 magic damage within 6.25s; hitting readies a discount up to 2 MP on your next paid cast. 8s recovery."
+        },
+        {
+          "name": "Ancestral Shelter",
+          "kind": "HealHaste",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "A direct self-heal restoring at least 5 HP grants a 6-point barrier for 5s. 12s recovery."
+        },
+        {
+          "name": "Primal Rhythm",
+          "kind": "MeleeCombo",
+          "reward": "Heal",
+          "value": 4,
+          "duration": 0.0,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "Three melee hits within 6.25s restore 4 HP. 10s recovery; all native forms are allowed."
+        },
+        {
+          "name": "Rooted Followup",
+          "kind": "AbilityMark",
+          "reward": "Physical",
+          "value": 5,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": 7,
+          "description": "Entangling Roots marks a damaged target for 6.25s. A melee follow-up consumes it for +5 physical damage. 8s recovery."
+        },
+        {
+          "name": "Spirit Refrain",
+          "kind": "AbilityWeave",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "Using two different equipped abilities within 10s grants a 6-point barrier for 5s. 12s recovery."
+        },
+        {
+          "name": "Ancestral Cleansing",
+          "kind": "CleanseBarrier",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 3.75,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "Actually cleansing a harmful effect grants 10% movement speed for 3.75s. 12s recovery."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Spirit Surge",
+          "rules": {
+            "cd": "30",
+            "manaCost": "6",
+            "self": "FAST:5,MP_REGEN:3.75"
+          },
+          "description": "30s cooldown; 6 MP cost; haste for 5s (self); mana regeneration for 3.75s (self)."
+        },
+        {
+          "name": "Entangling Roots",
+          "rules": {
+            "cd": "30",
+            "manaCost": "7",
+            "range": "64",
+            "arc": "120",
+            "control": "WEBBED:2.5",
+            "damage": "5"
+          },
+          "description": "30s cooldown; 7 MP cost; 5 base magic damage; 64 range / 120 degree arc; web for 2.5s on hit."
+        },
+        {
+          "name": "Ancestral Remedy",
+          "rules": {
+            "cd": "40",
+            "manaCost": "7",
+            "heal": "14",
+            "cleanse": "1"
+          },
+          "description": "40s cooldown; 7 MP cost; 14 HP restored; cures poison, bleeding, slow, web, confusion, fear, sleep and paralysis (self)."
+        },
+        {
+          "name": "Primal Roar",
+          "rules": {
+            "cd": "35",
+            "manaCost": "5",
+            "range": "48",
+            "arc": "360",
+            "control": "FEAR:2.5",
+            "self": "MAGICRESIST:5"
+          },
+          "description": "35s cooldown; 5 MP cost; 48 range / 360 degree arc; fear for 2.5s on hit; magic resistance for 5s (self)."
+        }
+      ]
+    },
+    {
+      "name": "Hunter",
+      "perks": [
+        {
+          "name": "Quarry",
+          "kind": "Ranged",
+          "reward": "Physical",
+          "value": 5,
+          "duration": 6.25,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "A direct ranged hit primes your next melee hit for +5 physical damage within 6.25s. 10s recovery."
+        },
+        {
+          "name": "Close Escape",
+          "kind": "RearHaste",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 2.5,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "A direct rear melee hit grants 10% movement speed for 2.5s. 8s recovery."
+        },
+        {
+          "name": "Trail Signs",
+          "kind": "TrapSense",
+          "reward": "Barrier",
+          "value": 0,
+          "duration": 0.0,
+          "cooldown": 0,
+          "filter": -1,
+          "description": "See a close, visible trap warning and disarm reachable spear traps with Interact. Bear traps retain their native pickup interaction."
+        },
+        {
+          "name": "Hunters Remedy",
+          "kind": "RangedKill",
+          "reward": "Heal",
+          "value": 4,
+          "duration": 0.0,
+          "cooldown": 15,
+          "filter": -1,
+          "description": "Personally finish an enemy with a ranged weapon to restore 4 HP. Melee, spells and summons do not trigger it; 15s recovery."
+        },
+        {
+          "name": "Marked Followup",
+          "kind": "AbilityMark",
+          "reward": "Physical",
+          "value": 5,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": 8,
+          "description": "Crippling Shot marks a damaged enemy for 6.25s. A melee or ranged follow-up consumes it for +5 physical damage. 8s recovery."
+        },
+        {
+          "name": "Trail Circuit",
+          "kind": "Explore",
+          "reward": "Barrier",
+          "value": 5,
+          "duration": 6.25,
+          "cooldown": 18,
+          "filter": -1,
+          "description": "Entering a new 8-tile region grants a 5-point barrier for 6.25s. 18s recovery."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Piercing Shot",
+          "rules": {
+            "cd": "22",
+            "range": "160",
+            "arc": "10",
+            "damage": "23",
+            "kind": "physical"
+          },
+          "description": "22s cooldown; 23 base physical damage; 160 range / 10 degree arc."
+        },
+        {
+          "name": "Hunter's Mark",
+          "rules": {
+            "cd": "30",
+            "manaCost": "4",
+            "self": "TELEPATH:11.25"
+          },
+          "description": "30s cooldown; 4 MP cost; telepathy for 11.25s (self)."
+        },
+        {
+          "name": "Crippling Shot",
+          "rules": {
+            "cd": "28",
+            "range": "120",
+            "arc": "14",
+            "damage": "10",
+            "kind": "physical",
+            "control": "SLOW:5"
+          },
+          "description": "28s cooldown; 10 base physical damage; 120 range / 14 degree arc; slow for 5s on hit."
+        },
+        {
+          "name": "Trail Escape",
+          "rules": {
+            "cd": "30",
+            "self": "FAST:5,INVISIBLE:3.125"
+          },
+          "description": "30s cooldown; haste for 5s (self); invisibility for 3.125s (self)."
+        }
+      ]
+    },
+    {
+      "name": "Bard",
+      "perks": [
+        {
+          "name": "Refrain",
+          "kind": "Refrain",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "Perform an ability, a melee hit, then the other equipped ability within 10s to gain a 6-point barrier for 5s. 12s recovery."
+        },
+        {
+          "name": "Battle Tempo",
+          "kind": "Spellblade",
+          "reward": "Magic",
+          "value": 4,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "A paid damaging cast primes a melee hit for +4 magic damage within 6.25s; hitting readies a discount up to 2 MP on your next paid cast. 8s recovery."
+        },
+        {
+          "name": "Skalds Cadence",
+          "kind": "MeleeCombo",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 3.75,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "Three melee hits within 6.25s grant 10% movement speed for 3.75s. 10s recovery."
+        },
+        {
+          "name": "Restorative Chorus",
+          "kind": "Overflow",
+          "reward": "Barrier",
+          "value": 8,
+          "duration": 6.25,
+          "cooldown": 0,
+          "filter": -1,
+          "description": "Excess direct self-healing becomes an 8-point capped barrier for 6.25s."
+        },
+        {
+          "name": "Road Verse",
+          "kind": "Explore",
+          "reward": "Discount",
+          "value": 2,
+          "duration": 10.0,
+          "cooldown": 18,
+          "filter": -1,
+          "description": "Entering a new 8-tile region readies a discount up to 2 MP on your next paid cast within 10s. 18s recovery."
+        },
+        {
+          "name": "Dissonant Opening",
+          "kind": "AbilityMark",
+          "reward": "Physical",
+          "value": 5,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": 9,
+          "description": "Dissonant Chord marks a damaged enemy for 6.25s. A melee follow-up consumes it for +5 physical damage. 8s recovery."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Battle Ballad",
+          "rules": {
+            "cd": "32",
+            "manaCost": "6",
+            "self": "POTION_STR:5,FAST:3.75"
+          },
+          "description": "32s cooldown; 6 MP cost; strength for 5s (self); haste for 3.75s (self)."
+        },
+        {
+          "name": "Lullaby",
+          "rules": {
+            "cd": "34",
+            "manaCost": "7",
+            "range": "56",
+            "arc": "110",
+            "control": "ASLEEP:3.75"
+          },
+          "description": "34s cooldown; 7 MP cost; 56 range / 110 degree arc; sleep for 3.75s on hit."
+        },
+        {
+          "name": "Restorative Verse",
+          "rules": {
+            "cd": "42",
+            "manaCost": "6",
+            "heal": "10",
+            "self": "HP_REGEN:3.75"
+          },
+          "description": "42s cooldown; 6 MP cost; 10 HP restored; health regeneration for 3.75s (self)."
+        },
+        {
+          "name": "Dissonant Chord",
+          "rules": {
+            "cd": "24",
+            "manaCost": "5",
+            "range": "72",
+            "arc": "90",
+            "damage": "12",
+            "control": "CONFUSED:2.5"
+          },
+          "description": "24s cooldown; 5 MP cost; 12 base magic damage; 72 range / 90 degree arc; confusion for 2.5s on hit."
+        }
+      ]
+    },
+    {
+      "name": "Sapper",
+      "perks": [
+        {
+          "name": "Breach Momentum",
+          "kind": "Ability",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 12,
+          "filter": 6,
+          "description": "Breach Charge grants a 6-point barrier for 5s. 12s recovery."
+        },
+        {
+          "name": "Fuse Link",
+          "kind": "AbilityMark",
+          "reward": "Magic",
+          "value": 5,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": 6,
+          "description": "Breach Charge marks a damaged enemy for 6.25s. A melee follow-up consumes it for +5 magic damage. 8s recovery."
+        },
+        {
+          "name": "Demolition Entry",
+          "kind": "Breacher",
+          "reward": "Discount",
+          "value": 2,
+          "duration": 10.0,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "A fully charged melee strike breaks an ordinary wooden door and readies a discount up to 2 MP on your next paid cast within 10s. 10s recovery."
+        },
+        {
+          "name": "Blast Rhythm",
+          "kind": "AbilityWeave",
+          "reward": "Physical",
+          "value": 5,
+          "duration": 6.25,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "Using two different equipped abilities within 10s primes your next melee hit for +5 physical damage within 6.25s. 12s recovery."
+        },
+        {
+          "name": "Salvage Screen",
+          "kind": "Cache",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 6.25,
+          "cooldown": 15,
+          "filter": -1,
+          "description": "First opening a distinct cache grants a 6-point barrier for 6.25s. 15s recovery."
+        },
+        {
+          "name": "Fuse Runner",
+          "kind": "ControlEnd",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 3.75,
+          "cooldown": 15,
+          "filter": -1,
+          "description": "When hostile control on you ends, gain 10% movement speed for 3.75s. 15s recovery."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Breach Charge",
+          "rules": {
+            "cd": "26",
+            "range": "56",
+            "arc": "110",
+            "damage": "22",
+            "kind": "physical"
+          },
+          "description": "26s cooldown; 22 base physical damage; 56 range / 110 degree arc."
+        },
+        {
+          "name": "Concussion Burst",
+          "rules": {
+            "cd": "32",
+            "manaCost": "5",
+            "range": "44",
+            "arc": "360",
+            "damage": "7",
+            "kind": "physical",
+            "control": "CONFUSED:3.75"
+          },
+          "description": "32s cooldown; 5 MP cost; 7 base physical damage; 44 range / 360 degree arc; confusion for 3.75s on hit."
+        },
+        {
+          "name": "Blast Shelter",
+          "rules": {
+            "cd": "36",
+            "self": "MAGICRESIST:7.5",
+            "cleanse": "1"
+          },
+          "description": "36s cooldown; magic resistance for 7.5s (self); cures poison, bleeding, slow, web, confusion, fear, sleep and paralysis (self)."
+        },
+        {
+          "name": "Fuse Sprint",
+          "rules": {
+            "cd": "22",
+            "self": "FAST:6.25"
+          },
+          "description": "22s cooldown; haste for 6.25s (self)."
+        }
+      ]
+    },
+    {
+      "name": "Scion",
+      "perks": [
+        {
+          "name": "Heirloom Circuit",
+          "kind": "Spellblade",
+          "reward": "Magic",
+          "value": 4,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "A paid damaging cast primes a melee hit for +4 magic damage within 6.25s; hitting readies a discount up to 2 MP on your next paid cast. 8s recovery."
+        },
+        {
+          "name": "Ancestral Echo",
+          "kind": "AbilityWeave",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "Using two different equipped abilities within 10s grants a 6-point barrier for 5s. 12s recovery."
+        },
+        {
+          "name": "Noble Riposte",
+          "kind": "DuelCounter",
+          "reward": "Magic",
+          "value": 4,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "A real block marks its attacker for 6.25s. A melee counter against that attacker adds +4 magic damage; other targets cannot consume it. 8s recovery."
+        },
+        {
+          "name": "Bloodline Overflow",
+          "kind": "Overflow",
+          "reward": "Barrier",
+          "value": 8,
+          "duration": 6.25,
+          "cooldown": 0,
+          "filter": -1,
+          "description": "Excess direct self-healing becomes an 8-point capped barrier for 6.25s."
+        },
+        {
+          "name": "Ancestral Mark",
+          "kind": "AbilityMark",
+          "reward": "Physical",
+          "value": 5,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": 6,
+          "description": "Ancestral Blade marks a damaged enemy for 6.25s. A melee follow-up consumes it for +5 physical damage. 8s recovery."
+        },
+        {
+          "name": "Royal Momentum",
+          "kind": "RearHaste",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 2.5,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "A direct rear melee hit grants 10% movement speed for 2.5s. 10s recovery."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Ancestral Blade",
+          "rules": {
+            "cd": "24",
+            "manaCost": "7",
+            "range": "48",
+            "arc": "80",
+            "damage": "21"
+          },
+          "description": "24s cooldown; 7 MP cost; 21 base magic damage; 48 range / 80 degree arc."
+        },
+        {
+          "name": "Bloodline Ward",
+          "rules": {
+            "cd": "38",
+            "manaCost": "7",
+            "self": "MAGICREFLECT:3.75,MAGICRESIST:3.75"
+          },
+          "description": "38s cooldown; 7 MP cost; spell reflection for 3.75s (self); magic resistance for 3.75s (self)."
+        },
+        {
+          "name": "Noble Resolve",
+          "rules": {
+            "cd": "40",
+            "heal": "12",
+            "mana": "8",
+            "cleanse": "1"
+          },
+          "description": "40s cooldown; 12 HP restored; 8 MP restored; cures poison, bleeding, slow, web, confusion, fear, sleep and paralysis (self)."
+        },
+        {
+          "name": "Royal Pursuit",
+          "rules": {
+            "cd": "28",
+            "manaCost": "5",
+            "self": "FAST:6.25,POTION_STR:2.5"
+          },
+          "description": "28s cooldown; 5 MP cost; haste for 6.25s (self); strength for 2.5s (self)."
+        }
+      ]
+    },
+    {
+      "name": "Hermit",
+      "perks": [
+        {
+          "name": "Quiet Camp",
+          "kind": "Quiet",
+          "reward": "Heal",
+          "value": 3,
+          "duration": 0.0,
+          "cooldown": 20,
+          "filter": -1,
+          "description": "After 10s without hostile combat, restore 3 HP. Triggers at most once per 20s of active play."
+        },
+        {
+          "name": "Cave Footing",
+          "kind": "Explore",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 6.25,
+          "cooldown": 18,
+          "filter": -1,
+          "description": "Entering a new 8-tile region grants a 6-point barrier for 6.25s. 18s recovery."
+        },
+        {
+          "name": "Staff Rhythm",
+          "kind": "MeleeCombo",
+          "reward": "Magic",
+          "value": 4,
+          "duration": 6.25,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "Three melee hits within 6.25s prime your next melee hit for +4 magic damage within 6.25s. 10s recovery."
+        },
+        {
+          "name": "Solitary Overflow",
+          "kind": "Overflow",
+          "reward": "Barrier",
+          "value": 8,
+          "duration": 7.5,
+          "cooldown": 0,
+          "filter": -1,
+          "description": "Excess direct self-healing becomes an 8-point capped barrier for 7.5s."
+        },
+        {
+          "name": "Quiet Opening",
+          "kind": "PatientStrike",
+          "reward": "Magic",
+          "value": 5,
+          "duration": 0.0,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "After 10s without hostile combat, your opening melee hit deals +5 magic damage. Being hit or attacking breaks the quiet; 12s recovery."
+        },
+        {
+          "name": "Cave Refrain",
+          "kind": "AbilityWeave",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 3.75,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "Using two different equipped abilities within 10s grants 10% movement speed for 3.75s. 12s recovery."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Quiet Restoration",
+          "rules": {
+            "cd": "45",
+            "heal": "14",
+            "mana": "10"
+          },
+          "description": "45s cooldown; 14 HP restored; 10 MP restored."
+        },
+        {
+          "name": "Stone Meditation",
+          "rules": {
+            "cd": "34",
+            "manaCost": "4",
+            "self": "MAGICRESIST:10"
+          },
+          "description": "34s cooldown; 4 MP cost; magic resistance for 10s (self)."
+        },
+        {
+          "name": "Cave Echo",
+          "rules": {
+            "cd": "28",
+            "manaCost": "5",
+            "range": "60",
+            "arc": "360",
+            "damage": "10",
+            "control": "SLOW:3.75"
+          },
+          "description": "28s cooldown; 5 MP cost; 10 base magic damage; 60 range / 360 degree arc; slow for 3.75s on hit."
+        },
+        {
+          "name": "Leave No Trace",
+          "rules": {
+            "cd": "32",
+            "manaCost": "5",
+            "self": "INVISIBLE:6.25,LEVITATING:3.75"
+          },
+          "description": "32s cooldown; 5 MP cost; invisibility for 6.25s (self); levitation for 3.75s (self)."
+        }
+      ]
+    },
+    {
+      "name": "Paladin",
+      "perks": [
+        {
+          "name": "Oathbrand",
+          "kind": "AbilityMark",
+          "reward": "Heal",
+          "value": 3,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": 6,
+          "description": "Radiant Smite marks a damaged enemy for 6.25s. A melee follow-up consumes it to restore 3 HP. 8s recovery."
+        },
+        {
+          "name": "Dawn Guard",
+          "kind": "BlockHaste",
+          "reward": "Barrier",
+          "value": 6,
+          "duration": 5.0,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "A real block grants a 6-point barrier for 5s. 8s recovery."
+        },
+        {
+          "name": "Sacred Followthrough",
+          "kind": "Spellblade",
+          "reward": "Magic",
+          "value": 4,
+          "duration": 6.25,
+          "cooldown": 8,
+          "filter": -1,
+          "description": "A paid damaging cast primes a melee hit for +4 magic damage within 6.25s; hitting readies a discount up to 2 MP on your next paid cast. 8s recovery."
+        },
+        {
+          "name": "Renewed Resolve",
+          "kind": "CleanseBarrier",
+          "reward": "Magic",
+          "value": 4,
+          "duration": 6.25,
+          "cooldown": 12,
+          "filter": -1,
+          "description": "Actually cleansing a harmful effect readies a melee hit for +4 magic damage within 6.25s. One charge; 12s recovery."
+        },
+        {
+          "name": "Oath Overflow",
+          "kind": "HealingOath",
+          "reward": "Heal",
+          "value": 3,
+          "duration": 7.5,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "A paid self-heal restoring missing HP readies one melee follow-up within 7.5s that restores another 3 HP. Overhealing alone does not qualify; 10s recovery."
+        },
+        {
+          "name": "Crusader Rhythm",
+          "kind": "MeleeCombo",
+          "reward": "Haste",
+          "value": 10,
+          "duration": 3.75,
+          "cooldown": 10,
+          "filter": -1,
+          "description": "Three melee hits within 6.25s grant 10% movement speed for 3.75s. 10s recovery."
+        }
+      ],
+      "abilities": [
+        {
+          "name": "Radiant Smite",
+          "rules": {
+            "cd": "24",
+            "manaCost": "7",
+            "range": "40",
+            "arc": "70",
+            "damage": "20"
+          },
+          "description": "24s cooldown; 7 MP cost; 20 base magic damage; 40 range / 70 degree arc."
+        },
+        {
+          "name": "Dawn Aegis",
+          "rules": {
+            "cd": "38",
+            "manaCost": "8",
+            "self": "MAGICRESIST:7.5,HP_REGEN:5"
+          },
+          "description": "38s cooldown; 8 MP cost; magic resistance for 7.5s (self); health regeneration for 5s (self)."
+        },
+        {
+          "name": "Oath Renewal",
+          "rules": {
+            "cd": "42",
+            "manaCost": "6",
+            "heal": "16",
+            "cleanse": "1"
+          },
+          "description": "42s cooldown; 6 MP cost; 16 HP restored; cures poison, bleeding, slow, web, confusion, fear, sleep and paralysis (self)."
+        },
+        {
+          "name": "Crusader's Advance",
+          "rules": {
+            "cd": "30",
+            "manaCost": "5",
+            "self": "FAST:5,POTION_STR:3.75"
+          },
+          "description": "30s cooldown; 5 MP cost; haste for 5s (self); strength for 3.75s (self)."
+        }
+      ]
+    }
+  ]
+}

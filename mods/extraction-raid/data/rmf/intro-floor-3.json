@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "floor": 3,
+  "audio": "music/rmf/dungeon-floor-3.wav",
+  "duration_seconds": 17.81,
+  "cues": [
+    {
+      "start": 0.6,
+      "end": 2.9,
+      "text": "Welcome to the final level."
+    },
+    {
+      "start": 3.5,
+      "end": 5.0,
+      "text": "Good job, you made it."
+    },
+    {
+      "start": 5.11,
+      "end": 6.25,
+      "text": "How's your loot looking?"
+    },
+    {
+      "start": 6.66,
+      "end": 7.86,
+      "text": "Did you loot good?"
+    },
+    {
+      "start": 8.28,
+      "end": 10.98,
+      "text": "Well, it's time for you to get going."
+    },
+    {
+      "start": 11.5,
+      "end": 14.02,
+      "text": "Beat the others and get to the exit."
+    },
+    {
+      "start": 14.6,
+      "end": 16.06,
+      "text": "So long, my friend."
+    }
+  ]
+}

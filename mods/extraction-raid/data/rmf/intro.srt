@@ -1,0 +1,32 @@
+1
+00:00:01,300 --> 00:00:04,350
+I see you have found
+my secret dungeon.
+
+2
+00:00:04,610 --> 00:00:07,300
+There's many a delightful treasure
+to be found here.
+
+3
+00:00:07,490 --> 00:00:09,550
+But it won't be taken
+out of here easily.
+
+4
+00:00:10,010 --> 00:00:12,100
+Hurry before the others
+find it first,
+
+5
+00:00:12,370 --> 00:00:13,650
+and get to the exit.
+
+6
+00:00:14,030 --> 00:00:15,350
+Don't dally too much.
+
+7
+00:00:15,510 --> 00:00:18,300
+My pet boulders will soon
+be rolling about.

@@ -1,0 +1,27 @@
+1
+00:00:00,600 --> 00:00:02,900
+Welcome to the final level.
+
+2
+00:00:03,500 --> 00:00:05,000
+Good job, you made it.
+
+3
+00:00:05,110 --> 00:00:06,250
+How's your loot looking?
+
+4
+00:00:06,660 --> 00:00:07,860
+Did you loot good?
+
+5
+00:00:08,280 --> 00:00:10,980
+Well, it's time for you to get going.
+
+6
+00:00:11,500 --> 00:00:14,020
+Beat the others and get to the exit.
+
+7
+00:00:14,600 --> 00:00:16,060
+So long, my friend.

@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "floor": 2,
+  "audio": "music/rmf/dungeon-floor-2.wav",
+  "duration_seconds": 12.89,
+  "cues": [
+    {
+      "start": 0.7,
+      "end": 2.48,
+      "text": "Made it to level two, did ya?"
+    },
+    {
+      "start": 3.0,
+      "end": 4.96,
+      "text": "It ain't gonna get easier from here."
+    },
+    {
+      "start": 5.35,
+      "end": 6.86,
+      "text": "But I can promise you,"
+    },
+    {
+      "start": 7.34,
+      "end": 10.03,
+      "text": "the loot will be good."
+    },
+    {
+      "start": 10.7,
+      "end": 11.67,
+      "text": "Get to it!"
+    }
+  ]
+}

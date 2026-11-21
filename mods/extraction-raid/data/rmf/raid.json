@@ -1,0 +1,120 @@
+{
+  "id": "extraction-raid",
+  "game_version": "5.0.2",
+  "mode": "private-direct-ip",
+  "name": "Dungeon Delve",
+  "rules_version": 7,
+  "floors": 3,
+  "max_players": 4,
+  "floor_seconds": 360,
+  "instant_identification": true,
+  "starting_loadout": "fresh-class-balanced",
+  "pvp": "free-for-all",
+  "xp_multiplier": 2.5,
+  "layout_version": 4,
+  "layouts": [
+    {
+      "name": "Delve Mines",
+      "generation": "native",
+      "theme": "mine",
+      "size": 90,
+      "chest_target": 36,
+      "drop_target": 52,
+      "guard_target": 56
+    },
+    {
+      "name": "Delve Jungle",
+      "generation": "native",
+      "theme": "swamp",
+      "size": 90,
+      "chest_target": 30,
+      "drop_target": 44,
+      "guard_target": 56
+    },
+    {
+      "name": "Delve Crystal Caves",
+      "generation": "native",
+      "theme": "caves",
+      "size": 90,
+      "chest_target": 24,
+      "drop_target": 36,
+      "guard_target": 56
+    }
+  ],
+  "pvp_balance": {
+    "starter_minimum_hp": 50,
+    "race_damage_min": 0.8,
+    "race_damage_max": 1.2,
+    "paralysis_seconds": 1.5,
+    "sleep_seconds": 3,
+    "control_recovery_seconds": 2,
+    "implemented_by_runtime": "0.2.5",
+    "starter_hp_bonus": 20,
+    "healing_potions_per_starter": 1,
+    "aggregate_starter_budgets": true,
+    "race_supplies": true,
+    "goatman_starts_awake": true,
+    "fear_seconds": 2,
+    "web_seconds": 2,
+    "confusion_seconds": 3
+  },
+  "experience_multiplier": 2.5,
+  "class_builds": {
+    "catalogue": "data/rmf/class_builds.json",
+    "classes": 26,
+    "options_per_class": 10,
+    "passive_slots": 2,
+    "ability_slots": 2,
+    "implemented_by_runtime": "0.4.2",
+    "raid_protocol": 13
+  },
+  "mode_rules": "battle-royale",
+  "death_return": "same-floor-monsters-next-floor-preserved-progression-class-kit",
+  "rat_returns": {
+    "health": 5,
+    "damage": "native-uncapped",
+    "respawn_cooldown_seconds": 45,
+    "algernon_cheese": 10,
+    "cheese_progress": "one-rat-life",
+    "implemented_by_runtime": "0.17.0",
+    "raid_protocol": 28
+  },
+  "persistent_loot": false,
+  "descent_sites_per_floor": 1,
+  "portal_sites_per_floor": 3,
+  "portal_unlock_seconds_remaining": [
+    60,
+    0,
+    0
+  ],
+  "final_hatch_seconds_remaining": 60,
+  "victory_portals": 3,
+  "victory_seconds_remaining": 60,
+  "enemy_balance": {
+    "implemented_by_runtime": "0.17.0",
+    "raid_protocol": 28,
+    "harder_replacements_per_floor": [0, 5, 9],
+    "harder_replacement_species": "troll",
+    "regular_enemies_per_floor": 56,
+    "spawn_clearance_tiles": 12,
+    "encounter_separation_tiles": 3,
+    "guardian_clearance_tiles": 4,
+    "guardians": [
+      {
+        "monster": "skeleton",
+        "hp": 60,
+        "level": 3
+      },
+      {
+        "monster": "goblin",
+        "hp": 90,
+        "level": 6
+      },
+      {
+        "monster": "troll",
+        "hp": 140,
+        "level": 12
+      }
+    ]
+  }
+}

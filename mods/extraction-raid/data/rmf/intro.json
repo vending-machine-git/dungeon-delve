@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "audio": "music/rmf/dungeon-intro.wav",
+  "duration_seconds": 19.57,
+  "cues": [
+    {
+      "start": 1.3,
+      "end": 4.35,
+      "text": "I see you have found\nmy secret dungeon."
+    },
+    {
+      "start": 4.61,
+      "end": 7.3,
+      "text": "There's many a delightful treasure\nto be found here."
+    },
+    {
+      "start": 7.49,
+      "end": 9.55,
+      "text": "But it won't be taken\nout of here easily."
+    },
+    {
+      "start": 10.01,
+      "end": 12.1,
+      "text": "Hurry before the others\nfind it first,"
+    },
+    {
+      "start": 12.37,
+      "end": 13.65,
+      "text": "and get to the exit."
+    },
+    {
+      "start": 14.03,
+      "end": 15.35,
+      "text": "Don't dally too much."
+    },
+    {
+      "start": 15.51,
+      "end": 18.3,
+      "text": "My pet boulders will soon\nbe rolling about."
+    }
+  ]
+}
