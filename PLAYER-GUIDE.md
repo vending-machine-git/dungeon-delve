@@ -1,4 +1,4 @@
-# Dungeon Delve 0.17.1 - Windows x64
+# Dungeon Delve 0.17.2 - Windows x64
 
 Dungeon Delve and vending_machine framework are included together. No Workshop
 subscriptions, separate framework download, Python, compiler or installer required.
@@ -8,7 +8,7 @@ Experimental private Direct IP play for 2-4 players; protocol 28, framework API 
 ## Install and play
 
 1. Install Barony through Steam and run it normally once. Keep Steam running.
-2. Download **Dungeon-Delve-0.17.1-windows-x64.zip** from this project's GitHub
+2. Download **Dungeon-Delve-0.17.2-windows-x64.zip** from this project's GitHub
    Releases page, not GitHub's automatic "Source code" downloads. Verify its
    SHA256 against the accompanying SHA256SUMS.txt from the trusted publisher.
 3. Extract the ZIP into your Barony installation folder (Steam > Barony >
@@ -17,7 +17,7 @@ Experimental private Direct IP play for 2-4 players; protocol 28, framework API 
    ```text
    Barony/
      barony.exe                         <- original, never replace
-     Dungeon-Delve-0.17.1/
+     Dungeon-Delve-0.17.2/
        Play-Dungeon-Delve.cmd            <- double-click this
        Launch.ps1
        release.json
@@ -26,7 +26,7 @@ Experimental private Direct IP play for 2-4 players; protocol 28, framework API 
        mods/extraction-raid/
    ```
 
-4. Open **Dungeon-Delve-0.17.1** and double-click **Play-Dungeon-Delve.cmd**.
+4. Open **Dungeon-Delve-0.17.2** and double-click **Play-Dungeon-Delve.cmd**.
    A desktop shortcut to this file is optional. No administrator access or
    global PowerShell policy change is needed. Normal Steam Play starts vanilla.
 5. Everyone uses the same release. Host/join a fresh private **Direct IP** lobby;
@@ -44,19 +44,19 @@ Do not copy runtime files over retail files or mix releases/native frameworks.
 It prefers the Barony installation directly above the extracted folder, then
 Steam library discovery. It uses the two bundled mods, not Workshop downloads or
 unrelated installed mods, and verifies their complete file lists and SHA256s.
-It also verifies the native runtime, tested retail executable and nine DLLs
+It also verifies the native runtime, tested retail executable and ten DLLs
 copied locally from your owned installation; game DLLs/assets are not shipped.
 Matching version strings alone do not establish binary compatibility.
 
 Each launch runs from a fresh isolated session under
-`%LOCALAPPDATA%\vending_machine_framework\0.17.1\sessions\`.
+`%LOCALAPPDATA%\vending_machine_framework\0.17.2\sessions\`.
 Retail executable, assets, personal saves and configuration are not replaced,
 imported or edited. Back up normal saves before trying unofficial software.
 No background service, scheduled task or auto-updater is installed.
 
 ## Manual paths and checking installation
 
-Open a terminal in the extracted Dungeon-Delve-0.17.1 folder:
+Open a terminal in the extracted Dungeon-Delve-0.17.2 folder:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Launch.ps1 -GamePath "D:\SteamLibrary\steamapps\common\Barony" -CheckOnly
@@ -94,8 +94,9 @@ in the last minute; the first accepted claim wins. Full current rules are in
 does not apply to this combined GitHub release.
 
 Windows x64 only, private Direct IP, limited WAN/human balance testing; not a
-hardened public server. No Steam matchmaking/invites or EOS networking. FMOD is
-absent; supplied Delve music uses SDL. DLC is optional; genuine per-player DLC
+hardened public server. No Steam matchmaking/invites or EOS networking. Native
+FMOD gameplay effects/music are enabled; fmod.dll is copied from your owned game,
+never redistributed. Supplied Delve lobby music/narration use SDL. DLC is optional; genuine per-player DLC
 ownership remains required for DLC characters. No campaign imports or persistent
 loot bank. Unofficial project, not affiliated with or endorsed by Turning Wheel.
 License notices are in `licenses/` and each bundled mod. Development assistance:

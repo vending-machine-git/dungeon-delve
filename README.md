@@ -7,13 +7,13 @@ loot and abilities, return as monsters after death, and race for a final exit.
 ## Download and play
 
 Open this repository's **Releases** section and download
-**Dungeon-Delve-0.17.1-windows-x64.zip** plus **SHA256SUMS.txt**.
+**Dungeon-Delve-0.17.2-windows-x64.zip** plus **SHA256SUMS.txt**.
 Do not use GitHub's automatic "Source code" ZIP: it does not contain the runtime.
 
 1. Own/install the Steam Windows edition of Barony and run it once.
 2. Extract the release ZIP into Barony's installation folder. It creates a
-   separate `Dungeon-Delve-0.17.1` folder without replacing retail files.
-3. Double-click `Dungeon-Delve-0.17.1/Play-Dungeon-Delve.cmd`.
+   separate `Dungeon-Delve-0.17.2` folder without replacing retail files.
+3. Double-click `Dungeon-Delve-0.17.2/Play-Dungeon-Delve.cmd`.
 4. Host/join a fresh private Direct IP lobby with friends using the same release.
 
 **The framework and mod content are already included. No Workshop subscriptions,
@@ -23,7 +23,9 @@ Extracting elsewhere also works through Steam-library discovery. See
 
 ## Compatibility and limitations
 
-- Current release: 0.17.1, protocol 28, vending_machine framework API 1.
+- Current release: 0.17.2, protocol 28, vending_machine framework API 1.
+- 0.17.2 restores native gameplay audio missing from 0.17.1; the required FMOD
+  DLL is verified/copied from your own game rather than included in downloads.
 - Windows x64, tested Steam Barony 5.0.2 executable/DLL hashes. Future game
   updates may require a matching release even if the version text is unchanged.
 - Private Direct IP only; no Steam matchmaking/invites or join-in-progress.

@@ -1,13 +1,19 @@
 {
-  "version": "0.17.1",
+  "version": "0.17.2",
   "protocol": 28,
   "api_version": 1,
   "platform": "windows-x64",
   "distribution": "github-combined-portable",
   "game_version": "5.0.2",
+  "audio_backend": "fmod",
+  "audio_version": "2.02.14",
   "game_sha256": "8566da37bc39ea5a1ed08a8ad57608af4f019fb415869258fb3c1d310b4419e4",
-  "runtime_sha256": "08042793c635c3f920af626657ba252dd608efde5d2a597a9e598278b8355c2e",
+  "runtime_sha256": "d5c04f39488084547e45e4017e86feb3fd7182aae2f485101f6b78bbdd581782",
   "game_dlls": [
+    {
+      "name": "fmod.dll",
+      "sha256": "f0fb763aa0db5ff0b40930828d9078292add03386e76cec89956c58cc12b6920"
+    },
     {
       "name": "glew32.dll",
       "sha256": "eabb3dfec3a95f0282f10f5ba4b633e681aa5aff19995cad069e6e954a9cea12"
@@ -51,7 +57,7 @@
       "files": [
         {
           "path": "data/rmf/framework.json",
-          "sha256": "2986b4cc1f381230ddc63d81f0d198c00182eda64f04b966327a73daaaebb15a"
+          "sha256": "d3e2828e23e51a748f8a613c2d6ab1db751a31d3f0d4ba7e7b5b8fac2703af43"
         },
         {
           "path": "LICENSE.txt",
@@ -59,7 +65,7 @@
         },
         {
           "path": "mod.json",
-          "sha256": "ef89a6362ecedbfabe150d2a745f2eba3fa796423bd34ec57937915c3f030505"
+          "sha256": "00dfccf586b46ee2504e41b578d8e302daeb6f8589d5cc6c2fae97fd1beb62e3"
         },
         {
           "path": "preview.png",
@@ -67,7 +73,7 @@
         },
         {
           "path": "README.md",
-          "sha256": "68fff433f0d5be80e8ae49202fbcf138f3785a3c4756321087774d7f21314dd7"
+          "sha256": "a1ac1f6d699d453eebeed3352a2c441f68b4edc88a03ea69406d640326fc8c64"
         }
       ]
     },
@@ -140,7 +146,7 @@
         },
         {
           "path": "mod.json",
-          "sha256": "395b78c43cf8beb72e9725881aa39da56446facaac87cddbad49750af49e3e22"
+          "sha256": "c1f9c02ee3750254e217e0406f88d351cf24ccdb649cf660f1a3d74d50a3c251"
         },
         {
           "path": "music/rmf/dungeon-floor-2.wav",
@@ -164,7 +170,7 @@
         },
         {
           "path": "README.md",
-          "sha256": "117895cdc4d9e5d3873b2ef3ff09f5b74cc2a0784d72eae7dabc71ae83782dd2"
+          "sha256": "da64129bb4d3c984b535853920b0bac09764d079169946147fcddfc26a27437b"
         }
       ]
     }

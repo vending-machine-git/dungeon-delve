@@ -1,7 +1,7 @@
 {
   "id": "extraction-raid",
   "name": "Dungeon Delve (Battle Royale)",
-  "version": "0.17.1",
+  "version": "0.17.2",
   "kind": "game-mode",
   "api_version": 1,
   "requires": {
@@ -9,7 +9,7 @@
   },
   "launcher_mode": "extraction-raid",
   "release_compatibility": {
-    "runtime_version": "0.17.1",
+    "runtime_version": "0.17.2",
     "raid_protocol": 28,
     "platforms": [
       "windows-x64"
