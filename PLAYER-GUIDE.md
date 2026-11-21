@@ -5,7 +5,24 @@ subscriptions, separate framework download, Python, compiler or installer requir
 Requires an owned Steam Windows installation of Barony, tested build 5.0.2.
 Experimental private Direct IP play for 2-4 players; protocol 28, framework API 1.
 
-## Install and play
+## Optional installer
+
+The release asset **Dungeon-Delve-0.17.2-Setup.exe** installs the
+same complete mod as the ZIP. Verify its SHA256, run it, select a detected Barony
+installation or use Browse/paste a manual game path, then click Install.
+Steam libraries are detected automatically; no whole-disk scan is performed.
+An optional desktop shortcut starts the mod. No previous mod version is needed.
+Windows x64 with .NET Framework 4.5 or later is required (included with Windows
+10/11). The installer needs write access to the selected game directory.
+
+The installer verifies the owned game and required DLLs before extracting into
+`Dungeon-Delve-0.17.2`. It never replaces retail files or saves. A modified or
+partial existing versioned mod folder is preserved and installation is refused;
+rename that folder yourself before reinstalling. No admin request, auto-update,
+registry registration or automatic game launch. For a protected game directory,
+use the portable ZIP in a writable location instead.
+
+## Portable ZIP: install and play
 
 1. Install Barony through Steam and run it normally once. Keep Steam running.
 2. Download **Dungeon-Delve-0.17.2-windows-x64.zip** from this project's GitHub

@@ -10,6 +10,12 @@ Open this repository's **Releases** section and download
 **Dungeon-Delve-0.17.2-windows-x64.zip** plus **SHA256SUMS.txt**.
 Do not use GitHub's automatic "Source code" ZIP: it does not contain the runtime.
 
+**Dungeon-Delve-0.17.2-Setup.exe** is the alternative full offline
+installer: it detects Steam Barony installs, offers Browse/manual selection and
+an optional desktop shortcut. Select your game folder and click Install.
+No prior mod version is required. Requires Windows x64/.NET Framework 4.5+ and
+write access to the game directory. The portable ZIP remains available below.
+
 1. Own/install the Steam Windows edition of Barony and run it once.
 2. Extract the release ZIP into Barony's installation folder. It creates a
    separate `Dungeon-Delve-0.17.2` folder without replacing retail files.
