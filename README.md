@@ -97,10 +97,21 @@ Personal campaign saves are not imported.
 - Experimental, unsigned, unofficial software. Verify checksums and trust the
   publisher; do not disable antivirus. No auto-updater or background service.
 
+## Source code
+
+The C++ implementation is available in [src/](src/), including
+[Dungeon Delve](src/raid.cpp) and the [framework](src/mod_framework.cpp).
+The [launcher](framework/launcher/Launcher.cs) and
+[installer](framework/installer/Installer.cs) C# sources are included too.
+See [SOURCE.md](SOURCE.md) for build requirements, code locations, tests and licenses.
+Source is committed to `main`; player binaries remain in the existing Releases.
+
 ## Repository layout
 
-This is a focused **distribution repository**, not the complete game source or
-development workspace. `launcher/` contains player instructions, the custom
+This repository contains source code and authored player content, without retail
+assets, SDK caches, compiled build outputs, personal saves or local work logs.
+`src/` contains the native code; `framework/` and `tests/` contain development
+tools and test sources. `launcher/` contains player instructions, the custom
 icon and portable launcher scripts,
 `mods/` the two independent content roots, `licenses/` the notices and
 `release-manifest.json` the tested release/hash inventory. Executables belong

@@ -14,6 +14,7 @@ Choose Barony folder and Try again when startup fails. Windows x64/.NET Framewor
 4.5+ and an owned compatible Barony installation are required. Read PLAYER-GUIDE.md
 for full instructions. Existing launchers inside the supporting folder still work.
 
-Native C++ and C# implementation source stays private. This repository includes
-player documentation, icon artwork and the existing portable support scripts;
-compiled binaries are attached to GitHub Releases.
+Native C++ is in src/; launcher/installer C# is in framework/launcher/ and
+framework/installer/. See SOURCE.md for build instructions. Player documentation,
+original icon artwork and portable support scripts remain here; compiled player
+binaries are attached to the existing GitHub Releases.

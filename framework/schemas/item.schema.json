@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RMF API 1 custom ring",
+  "type": "object",
+  "required": [
+    "api_version",
+    "slot",
+    "id",
+    "name",
+    "effects"
+  ],
+  "properties": {
+    "api_version": {
+      "const": 1
+    },
+    "slot": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 15
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^(?!rmf_unused_)[a-z0-9_]{1,31}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 127
+    },
+    "unidentified_name": {
+      "type": "string",
+      "maxLength": 127
+    },
+    "base_item": {
+      "type": "string",
+      "default": "ring_adornment"
+    },
+    "effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "infinite_health": {
+          "type": "boolean"
+        },
+        "infinite_mana": {
+          "type": "boolean"
+        },
+        "no_hunger": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

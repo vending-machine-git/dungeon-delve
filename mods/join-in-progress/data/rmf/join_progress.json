@@ -1,0 +1,7 @@
+{
+  "id": "join-in-progress",
+  "api_version": 1,
+  "protocol": 1,
+  "transport": "private-direct-ip",
+  "maximum_players": 4
+}
