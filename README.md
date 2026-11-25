@@ -19,13 +19,21 @@ write access to the game directory. The portable ZIP remains available below.
 1. Own/install the Steam Windows edition of Barony and run it once.
 2. Extract the release ZIP into Barony's installation folder. It creates a
    separate `Dungeon-Delve-0.17.2` folder without replacing retail files.
-3. Double-click `Dungeon-Delve-0.17.2/Play-Dungeon-Delve.cmd`.
+3. Double-click `Dungeon-Delve-0.17.2/Dungeon Delve.exe`.
 4. Host/join a fresh private Direct IP lobby with friends using the same release.
 
 **The framework and mod content are already included. No Workshop subscriptions,
 Python, compiler, administrator access or separate installer are needed.**
 Extracting elsewhere also works through Steam-library discovery. See
 `PLAYER-GUIDE.md` for verification, manual paths, updates, removal and support.
+The EXE has a custom portal icon, opens without a command window and offers a
+folder picker if automatic discovery fails. Requires .NET Framework 4.5+
+(included with Windows 10/11). Keep the complete extracted folder together.
+
+Already have the complete 0.17.2 release? The small **Dungeon-Delve.exe** download
+can be placed inside its `Dungeon-Delve-0.17.2` folder, beside `Launch.ps1` and
+`release.json`, then double-clicked. This optional launcher download needs the
+existing full package. New players should use Setup or the full ZIP.
 
 ## Compatibility and limitations
 
@@ -45,7 +53,8 @@ Extracting elsewhere also works through Steam-library discovery. See
 ## Repository layout
 
 This is a focused **distribution repository**, not the complete game source or
-development workspace. `launcher/` contains the portable launcher scripts,
+development workspace. `launcher/` contains player instructions, the custom
+icon and portable launcher scripts,
 `mods/` the two independent content roots, `licenses/` the notices and
 `release-manifest.json` the tested release/hash inventory. Executables belong
 in attached GitHub release downloads, not Git history. Launcher scripts alone
