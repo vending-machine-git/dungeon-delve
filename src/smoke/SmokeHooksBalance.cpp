@@ -266,6 +266,7 @@ void normalTick() {
     number(d,"normal_ground_tooltip_retained",groundTooltip.statSummary.empty());
     free(unidentified);
     number(d,"normal_cooldown_hud_inert", !DelveBuilds::cooldownRemaining(0,0) && !DelvePassives::cooldownRemaining(0,0));
+    number(d,"normal_xp_multiplier_inert", ::Raid::experienceGain(17)==17);
     DelveEffects::activated(0, 6); DelveEffects::passive(0, 0, 100, 1, 0, 100, true);
     number(d,"normal_skill_feedback_inert", !DelveEffects::view(0,6).remaining && !DelveEffects::view(0,6).flash && !DelveEffects::view(0,0).charges);
     stats[0]->setProficiencyUnsafe(PRO_SORCERY,originalSorcery);stats[0]->INT=originalINT;

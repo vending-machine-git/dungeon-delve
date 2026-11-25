@@ -547,7 +547,7 @@ bool smokeAudit(Entity& host,Entity& guest) {
     check("spell_vanilla_passthrough", !castAbilitySpell(0, SPELL_FORCEBOLT));
     check("spell_unowned_rejected", castAbilitySpell(0, abilitySpellId((originalClass + 1) % 26, 6)) && sessions[0].cooldown == originalSessions[0].cooldown);
     check("xp_zero",Raid::experienceGain(0)==0);check("xp_negative",Raid::experienceGain(-2)==-2);
-    check("xp_skill_two_point_five",Raid::experienceGain(2)==5);check("xp_combat_two_point_five_rounded",Raid::experienceGain(17)==43);check("xp_cache_two_point_five",Raid::experienceGain(30)==75);
+    check("xp_skill_one_point_seven_five",Raid::experienceGain(2)==4);check("xp_combat_one_point_seven_five_rounded",Raid::experienceGain(17)==30);check("xp_cache_one_point_seven_five",Raid::experienceGain(30)==53);
     check("duplicate_perks_rejected",!validBuild(0,{{0,0,6,7}}));check("duplicate_abilities_rejected",!validBuild(0,{{0,1,6,6}}));
     check("cross_slot_rejected",!validBuild(0,{{6,1,0,7}}));check("unknown_class_rejected",!validBuild(26,empty));check("unknown_option_rejected",!validBuild(0,{{0,1,6,10}}));
     check("mid_match_edit_rejected",!setSelection(0,0,empty,false));
@@ -697,12 +697,12 @@ bool smokeAudit(Entity& host,Entity& guest) {
     originalHost.restore();
     // Native proficiency XP uses the real function, not the multiplier helper.
     stats[0]->setProficiencyUnsafe(PRO_APPRAISAL,0);int xp=stats[0]->EXP;
-    bool increased=host.increaseSkill(PRO_APPRAISAL,false);check("native_proficiency_xp_two_point_five",increased && stats[0]->EXP-xp==5);
+    bool increased=host.increaseSkill(PRO_APPRAISAL,false);check("native_proficiency_xp_one_point_seven_five",increased && stats[0]->EXP-xp==4);
     originalHost.restore();
     stats[0]->LVL=stats[1]->LVL=1;stats[0]->EXP=0;
     auto rngPrediction=local_rng;int normalCombat=10+rngPrediction.rand()%10;
     host.awardXP(&guest,false,false);
-    check("native_combat_exactly_two_point_five_once",stats[0]->EXP==(normalCombat*5+1)/2);
+    check("native_combat_exactly_one_point_seven_five_once",stats[0]->EXP==(normalCombat*7+2)/4);
     originalHost.restore();originalGuest.restore();
     // A ray with an opponent outside its arc must not hit them.
     sessions[0]=Session{};sessions[0].ready=sessions[0].applied=true;sessions[0].characterClass=CLASS_WIZARD;sessions[0].build={{-1,-1,6,-1}};

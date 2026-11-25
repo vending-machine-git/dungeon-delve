@@ -115,8 +115,8 @@ void battleHost() {
             for (int ordinal = 1; ordinal <= 4; ++ordinal) if (auto exit = battleExit(ordinal)) ::Raid::useExit(*exit);
             check(!battleExit(1)->flags[INVISIBLE] && battleExit(2)->flags[INVISIBLE]
                 && battleExit(3)->flags[INVISIBLE] && battleExit(4)->flags[INVISIBLE], "battle_one_early_hatch_only");
-            check(::Raid::experienceGain(2) == 5 && ::Raid::experienceGain(17) == 43
-                && ::Raid::experienceGain(30) == 75, "battle_xp_two_point_five");
+            check(::Raid::experienceGain(2) == 4 && ::Raid::experienceGain(17) == 30
+                && ::Raid::experienceGain(30) == 53, "battle_xp_one_point_seven_five");
             newItem(RING_REGENERATION, EXCELLENT, 0, 1, 789, true, &stats[0]->inventory);
             stats[0]->GOLD = 4321; stats[1]->GOLD = 999;
             stats[1]->HP = 0; phase = 1; began = ticks;

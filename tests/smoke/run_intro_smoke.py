@@ -24,7 +24,9 @@ def scenario(name, record=False, floors=False):
             role = 'host' if slot == 0 else 'guest'
             profile = run/role
             (profile/'config').mkdir(parents=True)
-            settings = json.loads((GAME/'config/config.json').read_text(encoding='utf-8'))
+            # Disposable defaults also work when the retail config is absent.
+            # Never copy a player's bindings/settings into an audio fixture.
+            settings = dict(video=dict(version=1), out_of_focus_audio_enabled=True)
             settings.update(version=25, skipintro=True, mods=[], port_number=57169,
                             master_volume=0.0 if name == 'muted' else 70.0,
                             gameplay_volume=100.0, music_volume=0.0)
@@ -47,7 +49,7 @@ def scenario(name, record=False, floors=False):
                 env.update(BARONY_SMOKE_DELVE='narration', BARONY_SMOKE_RAID_SYNC=str(run/'sync'))
             command = [str(ROOT/'framework/runtime/barony-raid-smoke.exe'), '-windowed', '-size=1280x720',
                        '-datadir='+str(GAME), '-raid-profile='+str(profile/'delve-profile.json')]
-            if name == 'nosound':
+            if name == 'nosound' or (name == 'complete' and slot != 0):
                 command.append('-nosound')
             stream = (profile/'process.log').open('wb')
             streams.append(stream)
@@ -123,7 +125,7 @@ def scenario(name, record=False, floors=False):
                     dialogue = '"'+entry['text'].replace('\n', ' ')+'"'
                     assert dialogue in log, (role, floor, dialogue)
             if played_floors:
-                expected_audio = '0' if name == 'nosound' else '1'
+                expected_audio = '0' if name == 'nosound' or (name == 'complete' and role != 'host') else '1'
                 assert log.count('playing audio='+expected_audio) == len(played_floors)
                 if name == 'muted':
                     assert log.count('playing audio=1 gain=0') == len(played_floors)

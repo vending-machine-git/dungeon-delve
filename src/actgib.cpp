@@ -1,3 +1,4 @@
+#include "delve_net_position.hpp"
 /*-------------------------------------------------------------------------------
 
 	BARONY
@@ -1359,8 +1360,8 @@ Entity* spawnFociGib(real_t x, real_t y, real_t z, real_t dir, real_t velocityBo
 			}
 			strcpy((char*)net_packet->data, "FOCI");
 			SDLNet_Write32(my->getUID(), &net_packet->data[4]);
-			SDLNet_Write16((Sint16)(x * 32), &net_packet->data[8]);
-			SDLNet_Write16((Sint16)(y * 32), &net_packet->data[10]);
+			SDLNet_Write16((Sint16)(x * Raid::networkPositionScale()), &net_packet->data[8]);
+			SDLNet_Write16((Sint16)(y * Raid::networkPositionScale()), &net_packet->data[10]);
 			SDLNet_Write16((Sint16)(z * 32), &net_packet->data[12]);
 			SDLNet_Write16((Sint16)(dir * 256), &net_packet->data[14]);
 			SDLNet_Write16((Sint16)(sprite), &net_packet->data[16]);

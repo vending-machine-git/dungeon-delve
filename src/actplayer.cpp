@@ -1,3 +1,4 @@
+#include "delve_net_position.hpp"
 #include "raid.hpp"
 #include "delve_passives.hpp"
 /*-------------------------------------------------------------------------------
@@ -2624,8 +2625,8 @@ void actDeathGhost(Entity* my)
 			strcpy((char*)net_packet->data, "GMOV");
 			net_packet->data[4] = playernum;
 			net_packet->data[5] = currentlevel;
-			SDLNet_Write16((Sint16)(my->x * 32), &net_packet->data[6]);
-			SDLNet_Write16((Sint16)(my->y * 32), &net_packet->data[8]);
+			SDLNet_Write16((Sint16)(my->x * Raid::networkPositionScale()), &net_packet->data[6]);
+			SDLNet_Write16((Sint16)(my->y * Raid::networkPositionScale()), &net_packet->data[8]);
 			SDLNet_Write16((Sint16)(my->vel_x * 128), &net_packet->data[10]);
 			SDLNet_Write16((Sint16)(my->vel_y * 128), &net_packet->data[12]);
 			SDLNet_Write16((Sint16)(my->yaw * 128), &net_packet->data[14]);
@@ -11477,8 +11478,8 @@ void actPlayer(Entity* my)
 			strcpy((char*)net_packet->data, "PMOV");
 			net_packet->data[4] = PLAYER_NUM;
 			net_packet->data[5] = currentlevel;
-			SDLNet_Write16((Sint16)(my->x * 32), &net_packet->data[6]);
-			SDLNet_Write16((Sint16)(my->y * 32), &net_packet->data[8]);
+			SDLNet_Write16((Sint16)(my->x * Raid::networkPositionScale()), &net_packet->data[6]);
+			SDLNet_Write16((Sint16)(my->y * Raid::networkPositionScale()), &net_packet->data[8]);
 			SDLNet_Write16((Sint16)(PLAYER_VELX * 128), &net_packet->data[10]);
 			SDLNet_Write16((Sint16)(PLAYER_VELY * 128), &net_packet->data[12]);
 			SDLNet_Write16((Sint16)(my->yaw * 128), &net_packet->data[14]);

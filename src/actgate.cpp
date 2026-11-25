@@ -18,6 +18,7 @@
 #include "collision.hpp"
 #include "player.hpp"
 #include "paths.hpp"
+#include "raid.hpp"
 
 void actGate(Entity* my)
 {
@@ -32,7 +33,8 @@ void actGate(Entity* my)
 void Entity::actGate()
 {
 	const bool oldPassable = flags[PASSABLE];
-	if ( multiplayer != CLIENT )
+    const bool delveControlled = Raid::controlGate(*this);
+	if ( multiplayer != CLIENT && !delveControlled )
 	{
 		if ( circuit_status == 0 )
 		{
@@ -88,7 +90,7 @@ void Entity::actGate()
 			}
 		}
 	}
-	else
+	else if ( multiplayer == CLIENT )
 	{
 		this->flags[NOUPDATE] = true;
 	}
@@ -96,7 +98,7 @@ void Entity::actGate()
 	{
 		gateInit = 1;
 		gateStartHeight = this->z;
-		if ( gateInverted )
+		if ( gateInverted || (delveControlled && gateStatus) )
 		{
 			this->z = gateStartHeight - 12;
 		}

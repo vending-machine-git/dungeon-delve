@@ -11,7 +11,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
 GAME = Path(r'F:\Steam\steamapps\common\Barony')
-VERSION = '0.17.2'
+VERSION = '0.20.2'
 FOLDER = 'Dungeon-Delve-' + VERSION
 
 
@@ -118,6 +118,31 @@ def main():
         run('known-previous-root-launcher-updated', ['--install', '--game-dir', primary])
         assert (primary / 'Dungeon Delve.exe').read_bytes() == root_launcher
         assert not list(primary.glob('.dd-launcher-*'))
+        previous = ROOT / 'framework/dist/github-root-launcher-0.17.2/player/Dungeon Delve.exe'
+        shutil.copy2(previous, primary / 'Dungeon Delve.exe')
+        run('previous-game-root-launcher-updated', ['--install', '--game-dir', primary])
+        assert (primary / 'Dungeon Delve.exe').read_bytes() == root_launcher
+        assert not list(primary.glob('.dd-launcher-*'))
+    if root_launcher is not None:
+        previous = ROOT / 'framework/dist/github-0.18.0-kiosks-final/player/Dungeon Delve.exe'
+        shutil.copy2(previous, primary / 'Dungeon Delve.exe')
+        run('previous-018-root-launcher-updated', ['--install', '--game-dir', primary])
+        assert (primary / 'Dungeon Delve.exe').read_bytes() == root_launcher
+    if root_launcher is not None:
+        previous = ROOT / 'framework/dist/github-0.19.1-boulder-fix/player/Dungeon Delve.exe'
+        shutil.copy2(previous, primary / 'Dungeon Delve.exe')
+        run('previous-0191-root-launcher-updated', ['--install', '--game-dir', primary])
+        assert (primary / 'Dungeon Delve.exe').read_bytes() == root_launcher
+    if root_launcher is not None:
+        previous = ROOT / 'framework/dist/github-0.20.0-furnished-kiosks/player/Dungeon Delve.exe'
+        shutil.copy2(previous, primary / 'Dungeon Delve.exe')
+        run('previous-020-root-launcher-updated', ['--install', '--game-dir', primary])
+        assert (primary / 'Dungeon Delve.exe').read_bytes() == root_launcher
+    if root_launcher is not None:
+        previous = ROOT / 'framework/dist/github-0.20.1-generation-quality/player/Dungeon Delve.exe'
+        shutil.copy2(previous, primary / 'Dungeon Delve.exe')
+        run('previous-0201-root-launcher-updated', ['--install', '--game-dir', primary])
+        assert (primary / 'Dungeon Delve.exe').read_bytes() == root_launcher
     for relative, checksum in protected.items():
         assert digest(primary / relative) == checksum
     assert not list(primary.glob('.dd-*'))

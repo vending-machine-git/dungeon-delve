@@ -10,7 +10,7 @@ namespace Raid
 {
 	constexpr unsigned char joinCapability = 0x02;
 	constexpr unsigned int startFlag = 1u << 31;
-	constexpr unsigned char protocolVersion = 28;
+	constexpr unsigned char protocolVersion = 34;
 	enum class Outcome : unsigned char { Playing, Descended, PendingExtraction, Extracted, Slain, Abandoned };
 
 	bool parseArgument(const char* argument);
@@ -20,6 +20,7 @@ namespace Raid
 	bool active();
 	bool concealedFromObserver(const Entity& entity, int observer);
 	int experienceGain(int normalAmount);
+	bool neutralShopkeeperPair(const Entity& first, const Entity& second);
 	bool isExtracted(int player);
 	bool hasLoadout(int player);
 	bool prepareCharacter(int player, std::string& error);
@@ -31,6 +32,7 @@ namespace Raid
 	void tick();
 	bool stormBoulder(const Entity& entity);
 	bool tickStormBoulder(Entity& entity);
+	bool controlGate(Entity& gate);
 	void spawnStormWave(int secondsOvertime);
 	void scatterDeathLoot(int player, double x, double y, const Item& item);
 	void receiveLoadout();
@@ -43,6 +45,7 @@ namespace Raid
 	bool holdPlayer(Entity& player);
 	bool instantIdentification();
 	void fillChest(Entity& chest);
+	void fillShop(Entity& merchant);
 	void dropEnemyLoot(Entity& enemy);
 	void openedChest(Entity& chest, int player);
 	void recordKill(Entity& killer, Entity& victim);

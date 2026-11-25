@@ -22,8 +22,9 @@ int main() {
     assert(experienceGain(0) == 0 && experienceGain(-2) == -2);
     assert(stormStartSecond(3, 360) == 300);
     assert(stormStartSecond(3, 30) == 0);
-    assert(experienceGain(1) == 3 && experienceGain(2) == 5);
-    assert(experienceGain(17) == 43 && experienceGain(30) == 75);
+    assert(experienceGain(1) == 2 && experienceGain(2) == 4);
+    assert(experienceGain(3) == 5 && experienceGain(4) == 7);
+    assert(experienceGain(17) == 30 && experienceGain(30) == 53);
     assert(experienceGain(std::numeric_limits<int>::max()) == std::numeric_limits<int>::max());
     for (int overtime = 1; overtime <= 3600; ++overtime) {
         assert(waveInterval(overtime) <= waveInterval(overtime - 1));

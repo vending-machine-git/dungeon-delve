@@ -24,9 +24,13 @@
 #include <fstream>
 #include <cstdint>
 #include <limits>
+#include <map>
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/prettywriter.h"
 #include "files.hpp"
+#ifdef BARONY_SMOKE_TESTS
+#include "collision.hpp"
+#endif
 
 namespace Raid {
 namespace {
@@ -34,6 +38,11 @@ rapidjson::Document world;
 int worldFloor = 0;
 bool nativeGenerating = false;
 std::array<unsigned int, MAXPLAYERS> deathDropOrdinals{};
+struct GateControl { Uint32 lever; bool startsOpen; };
+std::map<int,GateControl> gateControls;
+constexpr int shopsPerFloor=3, shopStockSize=16;
+constexpr int kioskRadius=2, kioskClearingRadius=3;
+constexpr int kioskShelfWall=55, kioskFloor=9, kioskCeiling=30;
 const ItemType gear[3][6] = {
     {IRON_SWORD,STEEL_HALBERD,IRON_BREASTPIECE,STEEL_HELM,SPELLBOOK_FIREBALL,SPELLBOOK_HEALING},
     {CRYSTAL_SWORD,CRYSTAL_BREASTPIECE,RING_MAGICRESISTANCE,AMULET_MAGICREFLECTION,MAGICSTAFF_LIGHTNING,SPELLBOOK_LIGHTNING},
@@ -179,6 +188,7 @@ bool prepareDungeonBase() {
 }
 bool configureWorld(int floor) {
     deathDropOrdinals.fill(0);
+    gateControls.clear();
     worldFloor=0;world.SetObject();
     auto file=PHYSFS_openRead("data/rmf/raid.json");if(!file)return false;
     auto length=PHYSFS_fileLength(file);std::string json;
@@ -199,22 +209,30 @@ bool configureWorld(int floor) {
 namespace {
 using Cell=std::pair<int,int>;
 int manhattan(Cell a,Cell b){return std::abs(a.first-b.first)+std::abs(a.second-b.second);}
+bool doorway(int sprite) {
+    return sprite==2 || sprite==3 || sprite==19 || sprite==20 || sprite==113 || sprite==114 || sprite==217 || sprite==218;
+}
+bool gateSprite(int sprite) {return sprite==19 || sprite==20 || sprite==113 || sprite==114;}
+Cell doorStep(int sprite) {
+    return sprite==2 || sprite==20 || sprite==114 || sprite==218 ? Cell{1,0}:Cell{0,1};
+}
 Entity* raw(int sprite,Cell p) {
     auto e=newEntity(sprite,1,map.entities,nullptr);e->x=p.first*16;e->y=p.second*16;
     setSpriteAttributes(e,nullptr,nullptr);return e;
 }
 bool blocking(Entity& e) {
     switch(e.sprite) {
-        case 14:case 19:case 20:case 21:case 35:case 59:case 60:case 108:case 109:case 110:return true;
+        case 14:case 21:case 35:case 59:case 60:case 108:case 109:case 110:return true;
         case 179:return e.colliderHasCollision==1;
         default:return false;
     }
 }
 bool adaptOfficial(unsigned seed) {
+    gateControls.clear();
     const int size=map.width;
     if(size!=world["size"].GetInt() || map.height!=size)return false;
     auto& allocator=world.GetAllocator();
-    for(auto key:{"chests","drops","encounters","gold","spawns","descents","portals","views"})
+    for(auto key:{"chests","drops","encounters","gold","spawns","descents","portals","views","kiosks","doors"})
         world.AddMember(rapidjson::StringRef(key),rapidjson::Value(rapidjson::kArrayType),allocator);
     auto addPoint=[&](const char* key,Cell p,const char* kind=nullptr,int role=-1) {
         rapidjson::Value v(rapidjson::kObjectType);v.AddMember("x",p.first,allocator);v.AddMember("y",p.second,allocator);
@@ -223,7 +241,10 @@ bool adaptOfficial(unsigned seed) {
         world[key].PushBack(v,allocator);
     };
     std::vector<Cell> nativeGuards;std::set<Cell> occupied;
-    int removedSpellTraps=0;
+    int removedSpellTraps=0,removedNativeChests=0;
+    const int nativeShopTiles=shoparea ? std::count(shoparea,shoparea+size*size,true):0;
+    if(nativeShopTiles){printlog("[DELVE] generation rejected: native full shop");return false;}
+    world.AddMember("native_shop_tiles",nativeShopTiles,allocator);
     for(auto node=map.entities->first;node;) {
         auto next=node->next;auto e=static_cast<Entity*>(node->element);
         Cell p{static_cast<int>(e->x)/16,static_cast<int>(e->y)/16};
@@ -231,20 +252,67 @@ bool adaptOfficial(unsigned seed) {
         bool monster=e->sprite==10 || (mob!=NOTHING && mob!=SHOPKEEPER);
         bool exit=e->sprite==1 || e->sprite==11 || e->sprite==45 || e->sprite==46 || e->sprite==63 || e->sprite==161;
         const bool spellTrap=worldFloor==2 && (e->sprite==65 || e->sprite==120);
-        if(monster || exit || p.second<9 || spellTrap) {
+        // Native cache templates include adjacent rows and doorway blockers.
+        // Rebuild the complete cache budget under one placement policy.
+        if(monster || mob==SHOPKEEPER || exit || p.second<9 || spellTrap || e->sprite==21) {
             if(spellTrap)++removedSpellTraps;
+            if(e->sprite==21)++removedNativeChests;
             if(monster)nativeGuards.push_back(p);
             list_RemoveNode(node);
         } else occupied.insert(p);
         node=next;
     }
     world.AddMember("removed_spell_traps",removedSpellTraps,allocator);
+    world.AddMember("replaced_native_chests",removedNativeChests,allocator);
     std::vector<bool> dry(size*size,false),safe(size*size,false);
     auto inside=[&](Cell p){return p.first>1 && p.second>=10 && p.first<size-2 && p.second<size-2;};
     auto index=[&](Cell p){return p.second+p.first*size;};
     for(int x=2;x<size-2;++x)for(int y=10;y<size-2;++y) {
         int off=MAPLAYERS*(y+x*size),f=map.tiles[off];
         dry[y+x*size]=f>0 && !map.tiles[off+OBSTACLELAYER] && !swimmingtiles[f] && !lavatiles[f];
+    }
+    // Preserve native barrier models. Only structurally broken doorways go;
+    // valid rooms receive rewards and gates receive reachable controls below.
+    int removedDoors=0,clearedDoorProps=0;
+    auto sanitizeDoors=[&]() {
+        for(auto node=map.entities->first;node;) {
+            auto next=node->next;auto e=static_cast<Entity*>(node->element);
+            if(doorway(e->sprite)) {
+                Cell p{static_cast<int>(e->x)/16,static_cast<int>(e->y)/16},step=doorStep(e->sprite);
+                Cell a{p.first-step.first,p.second-step.second},b{p.first+step.first,p.second+step.second};
+                if(!inside(p) || !inside(a) || !inside(b) || !dry[index(p)] || !dry[index(a)] || !dry[index(b)]) {
+                    occupied.erase(p);list_RemoveNode(node);++removedDoors;
+                } else {
+                    if(gateSprite(e->sprite))e->gateDisableOpening=0;
+                    else {
+                        e->doorForceLockedUnlocked=2;e->doorDisableLockpicks=0;e->doorDisableOpening=0;
+                        if(e->sprite==217 || e->sprite==218)e->doorUnlockWhenPowered=0;
+                    }
+                }
+            }
+            node=next;
+        }
+    };
+    sanitizeDoors();
+    std::set<Cell> doorClearance,doorCells;
+    auto reserveDoors=[&]() {
+        doorClearance.clear();
+        doorCells.clear();
+        for(auto node=map.entities->first;node;node=node->next) {
+            auto e=static_cast<Entity*>(node->element);if(!doorway(e->sprite))continue;
+            Cell p{static_cast<int>(e->x)/16,static_cast<int>(e->y)/16};
+            doorCells.insert(p);
+            for(int dx=-2;dx<=2;++dx)for(int dy=-2;dy<=2;++dy)doorClearance.insert({p.first+dx,p.second+dy});
+        }
+    };
+    reserveDoors();
+    for(auto node=map.entities->first;node;) {
+        auto next=node->next;auto e=static_cast<Entity*>(node->element);
+        Cell p{static_cast<int>(e->x)/16,static_cast<int>(e->y)/16};
+        if(blocking(*e) && doorClearance.count(p)) {
+            occupied.erase(p);list_RemoveNode(node);++clearedDoorProps;
+        }
+        node=next;
     }
     safe=dry;
     for(auto node=map.entities->first;node;node=node->next) {
@@ -291,7 +359,7 @@ bool adaptOfficial(unsigned seed) {
     auto pick=[&](Cell target,bool room,int clearance=0) {
         Cell best{-1,-1};int score=std::numeric_limits<int>::max();
         for(auto p:candidates) {
-            if(occupied.count(p) || (room && !roomy(p)))continue;
+            if(!safe[index(p)] || occupied.count(p) || (room && !roomy(p)))continue;
             bool close=false;for(auto s:spawns)if(clearance && manhattan(p,s)<clearance)close=true;
             if(close)continue;
             int value=manhattan(p,target);
@@ -322,6 +390,108 @@ bool adaptOfficial(unsigned seed) {
     boss.AddMember("hp",guardianHealth[worldFloor-1],allocator);
     boss.AddMember("level",guardianLevels[worldFloor-1],allocator);
     world.AddMember("boss",boss,allocator);
+    // Pick three widely separated sites around triangular map anchors. The clear
+    // outer ring preserves local routes before caches and other fixtures are placed.
+    const int minimumSpacing=size/4;
+    const int radius=(size-10)*3/10, middleY=(size+10)/2;
+    const std::array<Cell,3> anchors{{{size/2,middleY-radius},
+        {size/2-radius,middleY+radius/2},{size/2+radius,middleY+radius/2}}};
+    auto distanceSquared=[](Cell a,Cell b){const int dx=a.first-b.first,dy=a.second-b.second;return dx*dx+dy*dy;};
+    std::array<Cell,3> chosen{};int bestScore=std::numeric_limits<int>::max();
+    bool carveKiosks=false;
+    for(int pass=0;pass<2 && bestScore==std::numeric_limits<int>::max();++pass) {
+        std::vector<Cell> sites;
+        for(auto p:candidates) {
+            bool clear=manhattan(p,core)>=6;
+            for(auto spawn:spawns)if(manhattan(p,spawn)<8)clear=false;
+            for(int dx=-kioskClearingRadius;dx<=kioskClearingRadius && clear;++dx)for(int dy=-kioskClearingRadius;dy<=kioskClearingRadius;++dy) {
+                Cell q{p.first+dx,p.second+dy};
+                if(!inside(q) || q==core || doorCells.count(q) || (!pass && (!safe[index(q)] || occupied.count(q)))){clear=false;break;}
+            }
+            if(clear)sites.push_back(p);
+        }
+        std::array<std::vector<Cell>,3> nearest;
+        for(int n=0;n<shopsPerFloor;++n) {
+            nearest[n]=sites;
+            std::stable_sort(nearest[n].begin(),nearest[n].end(),[&](Cell a,Cell b){return distanceSquared(a,anchors[n])<distanceSquared(b,anchors[n]);});
+            if(nearest[n].size()>64)nearest[n].resize(64);
+        }
+        for(auto a:nearest[0])for(auto b:nearest[1])for(auto c:nearest[2]) {
+            const int ab=distanceSquared(a,b),ac=distanceSquared(a,c),bc=distanceSquared(b,c);
+            const int shortest=std::min({ab,ac,bc}),longest=std::max({ab,ac,bc});
+            if(shortest<minimumSpacing*minimumSpacing || longest>4*shortest)continue;
+            const int score=distanceSquared(a,anchors[0])+distanceSquared(b,anchors[1])+distanceSquared(c,anchors[2])+2*(longest-shortest);
+            if(score<bestScore){chosen={a,b,c};bestScore=score;}
+        }
+        if(pass && bestScore!=std::numeric_limits<int>::max())carveKiosks=true;
+        printlog("[DELVE] kiosk_sites floor=%d clearing=%d candidates=%u selected=%d",worldFloor,pass,(unsigned)sites.size(),bestScore!=std::numeric_limits<int>::max());
+    }
+    if(bestScore==std::numeric_limits<int>::max()){printlog("[DELVE] generation rejected: no three spaced kiosk sites");return false;}
+    world.AddMember("kiosk_minimum_spacing",minimumSpacing,allocator);
+    world.AddMember("kiosk_clearings",carveKiosks ? shopsPerFloor:0,allocator);
+    for(int ordinal=0;ordinal<shopsPerFloor;++ordinal) {
+        const auto best=chosen[ordinal];
+        const int surface=map.tiles[MAPLAYERS*index(best)];
+        if(carveKiosks) {
+            // Narrow native rooms may have no empty 7x7 squares. Open a small
+            // dry clearing instead; its outer ring bypasses every new kiosk wall
+            // and preserves the original connected routes through this area.
+            for(auto node=map.entities->first;node;) {
+                auto next=node->next;auto entity=static_cast<Entity*>(node->element);
+                if(std::abs(static_cast<int>(entity->x)/16-best.first)<=kioskClearingRadius &&
+                    std::abs(static_cast<int>(entity->y)/16-best.second)<=kioskClearingRadius)list_RemoveNode(node);
+                node=next;
+            }
+            for(int dx=-kioskClearingRadius;dx<=kioskClearingRadius;++dx)for(int dy=-kioskClearingRadius;dy<=kioskClearingRadius;++dy) {
+                Cell q{best.first+dx,best.second+dy};const int offset=MAPLAYERS*index(q);
+                map.tiles[offset]=surface;map.tiles[offset+OBSTACLELAYER]=0;
+                dry[index(q)]=safe[index(q)]=true;
+            }
+        }
+        for(int dx=-kioskClearingRadius;dx<=kioskClearingRadius;++dx)for(int dy=-kioskClearingRadius;dy<=kioskClearingRadius;++dy) {
+            Cell q{best.first+dx,best.second+dy};occupied.insert(q);
+            if(std::abs(dx)>kioskRadius || std::abs(dy)>kioskRadius)continue;
+            const int offset=MAPLAYERS*index(q);
+            const bool entrance=dx==0 && dy==kioskRadius;
+            const bool perimeter=std::abs(dx)==kioskRadius || std::abs(dy)==kioskRadius;
+            map.tiles[offset]=kioskFloor;
+            map.tiles[offset+OBSTACLELAYER]=perimeter && !entrance ?
+                (dy==kioskRadius ? 54:kioskShelfWall):0;
+            map.tiles[offset+2]=kioskCeiling;
+            safe[index(q)]=!perimeter || entrance;
+        }
+        // Furnish the left alcove, leaving the central trading lane and the
+        // outer bypass completely clear. Disable native random table extras.
+        auto table=raw(59,{best.first-1,best.second});
+        table->furnitureDir=0;table->furnitureTableRandomItemChance=0;table->furnitureTableSpawnChairs=0;
+        auto chair=raw(60,{best.first-1,best.second+1});chair->furnitureDir=6;
+        const std::array<Cell,4> torchSites{{{best.first-1,best.second-1},{best.first+1,best.second-1},
+            {best.first-1,best.second+3},{best.first+1,best.second+3}}};
+        std::array<Uint32,4> torchUIDs{};
+        for(unsigned n=0;n<torchSites.size();++n)torchUIDs[n]=raw(5,torchSites[n])->getUID();
+        const Cell merchantSite{best.first,best.second+1};
+        auto merchant=raw(35,merchantSite);merchant->yaw=PI/2;
+        safe[index({best.first-1,best.second})]=safe[index({best.first-1,best.second+1})]=safe[index(merchantSite)]=false;
+        addPoint("kiosks",best);
+        auto& kiosk=world["kiosks"][static_cast<rapidjson::SizeType>(ordinal)];
+        kiosk.AddMember("width",5,allocator);kiosk.AddMember("height",5,allocator);
+        kiosk.AddMember("entrance_x",best.first,allocator);kiosk.AddMember("entrance_y",best.second+2,allocator);
+        kiosk.AddMember("approach_x",best.first,allocator);kiosk.AddMember("approach_y",best.second+3,allocator);
+        kiosk.AddMember("merchant_x",merchantSite.first,allocator);kiosk.AddMember("merchant_y",merchantSite.second,allocator);
+        kiosk.AddMember("shopkeeper_uid",merchant->getUID(),allocator);
+        kiosk.AddMember("table_uid",table->getUID(),allocator);kiosk.AddMember("chair_uid",chair->getUID(),allocator);
+        rapidjson::Value torches(rapidjson::kArrayType);
+        for(auto uid:torchUIDs)torches.PushBack(uid,allocator);
+        kiosk.AddMember("torch_uids",torches,allocator);
+        printlog("[DELVE] kiosk floor=%d ordinal=%d center=%d,%d footprint=5x5 entrance=%d,%d shelves=1 torches=4 table=1 chair=1",worldFloor,ordinal,best.first,best.second,best.first,best.second+2);
+    }
+    // Fallback kiosk clearings can replace part of an old room boundary.
+    // Re-evaluate its doors using the finished terrain, not stale templates.
+    for(int x=2;x<size-2;++x)for(int y=10;y<size-2;++y) {
+        int off=MAPLAYERS*(y+x*size),f=map.tiles[off];
+        dry[y+x*size]=f>0 && !map.tiles[off+OBSTACLELAYER] && !swimmingtiles[f] && !lavatiles[f];
+    }
+    sanitizeDoors();reserveDoors();
     auto coreDistances=flood(core,safe);
     auto fresh=[&](Cell target,bool room=false) {
         auto p=pick(target,room);
@@ -336,7 +506,7 @@ bool adaptOfficial(unsigned seed) {
         return open>=5;
     };
     auto canBlock=[&](Cell p) {
-        if(!safe[index(p)])return false;
+        if(!safe[index(p)] || doorClearance.count(p))return false;
         std::vector<Cell> neighbors;
         for(auto side:sides) {
             Cell q{p.first+side.first,p.second+side.second};if(inside(q) && safe[index(q)])neighbors.push_back(q);
@@ -356,11 +526,16 @@ bool adaptOfficial(unsigned seed) {
         }
         return std::all_of(neighbors.begin(),neighbors.end(),[&](Cell q){return seen.count(q)!=0;});
     };
+    auto spacedCache=[&](Cell p) {
+        for(auto& c:world["chests"].GetArray())
+            if(manhattan(p,{c["x"].GetInt(),c["y"].GetInt()})<4)return false;
+        return true;
+    };
     auto blockingSpot=[&](Cell target) {
         Cell best{-1,-1};int distance=10000;
         for(auto p:candidates) {
             int d=manhattan(p,target);
-            if(d<distance && !occupied.count(p) && niche(p) && canBlock(p)){distance=d;best=p;}
+            if(d<distance && !occupied.count(p) && niche(p) && canBlock(p) && spacedCache(p)){distance=d;best=p;}
         }
         if(best.first>=0)occupied.insert(best);return best;
     };
@@ -368,26 +543,14 @@ bool adaptOfficial(unsigned seed) {
     for(auto spawn:spawns) {
         Cell best{-1,-1};int distance=10000;
         for(auto p:candidates) {
-            if(occupied.count(p) || manhattan(p,spawn)>5 || manhattan(p,spawn)<2 || !canBlock(p))continue;
+            if(occupied.count(p) || manhattan(p,spawn)>5 || manhattan(p,spawn)<2 || !canBlock(p) || !spacedCache(p))continue;
             int d=manhattan(p,spawn);if(d<distance){best=p;distance=d;}
         }
         if(best.first<0){printlog("[DELVE] generation rejected: missing start cache");return false;}
         cache(best,0);
     }
     printlog("[DELVE] native starts and starter caches ready");
-    // Retain official cache locations; supplement normal wall niches and room interiors.
-    std::vector<Entity*> nativeChests;
-    for(auto node=map.entities->first;node;node=node->next) {
-        auto e=static_cast<Entity*>(node->element);
-        if(e->sprite==21)nativeChests.push_back(e);
-    }
-    std::sort(nativeChests.begin(),nativeChests.end(),[](Entity* a,Entity* b){return std::make_pair(a->x,a->y)<std::make_pair(b->x,b->y);});
     int ordinal=0;
-    for(auto e:nativeChests) {
-        Cell p{static_cast<int>(e->x)/16,static_cast<int>(e->y)/16};
-        bool known=false;for(auto& c:world["chests"].GetArray())if(c["x"].GetInt()==p.first && c["y"].GetInt()==p.second)known=true;
-        if(!known)addPoint("chests",p,nullptr,1+(ordinal++%3));
-    }
     for(int n=0;n<3;++n) {
         auto p=blockingSpot({core.first+(n-1)*3,core.second+3});
         if(p.first<0){printlog("[DELVE] generation rejected: no relic site");return false;}cache(p,4);
@@ -395,9 +558,7 @@ bool adaptOfficial(unsigned seed) {
     std::mt19937 rng(seed^0xd31fe123u);std::shuffle(candidates.begin(),candidates.end(),rng);
     for(auto p:candidates) {
         if(world["chests"].Size()>=world["chest_target"].GetInt())break;
-        if(occupied.count(p) || !niche(p) || !canBlock(p))continue;
-        int near=0;for(auto& c:world["chests"].GetArray())if(manhattan(p,{c["x"].GetInt(),c["y"].GetInt()})<4)++near;
-        if(near)continue;
+        if(occupied.count(p) || !niche(p) || !canBlock(p) || !spacedCache(p))continue;
         cache(p,1+(ordinal++%3));
     }
     if(world["chests"].Size()<world["chest_target"].GetInt()){printlog("[DELVE] generation rejected: only %u cache sites",world["chests"].Size());return false;}
@@ -411,12 +572,11 @@ bool adaptOfficial(unsigned seed) {
         auto p=fresh({core.first+(n==1 ? -5: n==2 ? 5:0),core.second-4+(n%2)*7});
         if(p.first<0){printlog("[DELVE] generation rejected: missing portal");return false;}raw(45,p);addPoint("portals",p);
     }
-    int fountains=0,merchants=0;
+    int fountains=0;
     for(auto node=map.entities->first;node;node=node->next) {
-        auto e=static_cast<Entity*>(node->element);fountains+=e->sprite==14;merchants+=e->sprite==35;
+        auto e=static_cast<Entity*>(node->element);fountains+=e->sprite==14;
     }
     while(fountains<3) {auto p=blockingSpot(targets[fountains]);if(p.first<0)return false;raw(14,p);safe[index(p)]=false;++fountains;}
-    if(!merchants) {auto p=blockingSpot({core.first-10,core.second+8});if(p.first<0)return false;raw(35,p);safe[index(p)]=false;}
     auto away=[&](Cell p){
         if(manhattan(p,core)<guardianClearance ||
             !std::all_of(spawns.begin(),spawns.end(),[&](Cell s){return manhattan(p,s)>=enemySpawnClearance;}))return false;
@@ -477,8 +637,206 @@ bool adaptOfficial(unsigned seed) {
     auto reached=[&](Cell p){return inside(p) && reachable[index(p)]>=0;};
     for(auto p:spawns)if(!reached(p)){printlog("[DELVE] generation rejected: disconnected start");return false;}
     if(!reached(core)){printlog("[DELVE] generation rejected: disconnected core");return false;}
+    for(auto& kiosk:world["kiosks"].GetArray()) {
+        if(!reached({kiosk["entrance_x"].GetInt(),kiosk["entrance_y"].GetInt()}) ||
+            !reached({kiosk["approach_x"].GetInt(),kiosk["approach_y"].GetInt()})) {
+            printlog("[DELVE] generation rejected: inaccessible kiosk");return false;
+        }
+    }
     for(auto key:{"descents","portals","drops","encounters","gold"})for(auto& v:world[key].GetArray())
         if(!reached({v["x"].GetInt(),v["y"].GetInt()})){printlog("[DELVE] generation rejected: disconnected %s",key);return false;}
+    auto chestApproachable=[&](const rapidjson::Value& chest,const std::vector<int>& distances) {
+        Cell p{chest["x"].GetInt(),chest["y"].GetInt()};
+        for(auto side:sides) {
+            Cell q{p.first+side.first,p.second+side.second};
+            if(inside(q) && distances[index(q)]>=0)return true;
+        }
+        return false;
+    };
+    for(auto& chest:world["chests"].GetArray())if(!chestApproachable(chest,reachable)) {
+        printlog("[DELVE] generation rejected: inaccessible cache");return false;
+    }
+    // Plan the challenge first, then supply its reward. Native gate rows form a
+    // single barrier, and keep their gate models with a dedicated native lever.
+    // Reassign a loose reward from this floor's budget when a valid room is empty.
+    auto mainAccess=safe;
+    std::vector<Cell> lockApproaches;
+    std::vector<Entity*> barriers;
+    for(auto node=map.entities->first;node;) {
+        auto next=node->next;auto e=static_cast<Entity*>(node->element);
+        if(!doorway(e->sprite)){node=next;continue;}
+        Cell p{static_cast<int>(e->x)/16,static_cast<int>(e->y)/16},step=doorStep(e->sprite);
+        Cell a{p.first-step.first,p.second-step.second},b{p.first+step.first,p.second+step.second};
+        Cell jambA{p.first-step.second,p.second-step.first},jambB{p.first+step.second,p.second+step.first};
+        if(!reached(p) || !reached(a) || !reached(b) || (!gateSprite(e->sprite) &&
+            (!map.tiles[MAPLAYERS*index(jambA)+OBSTACLELAYER] || !map.tiles[MAPLAYERS*index(jambB)+OBSTACLELAYER]))) {
+            list_RemoveNode(node);++removedDoors;node=next;continue;
+        }
+        barriers.push_back(e);
+        node=next;
+    }
+    auto cell=[](Entity* e){return Cell{static_cast<int>(e->x)/16,static_cast<int>(e->y)/16};};
+    std::stable_sort(barriers.begin(),barriers.end(),[&](Entity* a,Entity* b){
+        if(gateSprite(a->sprite)!=gateSprite(b->sprite))return gateSprite(a->sprite);
+        return cell(a)<cell(b);
+    });
+    std::vector<std::vector<Entity*>> groups;
+    std::set<Entity*> grouped;
+    for(auto e:barriers) {
+        if(grouped.count(e))continue;
+        std::vector<Entity*> group{e};grouped.insert(e);
+        if(gateSprite(e->sprite))for(unsigned i=0;i<group.size();++i)for(auto other:barriers) {
+            if(grouped.count(other) || !gateSprite(other->sprite) || doorStep(e->sprite)!=doorStep(other->sprite))continue;
+            auto a=cell(group[i]),b=cell(other),step=doorStep(e->sprite);
+            if(manhattan(a,b)==1 && (a.first-b.first)*step.first+(a.second-b.second)*step.second==0) {
+                group.push_back(other);grouped.insert(other);
+            }
+        }
+        groups.push_back(group);
+    }
+    int rewardLocks=0,woodLocks=0,preservedGates=0,generatedRewards=0;
+    std::set<int> usedDropRewards;
+    for(unsigned groupID=0;groupID<groups.size();++groupID) {
+        auto& group=groups[groupID];const bool gate=gateSprite(group.front()->sprite);
+        const auto open=flood(spawns[0],mainAccess);
+        for(auto e:group)mainAccess[index(cell(e))]=false;
+        const auto closed=flood(spawns[0],mainAccess);
+        bool essential=closed[index(core)]<0;
+        for(auto s:spawns)if(closed[index(s)]<0)essential=true;
+        for(auto approach:lockApproaches)if(closed[index(approach)]<0)essential=true;
+        for(auto key:{"descents","portals"})for(auto& v:world[key].GetArray())
+            if(closed[index({v["x"].GetInt(),v["y"].GetInt()})]<0)essential=true;
+        for(auto& kiosk:world["kiosks"].GetArray())
+            if(closed[index({kiosk["approach_x"].GetInt(),kiosk["approach_y"].GetInt()})]<0 ||
+                closed[index({kiosk["entrance_x"].GetInt(),kiosk["entrance_y"].GetInt()})]<0)essential=true;
+        int vaultTiles=0;for(int i=0;i<size*size;++i)if(open[i]>=0 && closed[i]<0)++vaultTiles;
+        const bool optional=!essential && open[index(cell(group.front()))]>=0 && vaultTiles>=5 && vaultTiles<=120 && (gate || woodLocks<3);
+        auto groupDistance=[&](Cell p){int d=10000;for(auto e:group)d=std::min(d,manhattan(p,cell(e)));return d;};
+        Cell leverSite{-1,-1};
+        if(gate) {
+            const auto& distances=optional ? closed:open;int best=10000;
+            for(auto p:candidates) {
+                const int d=groupDistance(p);
+                if(d<1 || d>6 || d>=best || occupied.count(p) || !safe[index(p)] || distances[index(p)]<0)continue;
+                leverSite=p;best=d;
+            }
+            // An inner, initially open gate may lie inside another reward room.
+            if(leverSite.first<0)for(auto p:candidates) {
+                int d=groupDistance(p);
+                if(d>=1 && d<=6 && !occupied.count(p) && safe[index(p)] && reachable[index(p)]>=0){leverSite=p;break;}
+            }
+            if(leverSite.first<0){printlog("[DELVE] generation rejected: no gate control site");return false;}
+        }
+        int reward=-1;const char* rewardKind="none";bool generatedReward=false;
+        if(optional) {
+            for(rapidjson::SizeType i=0;i<world["chests"].Size();++i) {
+                auto& c=world["chests"][i];
+                if(c["role"].GetInt()!=0 && chestApproachable(c,open) && !chestApproachable(c,closed)) {
+                    reward=i;rewardKind="chest";break;
+                }
+            }
+            if(reward<0)for(rapidjson::SizeType i=0;i<world["drops"].Size();++i) {
+                auto& d=world["drops"][i];Cell p{d["x"].GetInt(),d["y"].GetInt()};
+                if(!usedDropRewards.count(i) && open[index(p)]>=0 && closed[index(p)]<0 && groupDistance(p)>=3) {
+                    reward=i;rewardKind="drop";break;
+                }
+            }
+            // Move an ordinary main-route cache into the empty room. The exact
+            // cache budget is unchanged and the chest entity follows its record.
+            if(reward<0) {
+                Cell destination{-1,-1};int best=-1;
+                for(auto p:candidates) {
+                    int d=groupDistance(p);
+                    if(d<=best || d<3 || occupied.count(p) || open[index(p)]<0 || closed[index(p)]>=0 || !niche(p) || !canBlock(p))continue;
+                    destination=p;best=d;
+                }
+                int source=-1;
+                if(destination.first>=0)for(int role:{2,1,3}) {
+                    for(rapidjson::SizeType i=0;source<0 && i<world["chests"].Size();++i) {
+                        auto& c=world["chests"][i];
+                        if(c["role"].GetInt()!=role || !chestApproachable(c,closed))continue;
+                        bool spaced=true;
+                        for(rapidjson::SizeType j=0;j<world["chests"].Size();++j)if(j!=i &&
+                            manhattan(destination,{world["chests"][j]["x"].GetInt(),world["chests"][j]["y"].GetInt()})<4)spaced=false;
+                        if(spaced)source=static_cast<int>(i);
+                    }
+                    if(source>=0)break;
+                }
+                Entity* moved=nullptr;
+                if(source>=0) {
+                    auto& c=world["chests"][static_cast<rapidjson::SizeType>(source)];Cell from{c["x"].GetInt(),c["y"].GetInt()};
+                    for(auto node=map.entities->first;node && !moved;node=node->next) {
+                        auto e=static_cast<Entity*>(node->element);
+                        if(e->sprite==21 && cell(e)==from)moved=e;
+                    }
+                    if(moved) {
+                        moved->x=destination.first*16;moved->y=destination.second*16;
+                        occupied.erase(from);occupied.insert(destination);
+                        safe[index(from)]=mainAccess[index(from)]=true;
+                        safe[index(destination)]=mainAccess[index(destination)]=false;
+                        c["x"].SetInt(destination.first);c["y"].SetInt(destination.second);
+                        reward=source;rewardKind="chest";generatedReward=true;++generatedRewards;
+                    }
+                }
+            }
+            if(reward<0) {
+                Cell destination{-1,-1};int best=-1;
+                for(auto p:candidates) {
+                    int d=groupDistance(p);
+                    if(d>best && d>=3 && safe[index(p)] && open[index(p)]>=0 && closed[index(p)]<0 && !occupied.count(p)) {
+                        destination=p;best=d;
+                    }
+                }
+                if(destination.first>=0)for(rapidjson::SizeType i=0;i<world["drops"].Size();++i) {
+                    auto& d=world["drops"][i];Cell p{d["x"].GetInt(),d["y"].GetInt()};
+                    if(usedDropRewards.count(i) || closed[index(p)]<0 ||
+                        (std::strcmp(d["kind"].GetString(),"gear") && std::strcmp(d["kind"].GetString(),"treasure")))continue;
+                    occupied.erase(p);occupied.insert(destination);
+                    d["x"].SetInt(destination.first);d["y"].SetInt(destination.second);
+                    reward=i;rewardKind="drop";generatedReward=true;++generatedRewards;break;
+                }
+            }
+        }
+        if(reward>=0) {
+            ++rewardLocks;if(!gate)++woodLocks;
+            if(!std::strcmp(rewardKind,"drop"))usedDropRewards.insert(reward);
+            for(auto e:group)for(auto side:sides) {
+                Cell p=cell(e),q{p.first+side.first,p.second+side.second};
+                if(inside(q) && closed[index(q)]>=0){lockApproaches.push_back(q);break;}
+            }
+        } else for(auto e:group)mainAccess[index(cell(e))]=safe[index(cell(e))];
+        Entity* lever=nullptr;
+        if(gate) {
+            lever=raw(17,leverSite);occupied.insert(leverSite);
+            if(open[index(leverSite)]>=0)lockApproaches.push_back(leverSite);
+        }
+        for(auto e:group) {
+            Cell p=cell(e),step=doorStep(e->sprite);
+            if(gate){gateControls[index(p)]={lever->getUID(),reward<0};++preservedGates;}
+            else e->doorForceLockedUnlocked=reward>=0 ? 1:2;
+            addPoint("doors",p);
+            auto& door=world["doors"][world["doors"].Size()-1];
+            door.AddMember("axis",step.first ? 0:1,allocator);door.AddMember("group",groupID,allocator);
+            door.AddMember("kind",rapidjson::StringRef(gate ? "gate":e->sprite==217 || e->sprite==218 ? "iron":"wood"),allocator);
+            door.AddMember("locked",reward>=0,allocator);door.AddMember("reward_index",reward,allocator);
+            door.AddMember("reward_kind",rapidjson::StringRef(rewardKind),allocator);
+            door.AddMember("reward_generated",generatedReward,allocator);
+            door.AddMember("vault_tiles",reward>=0 ? vaultTiles:0,allocator);
+            if(gate) {
+                door.AddMember("lever_uid",lever->getUID(),allocator);
+                door.AddMember("lever_x",leverSite.first,allocator);door.AddMember("lever_y",leverSite.second,allocator);
+                door.AddMember("starts_open",reward<0,allocator);
+            }
+        }
+    }
+    world.AddMember("removed_invalid_doors",removedDoors,allocator);
+    world.AddMember("converted_native_gates",0,allocator);
+    world.AddMember("preserved_native_gates",preservedGates,allocator);
+    world.AddMember("generated_room_rewards",generatedRewards,allocator);
+    world.AddMember("cleared_door_props",clearedDoorProps,allocator);
+    world.AddMember("reward_locks",rewardLocks,allocator);
+    printlog("[DELVE] placement_audit floor=%d native_shop_tiles=%d replaced_chests=%d invalid_doors=%d preserved_gates=%d reward_rooms=%d generated_rewards=%d",
+        worldFloor,nativeShopTiles,removedNativeChests,removedDoors,preservedGates,rewardLocks,generatedRewards);
     // Capture points and a straight combat lane are smoke-only diagnostics.
 #ifdef BARONY_SMOKE_TESTS
     Cell lane{-1,-1};
@@ -494,6 +852,12 @@ bool adaptOfficial(unsigned seed) {
     world.AddMember("combat_lane",combat,allocator);
     Cell viewTargets[]={{spawns[0].first+2,spawns[0].second},{size/3,size/2},{core.first-4,core.second},{size*3/4,size*3/4}};
     for(int n=0;n<4;++n) {
+        if(n==1 && !world["kiosks"].Empty()) {
+            auto& kiosk=world["kiosks"][0];
+            addPoint("views",{kiosk["approach_x"].GetInt(),kiosk["approach_y"].GetInt()});
+            world["views"][n].AddMember("yaw",-PI/2,allocator);
+            continue;
+        }
         auto p=pick(viewTargets[n],true);if(p.first<0)return false;addPoint("views",p);
         int longest=-1,dir=0;
         for(int d=0;d<4;++d) {
@@ -519,6 +883,7 @@ bool adaptOfficial(unsigned seed) {
     world.AddMember("spell_traps",spellTraps,allocator);
 #ifdef BARONY_SMOKE_TESTS
     rapidjson::Value diagram(rapidjson::kArrayType);
+    rapidjson::Value walkable(rapidjson::kArrayType);
     for (int y=0;y<size;++y) {
         std::string row;
         for (int x=0;x<size;++x) {
@@ -526,8 +891,19 @@ bool adaptOfficial(unsigned seed) {
             row += map.tiles[offset+OBSTACLELAYER] ? '#' : !surface ? ' ' : lavatiles[surface] ? '^' : swimmingtiles[surface] ? '~' : '.';
         }
         diagram.PushBack(rapidjson::Value(row.c_str(),allocator),allocator);
+        row.clear();for(int x=0;x<size;++x)row+=safe[y+x*size] ? '.':'#';
+        walkable.PushBack(rapidjson::Value(row.c_str(),allocator),allocator);
     }
     world.AddMember("diagram_tiles",diagram,allocator);
+    world.AddMember("diagram_walkable",walkable,allocator);
+    rapidjson::Value blockers(rapidjson::kArrayType);
+    for(auto node=map.entities->first;node;node=node->next) {
+        auto e=static_cast<Entity*>(node->element);if(!blocking(*e))continue;
+        rapidjson::Value v(rapidjson::kObjectType);
+        v.AddMember("x",static_cast<int>(e->x)/16,allocator);v.AddMember("y",static_cast<int>(e->y)/16,allocator);
+        v.AddMember("sprite",e->sprite,allocator);blockers.PushBack(v,allocator);
+    }
+    world.AddMember("static_blockers",blockers,allocator);
 #endif
     rapidjson::Value uids(rapidjson::kArrayType);
     for(auto node=map.entities->first;node;node=node->next) {
@@ -545,6 +921,13 @@ bool adaptOfficial(unsigned seed) {
 }
 }
 int generateOfficialFloor(unsigned seed,int* checkMapHash) {
+#ifdef BARONY_SMOKE_TESTS
+    const auto seedVariable="BARONY_SMOKE_DELVE_FLOOR"+std::to_string(worldFloor)+"_SEED";
+    if(const char* forced=std::getenv(seedVariable.c_str())) {
+        seed=static_cast<unsigned>(std::strtoul(forced,nullptr,10));
+        printlog("[SMOKE][DELVE] generation_seed floor=%d seed=%u",worldFloor,seed);
+    }
+#endif
     rapidjson::Document spec;spec.CopyFrom(world,spec.GetAllocator());
     for(int attempt=0;attempt<4;++attempt) {
         world.CopyFrom(spec,world.GetAllocator());
@@ -564,6 +947,25 @@ int generateOfficialFloor(unsigned seed,int* checkMapHash) {
     printlog("[DELVE] could not generate a connected native dungeon");worldFloor=0;mainloop=0;return -1;
 }
 
+
+bool controlGate(Entity& gate) {
+    if(!active() || !worldFloor)return false;
+    const int key=static_cast<int>(gate.y)/16+(static_cast<int>(gate.x)/16)*map.height;
+    auto control=gateControls.find(key);if(control==gateControls.end())return false;
+    gate.gateInverted=0;
+    if(multiplayer!=CLIENT) {
+        auto base=uidToEntity(control->second.lever);
+        auto lever=base ? uidToEntity(base->parent):nullptr;
+        const bool pulled=lever && lever->behavior==&actSwitch && lever->skill[0];
+        const int status=control->second.startsOpen ? !pulled:pulled;
+        if(gate.gateStatus!=status) {
+            gate.gateStatus=status;
+            if(multiplayer==SERVER)serverUpdateEntitySkill(&gate,3);
+            playSoundEntity(&gate,status ? 81:82,64);
+        }
+    } else if(!gate.gateInit)gate.gateStatus=control->second.startsOpen;
+    return true;
+}
 
 void configureChest(Entity& chest) {
     const int x=static_cast<int>(chest.x)/16,y=static_cast<int>(chest.y)/16;
@@ -622,6 +1024,151 @@ void populateWorld() {
         floor,map.width,map.height,count+1,world["chests"].Size(),dropped,mapseed);
 }
 #ifdef BARONY_SMOKE_TESTS
+bool smokeKioskAudit() {
+    if(!active() || multiplayer!=SERVER || worldFloor<1 || !world.HasMember("kiosks") || world["kiosks"].Size()!=shopsPerFloor)return false;
+    if(world["native_shop_tiles"].GetInt()!=0 || world["chests"].Size()!=world["chest_target"].GetInt())return false;
+    int actualChests=0,actualDoors=0,actualGates=0;
+    for(auto node=map.entities->first;node;node=node->next) {
+        auto e=static_cast<Entity*>(node->element);
+        if(e->behavior!=&actChest && e->behavior!=&actDoor && e->behavior!=&actIronDoor && e->behavior!=&actGate)continue;
+        const Cell p{static_cast<int>(e->x)/16,static_cast<int>(e->y)/16};
+        bool found=false;
+        for(auto& v:world[e->behavior==&actChest ? "chests":"doors"].GetArray()) {
+            if(p!=Cell{v["x"].GetInt(),v["y"].GetInt()})continue;
+            if((e->behavior==&actDoor || e->behavior==&actIronDoor) && (!e->doorInit || e->doorLocked!=v["locked"].GetBool() ||
+                e->doorDisableLockpicks || e->doorDisableOpening))return false;
+            if(e->behavior==&actGate) {
+                if(std::strcmp(v["kind"].GetString(),"gate") || !e->gateInit ||
+                    e->gateStatus!=v["starts_open"].GetBool() || e->flags[PASSABLE]!=v["starts_open"].GetBool())return false;
+                auto base=uidToEntity(v["lever_uid"].GetUint()),lever=base ? uidToEntity(base->parent):nullptr;
+                if(!lever || lever->behavior!=&actSwitch || !lever->flags[PASSABLE])return false;
+                const int oldPower=lever->skill[0],oldStatus=e->gateStatus;
+                lever->toggleSwitch();controlGate(*e);
+                const bool toggled=e->gateStatus!=oldStatus;
+                lever->toggleSwitch();controlGate(*e);
+                if(!toggled || lever->skill[0]!=oldPower || e->gateStatus!=oldStatus)return false;
+                ++actualGates;
+            }
+            found=true;break;
+        }
+        if(!found)return false;
+        if(e->behavior==&actChest)++actualChests;else ++actualDoors;
+    }
+    if(actualChests!=world["chests"].Size() || actualDoors!=world["doors"].Size())return false;
+    if(actualGates!=world["preserved_native_gates"].GetInt())return false;
+    std::set<unsigned> rewardGroups;
+    for(auto& door:world["doors"].GetArray()) {
+        if(!door["locked"].GetBool() || !rewardGroups.insert(door["group"].GetUint()).second)continue;
+        const bool chest=!std::strcmp(door["reward_kind"].GetString(),"chest");
+        const auto& reward=world[chest ? "chests":"drops"][door["reward_index"].GetInt()];
+        bool present=false;
+        for(auto node=map.entities->first;node;node=node->next) {
+            auto e=static_cast<Entity*>(node->element);
+            if(e->behavior!=(chest ? &actChest:&actItem) ||
+                std::abs(e->x-(reward["x"].GetInt()*16+8))>4 || std::abs(e->y-(reward["y"].GetInt()*16+8))>4)continue;
+            if(!chest || (e->getChestInventoryList() && e->getChestInventoryList()->first)){present=true;break;}
+        }
+        if(!present)return false;
+    }
+    if(rewardGroups.size()!=world["reward_locks"].GetInt())return false;
+    printlog("[SMOKE][DELVE] placement_native_audit floor=%d chests=%d doors=%d reward_locks=%d preserved_gates=%d generated_rewards=%d native_levers_toggle=1",
+        worldFloor,actualChests,actualDoors,world["reward_locks"].GetInt(),actualGates,world["generated_room_rewards"].GetInt());
+    int pairs=0;
+    std::set<std::string> inventories;
+    int merchants=0;
+    for(auto node=map.entities->first;node;node=node->next) {
+        auto entity=static_cast<Entity*>(node->element);
+        if(entity->behavior==&actMonster && entity->getStats() && entity->getStats()->type==SHOPKEEPER)++merchants;
+    }
+    if(merchants!=shopsPerFloor)return false;
+    for(auto& kiosk:world["kiosks"].GetArray()) {
+        const int x=kiosk["x"].GetInt(),y=kiosk["y"].GetInt();
+        auto merchant=uidToEntity(kiosk["shopkeeper_uid"].GetUint());
+        const int merchantX=kiosk["merchant_x"].GetInt(),merchantY=kiosk["merchant_y"].GetInt();
+        if(kiosk["width"].GetInt()!=5 || kiosk["height"].GetInt()!=5 || !merchant || merchant->behavior!=&actMonster ||
+            !merchant->getStats() || merchant->getStats()->type!=SHOPKEEPER || !merchant->getStats()->inventory.first ||
+            static_cast<int>(merchant->x)/16!=merchantX || static_cast<int>(merchant->y)/16!=merchantY)return false;
+        for(auto& other:world["kiosks"].GetArray()) {
+            if(&other==&kiosk)continue;
+            const int dx=x-other["x"].GetInt(),dy=y-other["y"].GetInt();
+            if(dx*dx+dy*dy<(map.width/4)*(map.width/4))return false;
+        }
+        int stockCount=0;std::set<std::pair<int,int>> stockSlots;std::string stockKey;
+        if(merchant->monsterStoreType!=9)return false;
+        for(auto node=merchant->getStats()->inventory.first;node;node=node->next) {
+            auto item=static_cast<Item*>(node->element);
+            if(!item->identified || !DelveRarity::eligible(*item) || item->count<1 || item->count>3 ||
+                item->x<0 || item->x>=Player::ShopGUI_t::MAX_SHOP_X || item->y<0 || item->y>=Player::ShopGUI_t::MAX_SHOP_Y ||
+                !stockSlots.insert({item->x,item->y}).second)return false;
+            if(DelveRarity::equipment(*item) || itemCategory(item)==GEM) {
+                const auto expected=static_cast<Status>(std::min(static_cast<int>(DelveRarity::stored(*item))+1,static_cast<int>(EXCELLENT)));
+                if(item->status!=expected)return false;
+            }
+            stockKey+=std::to_string(item->type)+":"+std::to_string(item->appearance)+":"+std::to_string(item->count)+";";
+            ++stockCount;
+        }
+        if(stockCount!=shopStockSize || !inventories.insert(stockKey).second)return false;
+        if(merchant->monsterPathBoundaryXStart!=merchantX*16 || merchant->monsterPathBoundaryXEnd!=merchantX*16 ||
+            merchant->monsterPathBoundaryYStart!=merchantY*16 || merchant->monsterPathBoundaryYEnd!=merchantY*16)return false;
+        int walls=0;
+        for(int dx=-kioskRadius;dx<=kioskRadius;++dx)for(int dy=-kioskRadius;dy<=kioskRadius;++dy) {
+            const int offset=MAPLAYERS*(y+dy+(x+dx)*map.height);
+            const bool blocked=(std::abs(dx)==kioskRadius || std::abs(dy)==kioskRadius) && !(dx==0 && dy==kioskRadius);
+            const int expectedWall=blocked ? (dy==kioskRadius ? 54:kioskShelfWall):0;
+            if(map.tiles[offset]!=kioskFloor || map.tiles[offset+2]!=kioskCeiling || map.tiles[offset+OBSTACLELAYER]!=expectedWall)return false;
+            walls+=blocked;
+        }
+        if(walls!=15)return false;
+        auto table=uidToEntity(kiosk["table_uid"].GetUint()),chair=uidToEntity(kiosk["chair_uid"].GetUint());
+        if(!table || !chair || table->behavior!=&actFurniture || chair->behavior!=&actFurniture ||
+            table->sprite!=271 || chair->sprite!=272 || table->furnitureType!=FURNITURE_TABLE || chair->furnitureType!=FURNITURE_CHAIR ||
+            table->x!=(x-1)*16+8 || table->y!=y*16+8 || chair->x!=table->x || chair->y!=(y+1)*16+8 ||
+            table->flags[PASSABLE] || chair->flags[PASSABLE] || std::abs(chair->yaw-3*PI/2)>.001)return false;
+        if(kiosk["torch_uids"].Size()!=4)return false;
+        for(auto& uid:kiosk["torch_uids"].GetArray()) {
+            auto torch=uidToEntity(uid.GetUint());
+            if(!torch || torch->behavior!=&actTorch || !torch->light || !torch->flags[PASSABLE])return false;
+            const int wallX=static_cast<int>(torch->x-std::cos(torch->yaw)*8)/16;
+            const int wallY=static_cast<int>(torch->y-std::sin(torch->yaw)*8)/16;
+            if(!map.tiles[MAPLAYERS*(wallY+wallX*map.height)+OBSTACLELAYER])return false;
+        }
+        // The full-tile entrance and approach must remain physically clear.
+        for(auto node=map.entities->first;node;node=node->next) {
+            auto entity=static_cast<Entity*>(node->element);
+            if(entity->flags[PASSABLE] || entity->behavior==&actPlayer || entity->behavior==&actMonster)continue;
+            for(int dy=2;dy<=3;++dy)if(std::abs(entity->x-(x*16+8))<entity->sizex+4 &&
+                std::abs(entity->y-((y+dy)*16+8))<entity->sizey+4)return false;
+        }
+        merchant->setEffect(EFF_ASLEEP,false,0,true);
+        for(auto node=map.entities->first;node;node=node->next) {
+            auto mob=static_cast<Entity*>(node->element);
+            if(mob==merchant || mob->behavior!=&actMonster || !mob->getStats())continue;
+            if(merchant->checkEnemy(mob) || mob->checkEnemy(merchant) || merchant->checkFriend(mob) || mob->checkFriend(merchant) ||
+                merchant->monsterAlertBeforeHit(mob) || mob->monsterAlertBeforeHit(merchant))return false;
+            const auto oldMerchantTarget=merchant->monsterTarget,oldMobTarget=mob->monsterTarget;
+            const auto oldMerchantState=merchant->monsterState,oldMobState=mob->monsterState;
+            merchant->monsterReleaseAttackTarget(true);mob->monsterReleaseAttackTarget(true);
+            merchant->monsterAcquireAttackTarget(*mob,MONSTER_STATE_PATH,true);
+            mob->monsterAcquireAttackTarget(*merchant,MONSTER_STATE_PATH,true);
+            const bool peaceful=!merchant->monsterTarget && !mob->monsterTarget;
+            merchant->monsterTarget=oldMerchantTarget;mob->monsterTarget=oldMobTarget;
+            merchant->monsterState=oldMerchantState;mob->monsterState=oldMobState;
+            if(!peaceful)return false;
+            ++pairs;
+        }
+        auto player=players[0] ? players[0]->entity:nullptr;
+        if(!player || neutralShopkeeperPair(*merchant,*player) || neutralShopkeeperPair(*player,*merchant))return false;
+        const double oldX=player->x,oldY=player->y,oldYaw=player->yaw;
+        const auto oldHit=hit;
+        player->x=kiosk["approach_x"].GetInt()*16+8;player->y=kiosk["approach_y"].GetInt()*16+8;player->yaw=-PI/2;
+        lineTrace(player,player->x,player->y,player->yaw,TOUCHRANGE,0,true);
+        const bool canTrade=hit.entity==merchant;
+        hit=oldHit;player->x=oldX;player->y=oldY;player->yaw=oldYaw;
+        if(!canTrade)return false;
+    }
+    printlog("[SMOKE][DELVE] kiosk_audit floor=%d buildings=%u neutral_pairs=%d footprint=5x5 shelves=11 torches=4 table=1 chair=1 clear_entrance=1 trade_los=1 stock_slots=%d distinct_stock=%u",worldFloor,world["kiosks"].Size(),pairs,shopStockSize,(unsigned)inventories.size());
+    return pairs>0;
+}
 bool smokePopulationAudit() {
     int ranged=0;
     for(int roll=0;roll<10;++roll) {
@@ -653,6 +1200,27 @@ bool smokePopulationAudit() {
     return true;
 }
 #endif
+void fillShop(Entity& merchant) {
+    if(!active() || multiplayer!=SERVER || merchant.behavior!=&actMonster)return;
+    auto stock=merchant.getStats();if(!stock || stock->type!=SHOPKEEPER)return;
+    const int floor=std::clamp(currentlevel,1,3);
+    std::mt19937 rng(seedAt(static_cast<int>(merchant.x)/16,static_cast<int>(merchant.y)/16)^0x73686f70u);
+    list_FreeAll(&stock->inventory);
+    merchant.monsterStoreType=9; // General store: normal gold-based native trading.
+    stock->MISC_FLAGS[STAT_FLAG_MYSTERIOUS_SHOPKEEP]=0;
+    std::array<int,5> rarities{};
+    for(int slot=0;slot<shopStockSize;++slot) {
+        const auto type=randomEnemyLoot(floor,rng);
+        const auto category=items[type].category;
+        const int count=category==POTION ? 1+rng()%3 : 1;
+        auto item=newItem(type,EXCELLENT,0,count,rng(),true,&stock->inventory);
+        const auto rarityRoll=rng();
+        DelveRarity::rollLoot(item,floor,rarityRoll,rng());
+        item->x=slot%Player::ShopGUI_t::MAX_SHOP_X;item->y=slot/Player::ShopGUI_t::MAX_SHOP_X;
+        ++rarities[static_cast<int>(DelveRarity::stored(*item))];
+    }
+    printlog("[DELVE] shop_stock floor=%d uid=%u slots=%d rarity=%d,%d,%d,%d,%d",floor,merchant.getUID(),shopStockSize,rarities[0],rarities[1],rarities[2],rarities[3],rarities[4]);
+}
 void fillChest(Entity& chest) {
     auto inventory=chest.getChestInventoryList();if(!inventory)return;
     int role=std::clamp(chest.skill[20],0,4),floor=std::clamp(currentlevel,1,3);

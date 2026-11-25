@@ -1,15 +1,22 @@
-# vending_machine framework 0.17.2
+# vending_machine framework 0.20.2
+
+0.20.2 preserves native gate and iron-door models and populates valid optional
+reward rooms before assigning their barriers. Empty rooms receive gear or treasure
+from the existing floor loot budget. Native gates have reachable lever controls;
+through-routes stay open. Only structurally broken doorways are removed. Chest
+spacing, doorway clearance and the three furnished kiosks remain.
+All peers need protocol 34.
 
 Native support for Dungeon Delve and compatible content mods. Framework API **1**;
-Dungeon Delve protocol **28**. Tested **Steam Barony 5.0.2, Windows x64**.
+Dungeon Delve protocol **34**. Tested **Steam Barony 5.0.2, Windows x64**.
 Unofficial experimental software, not an official Turning Wheel release.
 
 ## Combined GitHub release (current)
 
-The selected distribution is **Dungeon-Delve-0.17.2-windows-x64.zip** from the
+The selected distribution is **Dungeon-Delve-0.20.2-windows-x64.zip** from the
 project's GitHub Releases page. It includes this framework, its native runtime
 and Dungeon Delve together. Extract into the owned Barony installation and run
-**Dungeon-Delve-0.17.2/Play-Dungeon-Delve.cmd**, or extract elsewhere and use Steam
+**Dungeon-Delve-0.20.2/Play-Dungeon-Delve.cmd**, or extract elsewhere and use Steam
 library discovery. No Workshop subscriptions or separate framework download are
 required. Follow the combined ZIP's root README for installation/checksums,
 compatibility, updates, logs and removal. Retail files/saves stay untouched.
@@ -29,13 +36,13 @@ Steam's retail `barony.exe` or combine this with another native framework.
 ## Player installation
 
 1. Install/run the owned Steam Windows edition of Barony once; keep Steam running.
-2. Subscribe to this package and **Dungeon Delve 0.17.2**. Wait for downloads.
-3. Download **vending_machine-framework-0.17.2-windows.zip** using this Workshop
+2. Subscribe to this package and **Dungeon Delve 0.20.2**. Wait for downloads.
+3. Download **vending_machine-framework-0.20.2-windows.zip** using this Workshop
    page's release link. Extract into a writable folder outside Barony.
 4. Read its README, verify the posted SHA256 and run **Play-Dungeon-Delve.cmd**.
    No Python/compiler/admin access or global PowerShell policy change needed.
 5. Host/join a fresh private Direct IP lobby with 2-4 matching players before
-   starting. Everyone needs runtime/content **0.17.2**, API **1**, protocol **28**.
+   starting. Everyone needs runtime/content **0.20.2**, API **1**, protocol **34**.
 
 The launcher discovers Steam libraries and subscriptions by manifest, checks
 runtime/game/dependency hashes and stages content into a fresh isolated session.
@@ -46,7 +53,8 @@ Manual game/content paths and troubleshooting are in the runtime download README
 
 ## Features and limits
 
-Dungeon Delve has three six-minute floors, 2.5x XP, floor-scaled randomized loot,
+Dungeon Delve has three six-minute floors, 1.75x XP, three spaced merchant kiosks
+per floor with randomized floor-rarity stock, floor-scaled randomized loot,
 class builds, preserved within-match adventurer progression, monster/rat returns,
 45-second repeat-rat cooldowns and cheese-to-Algernon evolution. 0.17.1 improves
 the return picker and removes Delve's blue blessed-item background without
@@ -60,7 +68,7 @@ workspace, not this upload root.
 
 Steam matchmaking/invites and EOS networking are disabled: use private Direct IP.
 Host firewall/router setup may be needed; WAN/human balance testing is limited.
-0.17.2 restores native FMOD effects/music; Delve lobby music/narration use SDL.
+0.20.2 restores native FMOD effects/music; Delve lobby music/narration use SDL.
 FMOD is verified/copied from the owned installation, never shipped. Genuine DLC is checked per player;
 a base-game host can play with DLC owners without sharing unlocks. No DLC bypass.
 
@@ -68,7 +76,7 @@ a base-game host can play with DLC owners without sharing unlocks. No DLC bypass
 
 Update both subscriptions and the separate runtime together on every peer.
 Each launch uses a fresh session under
-`%LOCALAPPDATA%\vending_machine_framework\0.17.2\sessions\`, containing
+`%LOCALAPPDATA%\vending_machine_framework\0.20.2\sessions\`, containing
 `launch.json`, logs and results. Retail saves/config are not copied or edited.
 Back up normal saves before modded play. Report versions, reproduction steps and
 sanitized session logs; never post private saves or IPs publicly.

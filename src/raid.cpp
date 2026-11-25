@@ -293,6 +293,11 @@ void selectFromMenu(bool enabled) {
     printlog("[DELVE] menu selection=%s", enabled ? "dungeon-delve" : "campaign");
 }
 int experienceGain(int amount) { return active() ? BattleRules::experienceGain(amount) : amount; }
+bool neutralShopkeeperPair(const Entity& first, const Entity& second) {
+    if (!active() || first.behavior != &actMonster || second.behavior != &actMonster) return false;
+    const auto firstStats = first.getStats(), secondStats = second.getStats();
+    return firstStats && secondStats && (firstStats->type == SHOPKEEPER || secondStats->type == SHOPKEEPER);
+}
 bool active() { return inRaid && multiplayer != SINGLE; }
 bool concealedFromObserver(const Entity& entity, int observer) {
     if (!active() || intro) return false;

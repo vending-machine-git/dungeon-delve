@@ -61,9 +61,10 @@ def main():
     shutil.copy2(ROOT / 'framework/LICENSE-RMF.txt', licenses / 'LICENSE-RMF.txt')
     for mod_id in content_ids:
         shutil.copytree(ROOT / 'mods' / mod_id, bundle / 'mods' / mod_id)
-    release = dict(version=VERSION, protocol=28, api_version=1, platform='windows-x64',
+    release = dict(version=VERSION, protocol=34, api_version=1, platform='windows-x64',
                    distribution='github-combined-portable', game_version='5.0.2',
                    audio_backend='fmod', audio_version='2.02.14',
+                   narration_revision='depop-dungeon-1',
                    distribution_revision='exe-launcher-2', install_layout='game-root-launcher',
                    launcher_sha256=launcher['sha256'],
                    game_sha256=GAME_HASH, runtime_sha256=PRODUCTION_HASH,

@@ -722,6 +722,7 @@ ShopkeeperPlayerHostility_t ShopkeeperPlayerHostility;
 
 bool Entity::monsterAlertBeforeHit(Entity* attacker)
 {
+	if (attacker && Raid::neutralShopkeeperPair(*this, *attacker)) return false;
 	if ( !attacker )
 	{
 		return false;
@@ -2935,6 +2936,14 @@ void actMonster(Entity* my)
 	}
 	myStats->defending = false;
 	myStats->sneaking = 0;
+	if (Entity* target = uidToEntity(my->monsterTarget))
+	{
+		if (Raid::neutralShopkeeperPair(*my, *target))
+		{
+			my->monsterReleaseAttackTarget(true);
+			my->monsterState = MONSTER_STATE_WAIT;
+		}
+	}
 
 	// levitation
 	bool levitating = isLevitating(myStats);

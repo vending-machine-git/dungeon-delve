@@ -1,3 +1,4 @@
+#include "delve_net_position.hpp"
 #include "delve_spell_rolls.hpp"
 /*-------------------------------------------------------------------------------
 
@@ -506,8 +507,8 @@ void sendEntityUDP(Entity* entity, int c, bool guarantee)
 	strcpy((char*)net_packet->data, "ENTU");
 	SDLNet_Write32((Uint32)entity->getUID(), &net_packet->data[4]);
 	SDLNet_Write16((Uint16)entity->sprite, &net_packet->data[8]);
-	SDLNet_Write16((Sint16)(entity->x * 32), &net_packet->data[10]);
-	SDLNet_Write16((Sint16)(entity->y * 32), &net_packet->data[12]);
+	SDLNet_Write16((Sint16)(entity->x * Raid::networkPositionScale()), &net_packet->data[10]);
+	SDLNet_Write16((Sint16)(entity->y * Raid::networkPositionScale()), &net_packet->data[12]);
 	SDLNet_Write16((Sint16)(entity->z * 32), &net_packet->data[14]);
 	net_packet->data[16] = (Sint8)entity->sizex;
 	net_packet->data[17] = (Sint8)entity->sizey;
@@ -1854,8 +1855,8 @@ Entity* receiveEntity(Entity* entity)
 	entity->lastupdate = ticks;
 	entity->lastupdateserver = (Uint32)SDLNet_Read32(&net_packet->data[36]);
 	entity->setUID((int)SDLNet_Read32(&net_packet->data[4])); // remember who I am
-	entity->new_x = ((Sint16)SDLNet_Read16(&net_packet->data[10])) / 32.0;
-	entity->new_y = ((Sint16)SDLNet_Read16(&net_packet->data[12])) / 32.0;
+	entity->new_x = ((Sint16)SDLNet_Read16(&net_packet->data[10])) / Raid::networkPositionScale();
+	entity->new_y = ((Sint16)SDLNet_Read16(&net_packet->data[12])) / Raid::networkPositionScale();
 	if (!excludeForAnimation && (newentity || monsterType != SCARAB)) {
 	    entity->new_z = ((Sint16)SDLNet_Read16(&net_packet->data[14])) / 32.0;
 	}
@@ -2965,8 +2966,8 @@ static std::unordered_map<Uint32, void(*)()> clientPacketHandlers = {
 		{
 			return;
 		}
-		players[clientnum]->entity->x = ((Sint16)SDLNet_Read16(&net_packet->data[4])) / 32.0;
-		players[clientnum]->entity->y = ((Sint16)SDLNet_Read16(&net_packet->data[6])) / 32.0;
+		players[clientnum]->entity->x = ((Sint16)SDLNet_Read16(&net_packet->data[4])) / Raid::networkPositionScale();
+		players[clientnum]->entity->y = ((Sint16)SDLNet_Read16(&net_packet->data[6])) / Raid::networkPositionScale();
 	}},
 
 	// player ghost movement correction
@@ -2975,8 +2976,8 @@ static std::unordered_map<Uint32, void(*)()> clientPacketHandlers = {
 		{
 			return;
 		}
-		players[clientnum]->ghost.my->x = ((Sint16)SDLNet_Read16(&net_packet->data[4])) / 32.0;
-		players[clientnum]->ghost.my->y = ((Sint16)SDLNet_Read16(&net_packet->data[6])) / 32.0;
+		players[clientnum]->ghost.my->x = ((Sint16)SDLNet_Read16(&net_packet->data[4])) / Raid::networkPositionScale();
+		players[clientnum]->ghost.my->y = ((Sint16)SDLNet_Read16(&net_packet->data[6])) / Raid::networkPositionScale();
 	}},
 
 	// update health
@@ -3125,8 +3126,8 @@ static std::unordered_map<Uint32, void(*)()> clientPacketHandlers = {
 			entity->itemNotMovingClient = 0;
 			entity->flags[USERFLAG1] = false; // enable collision
 
-			entity->x = ((Sint16)SDLNet_Read16(&net_packet->data[8])) / 32.0;
-			entity->y = ((Sint16)SDLNet_Read16(&net_packet->data[10])) / 32.0;
+			entity->x = ((Sint16)SDLNet_Read16(&net_packet->data[8])) / Raid::networkPositionScale();
+			entity->y = ((Sint16)SDLNet_Read16(&net_packet->data[10])) / Raid::networkPositionScale();
 			entity->z = ((Sint16)SDLNet_Read16(&net_packet->data[12])) / 32.0;
 			
 			entity->vel_x = ((Sint16)SDLNet_Read16(&net_packet->data[14])) / 32.0;
@@ -3149,8 +3150,8 @@ static std::unordered_map<Uint32, void(*)()> clientPacketHandlers = {
 
 			entity->itemFollowUID = ((Uint32)SDLNet_Read32(&net_packet->data[20]));
 
-			entity->x = ((Sint16)SDLNet_Read16(&net_packet->data[8])) / 32.0;
-			entity->y = ((Sint16)SDLNet_Read16(&net_packet->data[10])) / 32.0;
+			entity->x = ((Sint16)SDLNet_Read16(&net_packet->data[8])) / Raid::networkPositionScale();
+			entity->y = ((Sint16)SDLNet_Read16(&net_packet->data[10])) / Raid::networkPositionScale();
 			entity->z = ((Sint16)SDLNet_Read16(&net_packet->data[12])) / 32.0;
 			entity->new_z = entity->z;
 			entity->itemLevitate = 1.0;
@@ -6766,8 +6767,8 @@ static std::unordered_map<Uint32, void(*)()> clientPacketHandlers = {
 
 	{ 'FOCI',[]() {
 		Uint32 uid = SDLNet_Read32(&net_packet->data[4]);
-		real_t x = SDLNet_Read16(&net_packet->data[8]) / 32.0;
-		real_t y = SDLNet_Read16(&net_packet->data[10]) / 32.0;
+		real_t x = SDLNet_Read16(&net_packet->data[8]) / Raid::networkPositionScale();
+		real_t y = SDLNet_Read16(&net_packet->data[10]) / Raid::networkPositionScale();
 		real_t z = SDLNet_Read16(&net_packet->data[12]) / 32.0;
 		real_t dir = SDLNet_Read16(&net_packet->data[14]) / 256.0;
 		int sprite = SDLNet_Read16(&net_packet->data[16]);
@@ -7145,8 +7146,8 @@ static std::unordered_map<Uint32, void(*)()> serverPacketHandlers = {
 		}
 
 		// get info from client
-		auto dx = ((Sint16)SDLNet_Read16(&net_packet->data[6])) / 32.0;
-		auto dy = ((Sint16)SDLNet_Read16(&net_packet->data[8])) / 32.0;
+		auto dx = ((Sint16)SDLNet_Read16(&net_packet->data[6])) / Raid::networkPositionScale();
+		auto dy = ((Sint16)SDLNet_Read16(&net_packet->data[8])) / Raid::networkPositionScale();
 		auto velx = ((Sint16)SDLNet_Read16(&net_packet->data[10])) / 128.0;
 		auto vely = ((Sint16)SDLNet_Read16(&net_packet->data[12])) / 128.0;
 		auto yaw = ((Sint16)SDLNet_Read16(&net_packet->data[14])) / 128.0;
@@ -7182,8 +7183,8 @@ static std::unordered_map<Uint32, void(*)()> serverPacketHandlers = {
 			if ( j > 0 && j < MAXPLAYERS )
 			{
 				strcpy((char*)net_packet->data, "PMOV");
-				SDLNet_Write16((Sint16)(players[j]->entity->x * 32), &net_packet->data[4]);
-				SDLNet_Write16((Sint16)(players[j]->entity->y * 32), &net_packet->data[6]);
+				SDLNet_Write16((Sint16)(players[j]->entity->x * Raid::networkPositionScale()), &net_packet->data[4]);
+				SDLNet_Write16((Sint16)(players[j]->entity->y * Raid::networkPositionScale()), &net_packet->data[6]);
 				net_packet->address.host = net_clients[j - 1].host;
 				net_packet->address.port = net_clients[j - 1].port;
 				net_packet->len = 8;
@@ -7244,8 +7245,8 @@ static std::unordered_map<Uint32, void(*)()> serverPacketHandlers = {
 		}
 
 		// get info from client
-		auto dx = ((Sint16)SDLNet_Read16(&net_packet->data[6])) / 32.0;
-		auto dy = ((Sint16)SDLNet_Read16(&net_packet->data[8])) / 32.0;
+		auto dx = ((Sint16)SDLNet_Read16(&net_packet->data[6])) / Raid::networkPositionScale();
+		auto dy = ((Sint16)SDLNet_Read16(&net_packet->data[8])) / Raid::networkPositionScale();
 		auto velx = ((Sint16)SDLNet_Read16(&net_packet->data[10])) / 128.0;
 		auto vely = ((Sint16)SDLNet_Read16(&net_packet->data[12])) / 128.0;
 		auto yaw = ((Sint16)SDLNet_Read16(&net_packet->data[14])) / 128.0;
@@ -7283,8 +7284,8 @@ static std::unordered_map<Uint32, void(*)()> serverPacketHandlers = {
 			if ( j > 0 && j < MAXPLAYERS )
 			{
 				strcpy((char*)net_packet->data, "GMOV");
-				SDLNet_Write16((Sint16)(players[j]->ghost.my->x * 32), &net_packet->data[4]);
-				SDLNet_Write16((Sint16)(players[j]->ghost.my->y * 32), &net_packet->data[6]);
+				SDLNet_Write16((Sint16)(players[j]->ghost.my->x * Raid::networkPositionScale()), &net_packet->data[4]);
+				SDLNet_Write16((Sint16)(players[j]->ghost.my->y * Raid::networkPositionScale()), &net_packet->data[6]);
 				net_packet->address.host = net_clients[j - 1].host;
 				net_packet->address.port = net_clients[j - 1].port;
 				net_packet->len = 8;

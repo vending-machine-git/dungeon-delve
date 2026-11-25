@@ -1,3 +1,4 @@
+#include "delve_net_position.hpp"
 /*-------------------------------------------------------------------------------
 
 	BARONY
@@ -790,8 +791,8 @@ void actItem(Entity* my)
 							}
 							strcpy((char*)net_packet->data, "GHOI");
 							SDLNet_Write32(my->getUID(), &net_packet->data[4]);
-							SDLNet_Write16((Sint16)(my->x * 32), &net_packet->data[8]);
-							SDLNet_Write16((Sint16)(my->y * 32), &net_packet->data[10]);
+							SDLNet_Write16((Sint16)(my->x * Raid::networkPositionScale()), &net_packet->data[8]);
+							SDLNet_Write16((Sint16)(my->y * Raid::networkPositionScale()), &net_packet->data[10]);
 							SDLNet_Write16((Sint16)(my->z * 32), &net_packet->data[12]);
 							SDLNet_Write16((Sint16)(my->vel_x * 32), &net_packet->data[14]);
 							SDLNet_Write16((Sint16)(my->vel_y * 32), &net_packet->data[16]);
@@ -1456,8 +1457,8 @@ void Entity::attractItem(Entity& itemEntity)
 				}
 				strcpy((char*)net_packet->data, "ATTI");
 				SDLNet_Write32(itemEntity.getUID(), &net_packet->data[4]);
-				SDLNet_Write16((Sint16)(itemEntity.x * 32), &net_packet->data[8]);
-				SDLNet_Write16((Sint16)(itemEntity.y * 32), &net_packet->data[10]);
+				SDLNet_Write16((Sint16)(itemEntity.x * Raid::networkPositionScale()), &net_packet->data[8]);
+				SDLNet_Write16((Sint16)(itemEntity.y * Raid::networkPositionScale()), &net_packet->data[10]);
 				SDLNet_Write16((Sint16)(itemEntity.z * 32), &net_packet->data[12]);
 				SDLNet_Write16((Sint16)(itemEntity.vel_x * 32), &net_packet->data[14]);
 				SDLNet_Write16((Sint16)(itemEntity.vel_y * 32), &net_packet->data[16]);

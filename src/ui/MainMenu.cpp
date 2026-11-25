@@ -23786,6 +23786,8 @@ failed:
             if (role && !std::strcmp(role, "host")) {
                 Button dummy;
                 hostLANLobby(dummy);
+                if(const char* count=std::getenv("BARONY_SMOKE_PLAYERS");count && std::atoi(count)==1)
+                    for(int p=1;p<MAXPLAYERS;++p)client_disconnected[p]=true;
                 printlog("[SMOKE][RAID] host_ready");
             } else {
                 const char* address = std::getenv("BARONY_SMOKE_CONNECT_ADDRESS");
@@ -23954,9 +23956,9 @@ failed:
             return;
         }
         int delvePeers = 2;
-        if (const char* value = std::getenv("BARONY_SMOKE_PLAYERS")) delvePeers = std::clamp(std::atoi(value),2,4);
+        if (const char* value = std::getenv("BARONY_SMOKE_PLAYERS")) delvePeers = std::clamp(std::atoi(value),1,4);
         bool delveReady = true; for (int p=1;p<delvePeers;++p) if(client_disconnected[p]) delveReady=false;
-        if (!started && multiplayer == SERVER && ((delveReady && !client_disconnected[1]) || (JoinProgress::requested() && std::getenv("BARONY_SMOKE_JIP_SOLO_HOST")))) {
+        if (!started && multiplayer == SERVER && ((delveReady && (delvePeers==1 || !client_disconnected[1])) || (JoinProgress::requested() && std::getenv("BARONY_SMOKE_JIP_SOLO_HOST")))) {
             if (!connectedAt) connectedAt = ticks;
             if (ticks - connectedAt >= TICKS_PER_SECOND * 3) {
                 started = true;

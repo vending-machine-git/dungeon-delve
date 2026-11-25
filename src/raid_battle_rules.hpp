@@ -22,7 +22,7 @@ inline int stormStartSecond(int floor, int limit) {
 }
 inline int experienceGain(int amount) {
     return amount <= 0 ? amount : static_cast<int>(std::min<std::int64_t>(
-        std::numeric_limits<int>::max(), (static_cast<std::int64_t>(amount) * 5 + 1) / 2));
+        std::numeric_limits<int>::max(), (static_cast<std::int64_t>(amount) * 7 + 2) / 4));
 }
 inline int waveInterval(int overtime) { return std::max(1, 8 - overtime / 10); }
 inline int waveSize(int overtime) { return std::min(12, 1 + overtime / 15); }

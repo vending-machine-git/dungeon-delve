@@ -18824,6 +18824,7 @@ Returns true if my and your are enemies, otherwise returns false
 
 bool Entity::checkEnemy(Entity* your)
 {
+	if (your && Raid::neutralShopkeeperPair(*this, *your)) return false;
 	if (your && Raid::neutralRevenantPair(*this, *your)) return false;
 	if ( !your )
 	{
@@ -19452,6 +19453,8 @@ Returns true if my and your are friends, otherwise returns false
 
 bool Entity::checkFriend(Entity* your)
 {
+	// Neutral traders must not join a mob's fight or inherit its hostile targets.
+	if (your && Raid::neutralShopkeeperPair(*this, *your)) return false;
 	if (your && Raid::neutralRevenantPair(*this, *your)) return true;
 	bool result = false;
 
@@ -24268,6 +24271,7 @@ void Entity::giveClientStats()
 
 void Entity::monsterAcquireAttackTarget(const Entity& target, Sint32 state, bool monsterWasHit)
 {
+	if (Raid::neutralShopkeeperPair(*this, target)) return;
 	if (Raid::neutralRevenantPair(*this, target)) return;
 	Stat* myStats = getStats();
 	if ( !myStats )

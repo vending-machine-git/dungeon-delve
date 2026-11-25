@@ -1317,6 +1317,10 @@ int generateDungeon(char* levelset, Uint32 seed, std::tuple<int, int, int, int> 
 		shoplevel = true;
 	}
 
+    // Delve supplies exactly three kiosks after room generation. Removing only
+    // native merchants leaves the full retail shop building and its fixtures.
+    if ( Raid::nativeGeneration() ) shoplevel = false;
+
 	// determine whether minotaur level or not
 	if ( (svFlags & SV_FLAG_MINOTAURS) && gameplayCustomManager.processedMinotaurSpawn(currentlevel, secretlevel, map.name) )
 	{
