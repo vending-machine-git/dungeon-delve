@@ -1,6 +1,10 @@
-# Dungeon Delve - Battle Royale 0.20.4
+# Dungeon Delve - Battle Royale 0.20.5
 
-0.20.4 adds Steam invites: open lobby seats show INVITE cards, friends join
+0.20.5 changes the monsters: dungeon monsters no longer fight each other.
+Floor 2 (Jungle) swaps most skeletons for melee goblins, so fewer enemies shoot.
+Floor 3 (Crystal Caves) drops skeletons for spiders, scorpions and toned-down
+insectoids (level 10, no thrown daggers, rare bows), making it a bit harder.
+0.20.4 added Steam invites: open lobby seats show INVITE cards, friends join
 through Steam's relay without port forwarding, and Direct IP still works.
 0.20.3 made gates behave like vanilla: they start closed and their lever sits a
 few tiles away against a wall. Gates that divide the floor have a lever on each
@@ -17,11 +21,11 @@ Experimental Windows x64 release. Unofficial; not a Turning Wheel release.
 
 ## Combined GitHub release (current)
 
-Download **Dungeon-Delve-0.20.4-windows-x64.zip** from the project's GitHub
+Download **Dungeon-Delve-0.20.5-windows-x64.zip** from the project's GitHub
 Releases page. It already includes Dungeon Delve and vending_machine framework;
 no Workshop subscription or separate framework download is required. Extract
 into the owned Barony installation, then run
-**Dungeon-Delve-0.20.4/Play-Dungeon-Delve.cmd**. Extracting elsewhere also supports
+**Dungeon-Delve-0.20.5/Play-Dungeon-Delve.cmd**. Extracting elsewhere also supports
 Steam-library discovery. Retail files/saves remain untouched. Follow the README
 at the combined ZIP's root for checksums, compatibility, updates and removal.
 Use matching releases on every peer; private Direct IP only.
@@ -32,12 +36,12 @@ The separate-package route below is retained for reference, not required for
 the combined GitHub download. Gameplay/networking restrictions still apply.
 
 1. Own/install/run the Steam Windows edition of **Barony**, tested build **5.0.2**.
-2. Subscribe to **vending_machine framework 0.20.4** and **Dungeon Delve 0.20.4**.
-3. Separately download **vending_machine-framework-0.20.4-windows.zip** from the
+2. Subscribe to **vending_machine framework 0.20.5** and **Dungeon Delve 0.20.5**.
+3. Separately download **vending_machine-framework-0.20.5-windows.zip** from the
    framework Workshop page's release link. Extract outside Barony's game folder.
 4. Follow its README and run **Play-Dungeon-Delve.cmd**. No Python/compiler needed.
 5. Host/join a fresh private **Direct IP** lobby; everyone joins before starting.
-   All peers need runtime/content **0.20.4**, protocol **35**, framework API **1**.
+   All peers need runtime/content **0.20.5**, protocol **35**, framework API **1**.
 
 **Subscribing alone cannot enable this native mode.** Launching retail Barony
 from Steam does not enable it. The separately downloaded launcher checks the
@@ -115,7 +119,7 @@ portals open at timeout. Other metadata mainly describes native rules, not scrip
 Keep everyone on matching unmodified packages when reporting issues.
 
 The portable launcher creates a fresh session for every launch under
-`%LOCALAPPDATA%\vending_machine_framework\0.20.4\sessions\`.
+`%LOCALAPPDATA%\vending_machine_framework\0.20.5\sessions\`.
 Retail saves/config are not copied or edited. Match results/logs remain there;
 progress is not a resumable campaign. Read the runtime README for manual paths,
 checksums, updates and uninstall. Report versions/reproduction/session logs with

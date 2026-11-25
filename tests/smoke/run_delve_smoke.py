@@ -37,8 +37,15 @@ def check_tuned_roster(layout, floor):
         assert len(set(kiosk['torch_uids']))==4 and kiosk['table_uid']!=kiosk['chair_uid']
     assert len(layout['descents']) == 1 and len(layout['portals']) == 3, 'Expected one hatch and three portal sites'
     species = Counter(encounter['monster'] for encounter in layout['encounters'])
-    assert sum(species.values()) == 56 and all(species[kind] > 0 for kind in (2, 4, 6, 9))
-    assert species[5] in ((0,) if floor == 1 else (5,) if floor == 2 else (13, 14)), 'Wrong harder-enemy replacement count'
+    assert sum(species.values()) == 56 and all(species[kind] > 0 for kind in (2, 4, 6))
+    # 3 goblin, 7 spider, 9 skeleton, 10 scorpion, 28 insectoid.
+    if floor == 1:
+        assert species[9] > 0 and species[3] == 0 and species[28] == 0
+    elif floor == 2:
+        assert species[9] > 0 and species[3] >= 3 * species[9] and species[28] == 0, 'Jungle goblins must replace skeletons'
+    else:
+        assert species[9] == 0 and all(species[kind] > 0 for kind in (7, 10, 28)), 'Caves must use mid-tier insect monsters'
+    assert species[5] == (0, 5, 9)[floor - 1], 'Wrong harder-enemy replacement count'
 
 
 def menu_window(proc):

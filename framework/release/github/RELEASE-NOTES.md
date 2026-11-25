@@ -1,19 +1,17 @@
-# Dungeon Delve 0.20.4 - Steam invites
+# Dungeon Delve 0.20.5 - Monster changes
 
-Invite Steam friends instead of sharing an IP address. With Steam running, the
-host's open seats show **INVITE** cards that open Steam's invite dialog. Friends
-can accept the invite, use **Join Game** on the host in their Steam friends list,
-or paste the copied invite code (`steam:<number>`) into the Direct IP box. Invited
-players connect through Steam's relay, so the host needs no port forwarding.
-Direct IP still works exactly as before.
+- **No more monster infighting.** Dungeon monsters ignore each other and only
+  attack adventurers. A stray hit from another monster no longer starts a fight.
+  Your own summons and followers still fight monsters to protect you.
+- **Floor 2 (Jungle):** most skeletons are replaced by goblins. Delve goblins
+  only use axes and maces, so far fewer enemies on this floor shoot at you.
+- **Floor 3 (Crystal Caves):** skeletons are gone. Expect spiders, scorpions and
+  insectoids alongside the existing trolls, goblins and ghouls. Insectoids are
+  tuned for Delve (level 10, about 85-95 HP, no thrown daggers, only 1 in 10 with
+  a bow) but keep their acid spray; spiders keep their web spray. The floor is a
+  bit harder than before.
 
-Important: friends must already have Dungeon Delve open (from Dungeon Delve.exe)
-when they accept. Steam starts its normal Barony for invites accepted while the
-game is closed, and normal Barony cannot join; it is refused cleanly.
-
-Steam invites passed automated multi-player tests and a single real-account
-check (real Steam lobby and invite dialog). They have not yet been tested between
-two real Steam accounts, so please report any problems; Direct IP remains the
-fallback. Gameplay, gates, loot and the three floors are unchanged from 0.20.3.
-All peers need runtime/content 0.20.4, protocol 35 and API 1. Restart from the
+Floor 1, the floor guardians, loot, Steam invites and Direct IP are unchanged.
+The host runs all monsters, but everyone should update so the rules match:
+all peers need runtime/content 0.20.5, protocol 35 and API 1. Restart from the
 root Dungeon Delve.exe.

@@ -4,7 +4,7 @@ Double-click `Dungeon Delve.exe` beside retail `barony.exe`. Its versioned suppo
 small startup window, discovers the owned game, checks the release and starts
 an isolated session. Startup failures remain visible with Retry and Choose
 Barony folder buttons. There is no command window or administrator prompt.
-Keep the EXE beside the complete Dungeon-Delve-0.20.4 supporting folder. Legacy launchers inside that folder remain supported.
+Keep the EXE beside the complete Dungeon-Delve-0.20.5 supporting folder. Legacy launchers inside that folder remain supported.
 
 Windows x64 with .NET Framework 4.5+ is required (included with Windows 10/11).
 The launcher uses the existing PowerShell launch script in a hidden child
@@ -33,7 +33,7 @@ The launcher can also be compiled from this directory using:
 & "$env:WINDIR\Microsoft.NET\Framework64\v4.0.30319\csc.exe" /nologo /target:winexe /platform:x64 /optimize+ '/out:Dungeon Delve.exe' /win32icon:DungeonDelve.ico /win32manifest:app.manifest /reference:System.Windows.Forms.dll /reference:System.Drawing.dll /reference:System.Web.Extensions.dll /reference:System.Core.dll Launcher.cs
 ```
 
-Move the compiled EXE next to barony.exe and the complete Dungeon-Delve-0.20.4
+Move the compiled EXE next to barony.exe and the complete Dungeon-Delve-0.20.5
 supporting folder. Legacy placement beside Launch.ps1/release.json also works.
 This compiles only the launcher, not the native game runtime.
 

@@ -298,6 +298,14 @@ bool neutralShopkeeperPair(const Entity& first, const Entity& second) {
     const auto firstStats = first.getStats(), secondStats = second.getStats();
     return firstStats && secondStats && (firstStats->type == SHOPKEEPER || secondStats->type == SHOPKEEPER);
 }
+// Delve monsters only fight adventurers: two leaderless dungeon monsters never infight.
+// Player-led followers keep native hostility so summons can still defend their owner.
+bool neutralMonsterPair(const Entity& first, const Entity& second) {
+    if (!active() || &first == &second || first.behavior != &actMonster || second.behavior != &actMonster) return false;
+    const auto firstStats = first.getStats(), secondStats = second.getStats();
+    return firstStats && secondStats && !firstStats->leader_uid && !secondStats->leader_uid
+        && first.monsterAllyIndex < 0 && second.monsterAllyIndex < 0;
+}
 bool active() { return inRaid && multiplayer != SINGLE; }
 bool concealedFromObserver(const Entity& entity, int observer) {
     if (!active() || intro) return false;

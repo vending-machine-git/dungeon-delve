@@ -21,6 +21,7 @@ namespace Raid
 	bool concealedFromObserver(const Entity& entity, int observer);
 	int experienceGain(int normalAmount);
 	bool neutralShopkeeperPair(const Entity& first, const Entity& second);
+	bool neutralMonsterPair(const Entity& first, const Entity& second);
 	bool isExtracted(int player);
 	bool hasLoadout(int player);
 	bool prepareCharacter(int player, std::string& error);

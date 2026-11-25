@@ -1,5 +1,5 @@
 {
-  "version": "0.20.4",
+  "version": "0.20.5",
   "protocol": 35,
   "api_version": 1,
   "platform": "windows-x64",
@@ -10,9 +10,9 @@
   "narration_revision": "depop-dungeon-1",
   "distribution_revision": "exe-launcher-2",
   "install_layout": "game-root-launcher",
-  "launcher_sha256": "6c3d80f63b69f61ee95ea7c8e1749756b63898accecc9dd66a8456197ac5f0d8",
+  "launcher_sha256": "476c689710c6cacba2ec0827db746a182b26d053e247119d0cd7c46a2b1e9a1d",
   "game_sha256": "8566da37bc39ea5a1ed08a8ad57608af4f019fb415869258fb3c1d310b4419e4",
-  "runtime_sha256": "c447b84053b2aa104e1d69d6dc9946eb8d612303f240d50c3dbebf0040dd5d81",
+  "runtime_sha256": "92b283f106c34ba86223568d2ae254cca9ccc25897bbc01a543236f3f302dcda",
   "game_dlls": [
     {
       "name": "fmod.dll",
@@ -61,7 +61,7 @@
       "files": [
         {
           "path": "data/rmf/framework.json",
-          "sha256": "43532e27fc14c0d25bf1514ca5b18de0d9a1bd420334a6596dc1ec9849871bab"
+          "sha256": "50a16fff60ddfbf4f24e35208a97bdeb576f133ead1eed889a83dc7b5b88ee64"
         },
         {
           "path": "LICENSE.txt",
@@ -69,7 +69,7 @@
         },
         {
           "path": "mod.json",
-          "sha256": "9ab7b9de46c981fd6ae5f7c332e307ba913ce5db215a99bef4d0c85aaca76694"
+          "sha256": "446251e337f2ba06c2270fd3d3353f15bbcab94d5b9f24e690edb9d7cf850b85"
         },
         {
           "path": "preview.png",
@@ -77,7 +77,7 @@
         },
         {
           "path": "README.md",
-          "sha256": "417b11cbc1116f26d543c40f68c2e5118e774ad554d10770b1407e21715f0135"
+          "sha256": "47636216329ed17be9fa5cf0a1b5635442e350316ff2d620328c9ce71284d65e"
         }
       ]
     },
@@ -150,7 +150,7 @@
         },
         {
           "path": "mod.json",
-          "sha256": "516998685299eb546ce150e5e43b9551d7de1e21dba08337505d788ba320eb89"
+          "sha256": "63a7411210369961409aebb6056466f093cebc12a5315c041a149082b94ac16b"
         },
         {
           "path": "music/rmf/dungeon-floor-2.wav",
@@ -174,7 +174,7 @@
         },
         {
           "path": "README.md",
-          "sha256": "3a070a61f6e269c54be54f3b4e7ed5b28b349a4904fbabe773317ae3757e9fb3"
+          "sha256": "0cdd39d70cd80a24511d4e8441fbb9bf1d24de1a9f5c84003f396bc7c25604b4"
         }
       ]
     }
