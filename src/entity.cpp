@@ -18826,6 +18826,7 @@ bool Entity::checkEnemy(Entity* your)
 {
 	if (your && Raid::neutralShopkeeperPair(*this, *your)) return false;
 	if (your && Raid::neutralRevenantPair(*this, *your)) return false;
+	if (your && Raid::neutralMonsterPair(*this, *your)) return false;
 	if ( !your )
 	{
 		return false;
@@ -24273,6 +24274,7 @@ void Entity::monsterAcquireAttackTarget(const Entity& target, Sint32 state, bool
 {
 	if (Raid::neutralShopkeeperPair(*this, target)) return;
 	if (Raid::neutralRevenantPair(*this, target)) return;
+	if (Raid::neutralMonsterPair(*this, target)) return;
 	Stat* myStats = getStats();
 	if ( !myStats )
 	{

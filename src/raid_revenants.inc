@@ -495,6 +495,21 @@ void smokeReturnLives() {
             neutral &= monster->monsterTarget != players[0]->entity->getUID();
         }
         check(monsters > 0 && neutral, "revenant_all_npcs_ignore_even_retaliation");
+        bool peaceful = true; int pairs = 0;
+        for (auto a = map.creatures->first; a; a = a->next)
+            for (auto b = a->next; b; b = b->next) {
+                auto first = static_cast<Entity*>(a->element), second = static_cast<Entity*>(b->element);
+                if (first->behavior != &actMonster || second->behavior != &actMonster || !first->getStats() || !second->getStats()
+                    || first->getStats()->leader_uid || second->getStats()->leader_uid) continue;
+                ++pairs;
+                const auto oldTarget = first->monsterTarget;
+                peaceful &= !first->checkEnemy(second) && !second->checkEnemy(first) && !first->monsterAlertBeforeHit(second);
+                first->monsterAcquireAttackTarget(*second, MONSTER_STATE_PATH, true);
+                peaceful &= first->monsterTarget != second->getUID();
+                first->monsterTarget = oldTarget;
+            }
+        printlog("[SMOKE][DELVE] monster_infight pairs=%d peaceful=%d", pairs, peaceful);
+        check(pairs > 0 && peaceful, "delve_monsters_never_infight");
         stats[0]->HP = stats[1]->HP = 0; phase = 3;
     } else if (phase == 3 && !players[0]->entity && !returnLives[0].alive) {
         check(!requestRevenant(0, 2), "revenant_npc_life_only_once");

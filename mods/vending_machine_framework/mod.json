@@ -1,7 +1,7 @@
 {
   "id": "vending_machine_framework",
   "name": "vending_machine framework",
-  "version": "0.20.4",
+  "version": "0.20.5",
   "kind": "framework",
   "api_version": 1,
   "requires": {},
@@ -11,7 +11,7 @@
     "supported_game_version": "5.0.2"
   },
   "release_compatibility": {
-    "runtime_version": "0.20.4",
+    "runtime_version": "0.20.5",
     "raid_protocol": 35,
     "platforms": [
       "windows-x64"

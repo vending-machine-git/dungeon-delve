@@ -239,6 +239,11 @@ void host() {
             if(stats->type==SKELETON || stats->type==GOBLIN)
                 physical &= stats->weapon && (isMeleeWeapon(*stats->weapon) || isRangedWeapon(*stats->weapon));
             if(stats->type==GOBLIN)physical &= stats->weapon && isMeleeWeapon(*stats->weapon);
+            if(stats->type==INSECTOID) {
+                physical &= stats->weapon && stats->LVL==10 && stats->MAXHP<=95;
+                for(auto item=stats->inventory.first;item;item=item->next)
+                    physical &= static_cast<Item*>(item->element)->type!=IRON_DAGGER;
+            }
             const int attack=Entity::getAttack(monster,stats,false);
             starterThreat &= attack<=attackCeilings[currentlevel-1];
             printlog("[SMOKE][DELVE] enemy_stats floor=%d type=%d hp=%d attack=%d level=%d",
@@ -259,7 +264,9 @@ void host() {
         check(guardians==1,"population_exactly_one_guardian");
         check(::Raid::smokeKioskAudit(),"kiosks_geometry_stock_trade_and_mutual_neutrality");
         printlog("[SMOKE][DELVE] population_checked floor=%d rats=%d bats=%d skeletons=%d",currentlevel,actual[RAT],actual[BAT_SMALL],actual[SKELETON]);
-        check(actual[RAT]>0 && actual[BAT_SMALL]>0 && actual[SKELETON]>0,"low_tier_enemies_on_every_floor");
+        check(actual[RAT]>0 && actual[BAT_SMALL]>0 && (currentlevel==3 ? actual[SKELETON]==0 && actual[INSECTOID]>0 &&
+            actual[SCORPION]>0 && actual[SPIDER]>0 : actual[SKELETON]>0),"low_tier_enemies_on_every_floor");
+        if(currentlevel==2)check(actual[GOBLIN]>=3*actual[SKELETON],"jungle_goblins_replace_skeletons");
         populationChecked=true;
     }
     if(currentlevel==1 && !outpostChecked && ticks-began>TICKS_PER_SECOND) {

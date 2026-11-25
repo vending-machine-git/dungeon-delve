@@ -95,8 +95,11 @@ ItemType randomEquipment(int tier, std::mt19937& rng, int slot = -1) {
 }
 const std::array<Monster,12> patrols[3] = {
     {RAT,RAT,RAT,RAT,BAT_SMALL,SKELETON,SKELETON,SKELETON,SKELETON,SKELETON,SLIME,SLIME},
-    {RAT,RAT,RAT,BAT_SMALL,SKELETON,SKELETON,SKELETON,SKELETON,SLIME,SLIME,GOBLIN,GHOUL},
-    {RAT,RAT,BAT_SMALL,SKELETON,SKELETON,SKELETON,SKELETON,SLIME,GOBLIN,GOBLIN,GHOUL,TROLL}};
+    // Jungle: melee goblins replace most skeletons, so only one slot can roll a bow.
+    {RAT,RAT,RAT,BAT_SMALL,SKELETON,SLIME,SLIME,GOBLIN,GOBLIN,GOBLIN,GOBLIN,GHOUL},
+    // Crystal Caves: mid-tier insectoids, scorpions and spiders. Ranged pressure stays
+    // limited to insectoid acid spray, spider webs and a 1-in-10 insectoid bow.
+    {RAT,BAT_SMALL,SLIME,SLIME,SPIDER,SPIDER,SCORPION,SCORPION,INSECTOID,INSECTOID,GOBLIN,GHOUL}};
 ItemType randomMagic(int tier, std::mt19937& rng) {
     const auto type = magic[std::clamp(tier, 0, 2)][rng() % 4];
     return items[type].category == SPELLBOOK && rng() % 4 == 0 ? MAGICSTAFF_COLD : type;
@@ -148,6 +151,7 @@ bool point(const rapidjson::Value& v,int size) {
 unsigned seedAt(int x,int y) { return mapseed ^ (x*73856093u) ^ (y*19349663u) ^ (worldFloor*83492791u); }
 ItemType delveGuardWeapon(Monster type, int roll) {
     if(type==GOBLIN)return roll<6 || roll==9 ? BRONZE_AXE : roll<8 ? IRON_MACE : IRON_AXE;
+    if(type==INSECTOID)return roll==0 ? SHORTBOW : roll<5 ? IRON_SPEAR : roll<8 ? STEEL_SWORD : STEEL_HALBERD;
     return roll<2 ? (roll==0 ? SHORTBOW : CROSSBOW) : BRONZE_SWORD;
 }
 void configureDelveGuard(Entity& guard, unsigned seed) {
@@ -155,7 +159,16 @@ void configureDelveGuard(Entity& guard, unsigned seed) {
     if(!stats)return;
     stats->setAttribute("delve_loot_seed", std::to_string(seed));
     stats->MISC_FLAGS[STAT_FLAG_DISABLE_MINIBOSS]=1;
-    if(stats->type!=SKELETON && stats->type!=GOBLIN)return;
+    if(stats->type!=SKELETON && stats->type!=GOBLIN && stats->type!=INSECTOID)return;
+    if(stats->type==INSECTOID) {
+        // No default inventory: removes native thrown-dagger stacks.
+        for(int slot=ITEM_SLOT_INV_1;slot<=ITEM_SLOT_INV_6;slot+=ITEM_SLOT_NUMPROPERTIES)stats->EDITOR_ITEMS[slot]=0;
+        // Native insectoids are level-25 late-game threats; Delve uses a mid-tier profile
+        // a step above scorpions so floor 3 stays survivable after redeployment.
+        stats->MAXHP=stats->HP=stats->OLDHP=85;stats->RANDOM_MAXHP=stats->RANDOM_HP=10;
+        stats->STR=8;stats->RANDOM_STR=2;stats->DEX=7;stats->CON=8;stats->RANDOM_CON=0;
+        stats->PER=8;stats->RANDOM_PER=0;stats->LVL=10;stats->RANDOM_LVL=0;
+    }
     std::mt19937 rng(seed ^ 0xa511e9b3u);
     const int roll=rng()%10;
     const ItemType weapon=delveGuardWeapon(stats->type,roll);
@@ -1240,6 +1253,14 @@ bool smokePopulationAudit() {
     }
     if(ranged!=2)return false;
     printlog("[SMOKE][DELVE] check PASS skeleton_ranged_two_of_ten");
+    ranged=0;
+    for(int roll=0;roll<10;++roll) {
+        const auto weapon=delveGuardWeapon(INSECTOID,roll);
+        ranged+=weapon==SHORTBOW || weapon==LONGBOW || weapon==COMPOUND_BOW || weapon==CROSSBOW;
+        if(delveGuardWeapon(GOBLIN,roll)==SHORTBOW)return false;
+    }
+    if(ranged!=1)return false;
+    printlog("[SMOKE][DELVE] check PASS insectoid_ranged_one_of_ten goblin_melee_only");
     const int targets[]={56,56,56};
     for(int floor=1;floor<=3;++floor)for(unsigned seed=0;seed<1000;++seed) {
         const auto roster=encounterRoster(floor,targets[floor-1],seed);
@@ -1254,11 +1275,11 @@ bool smokePopulationAudit() {
             if(mob==RAT || mob==BAT_SMALL || mob==SLIME)minimum=std::max(1,minimum-harderReplacements[floor-1]);
             if(counts[mob]<minimum || counts[mob]>maximum)return false;
         }
-        if(!counts[RAT] || !counts[BAT_SMALL] || !counts[SKELETON])return false;
-        if(counts[DEMON] || counts[INSECTOID] || counts[INCUBUS] || counts[VAMPIRE] || counts[CRYSTALGOLEM])return false;
-        if(floor==1 && (counts[GOBLIN] || counts[GHOUL] || counts[TROLL]))return false;
-        if(floor==2 && (!counts[GOBLIN] || !counts[GHOUL] || counts[TROLL]!=5))return false;
-        if(floor==3 && (!counts[GOBLIN] || !counts[GHOUL] || !counts[TROLL]))return false;
+        if(!counts[RAT] || !counts[BAT_SMALL])return false;
+        if(counts[DEMON] || counts[INCUBUS] || counts[VAMPIRE] || counts[CRYSTALGOLEM])return false;
+        if(floor==1 && (!counts[SKELETON] || counts[GOBLIN] || counts[GHOUL] || counts[TROLL] || counts[INSECTOID]))return false;
+        if(floor==2 && (!counts[SKELETON] || counts[GOBLIN]<3*counts[SKELETON] || !counts[GHOUL] || counts[TROLL]!=5 || counts[INSECTOID]))return false;
+        if(floor==3 && (counts[SKELETON] || !counts[INSECTOID] || !counts[SCORPION] || !counts[SPIDER] || !counts[TROLL]))return false;
     }
     return true;
 }

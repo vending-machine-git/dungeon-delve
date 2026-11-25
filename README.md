@@ -13,8 +13,8 @@ Run normal Barony once, then keep Steam running.
 
 ### Recommended: installer
 
-1. Download [Dungeon-Delve-0.20.4-Setup.exe](https://github.com/vending-machine-git/dungeon-delve/releases/download/v0.20.4/Dungeon-Delve-0.20.4-Setup.exe)
-   and [SHA256SUMS.txt](https://github.com/vending-machine-git/dungeon-delve/releases/download/v0.20.4/SHA256SUMS.txt).
+1. Download [Dungeon-Delve-0.20.5-Setup.exe](https://github.com/vending-machine-git/dungeon-delve/releases/download/v0.20.5/Dungeon-Delve-0.20.5-Setup.exe)
+   and [SHA256SUMS.txt](https://github.com/vending-machine-git/dungeon-delve/releases/download/v0.20.5/SHA256SUMS.txt).
    Compare the download's SHA256 with its entry in that file.
 2. Run Setup and select the Barony game folder containing **barony.exe**.
    Automatic detection and **Browse** are available. Find the folder in Steam:
@@ -29,7 +29,7 @@ Steam's normal Play button still starts vanilla Barony.
 
 ### Alternative: extract the ZIP into the main game directory
 
-1. Download [Dungeon-Delve-0.20.4-windows-x64.zip](https://github.com/vending-machine-git/dungeon-delve/releases/download/v0.20.4/Dungeon-Delve-0.20.4-windows-x64.zip)
+1. Download [Dungeon-Delve-0.20.5-windows-x64.zip](https://github.com/vending-machine-git/dungeon-delve/releases/download/v0.20.5/Dungeon-Delve-0.20.5-windows-x64.zip)
    and check its SHA256 against the release's checksum file.
 2. Right-click the ZIP, choose **Extract All**, and set the destination to the
    **Barony folder containing barony.exe**. Extract the ZIP's contents directly
@@ -42,7 +42,7 @@ The finished layout is:
 Barony/
   barony.exe                       <- original base game
   Dungeon Delve.exe                <- double-click this to play the mod
-  Dungeon-Delve-0.20.4/             <- keep this supporting folder
+  Dungeon-Delve-0.20.5/             <- keep this supporting folder
     Launch.ps1
     release.json
     runtime/barony-rmf.exe
@@ -57,7 +57,7 @@ replaced. GitHub's automatic **Source code** ZIP is not the playable package.
 
 The launcher is not a separate download. If **Dungeon Delve.exe** is missing from
 the main Barony folder, copy it from the root of the full ZIP to sit beside
-**barony.exe**, next to the **Dungeon-Delve-0.20.4** supporting folder. The EXE
+**barony.exe**, next to the **Dungeon-Delve-0.20.5** supporting folder. The EXE
 cannot run alone from Downloads.
 
 ### Start a match with friends
@@ -70,7 +70,7 @@ in progress are not supported. Internet play may need host firewall/router setup
 ### If the game does not start
 
 If files are missing, check that **Dungeon Delve.exe** and the complete
-**Dungeon-Delve-0.20.4** folder are both beside **barony.exe**. Extract the full ZIP
+**Dungeon-Delve-0.20.5** folder are both beside **barony.exe**. Extract the full ZIP
 again if necessary. If the launcher cannot locate Barony, use **Choose Barony folder...**.
 An older same-version supporting folder is preserved by Setup; rename that folder
 before a full reinstall, or copy the root launcher from the ZIP beside your existing package.
@@ -80,8 +80,11 @@ Personal campaign saves are not imported.
 
 ## Compatibility and limitations
 
-- Current release: 0.20.4, protocol 35, vending_machine framework API 1.
-- 0.20.4 adds Steam invites: INVITE cards on open seats, Steam friends-list
+- Current release: 0.20.5, protocol 35, vending_machine framework API 1.
+- 0.20.5: monsters no longer fight each other; Jungle uses mostly melee goblins
+  instead of skeletons; Crystal Caves adds spiders, scorpions and Delve-tuned
+  insectoids.
+- 0.20.4 added Steam invites: INVITE cards on open seats, Steam friends-list
   Join Game and Steam relay networking (no port forwarding). Friends must have
   Dungeon Delve open before accepting. Not yet tested between two real accounts.
 - Native gameplay audio uses the FMOD DLL verified/copied from your own game
