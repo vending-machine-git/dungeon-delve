@@ -1,0 +1,25 @@
+[h1]vending_machine framework 0.17.1[/h1]
+Native framework for Dungeon Delve. Windows x64 / tested Steam Barony 5.0.2.
+
+[b]IMPORTANT: Workshop subscription alone does NOT install the native runtime.[/b]
+Download and extract the matching Windows runtime separately:
+[url=[RUNTIME_RELEASE_URL]]Runtime download, checksums and installation guide[/url]
+
+[h2]Install[/h2]
+[list]
+[*]Own/install Barony. Subscribe to this framework and Dungeon Delve 0.17.1; wait for Steam downloads.
+[*]Download vending_machine-framework-0.17.1-windows.zip from the release link above. Verify the posted SHA256.
+[*]Extract outside the game folder, read README.md, then run Play-Dungeon-Delve.cmd. No Python/compiler/admin rights needed.
+[*]All 2-4 players must use matching runtime/content 0.17.1, protocol 28, API 1. Host/join a fresh private Direct IP lobby before starting.
+[/list]
+
+[h2]Safe separation[/h2]
+Does not replace retail barony.exe or import/edit retail saves/config. Every launch uses a fresh isolated local session. Requires your owned installed game assets and DLLs; none are included. The launcher checks tested build hashes and rejects incompatible Steam updates.
+
+[h2]Limitations[/h2]
+Experimental, unofficial Windows x64 release. No Steam matchmaking/invites, EOS networking, public-server hardening or runtime auto-updater. Use private Direct IP; WAN/firewall/router setup may be needed. Do not combine native frameworks or mix retail/modded clients. Per-player genuine DLC gates remain; DLC is optional for base-game classes/races.
+
+[h2]Updates / removal / support[/h2]
+Update both subscriptions and the separate runtime together on every PC. Close games before removal; delete extracted runtime and optionally its isolated LocalAppData sessions, then unsubscribe. Retail remains untouched. Read the runtime README for manual paths, logs, checksum errors and uninstall. Report versions, reproduction steps and sanitized session logs; remove private IPs/usernames.
+
+Not affiliated with or endorsed by Turning Wheel. Native executable is unsigned: verify checksums and trust the publisher rather than disabling antivirus.

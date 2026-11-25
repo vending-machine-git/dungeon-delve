@@ -1,0 +1,11 @@
+{
+  "id": "join-in-progress",
+  "name": "Join In Progress",
+  "version": "0.1.2",
+  "kind": "quality-of-life",
+  "api_version": 1,
+  "requires": {
+    "vending_machine_framework": 1
+  },
+  "launcher_mode": "join-in-progress"
+}

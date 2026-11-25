@@ -1,0 +1,6 @@
+{
+  "id": "bring-your-gear",
+  "api_version": 1,
+  "scope": "new-normal-character",
+  "import_scope": "physical-inventory-and-equipment"
+}

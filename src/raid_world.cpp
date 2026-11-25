@@ -1,0 +1,881 @@
+#include "main.hpp"
+#include "game.hpp"
+#include "entity.hpp"
+#include "stat.hpp"
+#include "items.hpp"
+#include "net.hpp"
+#include "player.hpp"
+#include "monster.hpp"
+#include "raid.hpp"
+#include "raid_battle_rules.hpp"
+#include "paths.hpp"
+#include "delve_rarity.hpp"
+#include "rapidjson/document.h"
+#include "engine/audio/sound.hpp"
+#include <random>
+#include <cstring>
+#include <cmath>
+#include <algorithm>
+#include <array>
+#include <deque>
+#include <set>
+#include <vector>
+#include <filesystem>
+#include <fstream>
+#include <cstdint>
+#include <limits>
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/prettywriter.h"
+#include "files.hpp"
+
+namespace Raid {
+namespace {
+rapidjson::Document world;
+int worldFloor = 0;
+bool nativeGenerating = false;
+std::array<unsigned int, MAXPLAYERS> deathDropOrdinals{};
+const ItemType gear[3][6] = {
+    {IRON_SWORD,STEEL_HALBERD,IRON_BREASTPIECE,STEEL_HELM,SPELLBOOK_FIREBALL,SPELLBOOK_HEALING},
+    {CRYSTAL_SWORD,CRYSTAL_BREASTPIECE,RING_MAGICRESISTANCE,AMULET_MAGICREFLECTION,MAGICSTAFF_LIGHTNING,SPELLBOOK_LIGHTNING},
+    {ARTIFACT_SWORD,ARTIFACT_BOW,ARTIFACT_BREASTPIECE,ARTIFACT_BOOTS,SCROLL_ENCHANTWEAPON,SPELLBOOK_EXTRAHEALING}};
+const ItemType magic[3][4] = {
+    {SPELLBOOK_FIREBALL,SPELLBOOK_HEALING,SPELLBOOK_MAGICMISSILE,MAGICSTAFF_COLD},
+    {SPELLBOOK_LIGHTNING,MAGICSTAFF_LIGHTNING,RING_MAGICRESISTANCE,AMULET_MAGICREFLECTION},
+    {SPELLBOOK_EXTRAHEALING,SCROLL_ENCHANTWEAPON,SCROLL_ENCHANTARMOR,MAGICSTAFF_LIGHTNING}};
+const std::vector<ItemType> equipmentPools[3][10] = {
+    {
+        {IRON_SWORD,IRON_AXE,IRON_MACE,STEEL_HALBERD,SHORTBOW,CROSSBOW},
+        {LEATHER_BREASTPIECE,IRON_BREASTPIECE,STEEL_BREASTPIECE,TUNIC,SILVER_DOUBLET},
+        {HAT_PHRYGIAN,HAT_HOOD,HAT_WIZARD,HAT_JESTER,HAT_FEZ,HAT_HOOD_RED,HAT_HOOD_SILVER,LEATHER_HELM,IRON_HELM,STEEL_HELM},
+        {CLOAK,CLOAK_BLACK,CLOAK_SILVER,CLOAK_PROTECTION,CLOAK_BACKPACK},
+        {RING_ADORNMENT,RING_SLOWDIGESTION,RING_PROTECTION,RING_WARNING,RING_STRENGTH,RING_CONSTITUTION},
+        {AMULET_POISONRESISTANCE,AMULET_WATERBREATHING,AMULET_MAGICREFLECTION},
+        {LEATHER_BOOTS,SUEDE_BOOTS,IRON_BOOTS,LEATHER_BOOTS_SPEED,IRON_BOOTS_WATERWALKING},
+        {GLOVES,SUEDE_GLOVES,BRACERS,GAUNTLETS,GLOVES_DEXTERITY,BRACERS_CONSTITUTION},
+        {WOODEN_SHIELD,BRONZE_SHIELD,IRON_SHIELD,STEEL_SHIELD},
+        {MASK_BANDIT,MASK_EYEPATCH,MASK_MASQUERADE,MONOCLE}
+    },
+    {
+        {STEEL_SWORD,STEEL_AXE,STEEL_MACE,CRYSTAL_SWORD,LONGBOW,HEAVY_CROSSBOW,TOOL_WHIP},
+        {STEEL_BREASTPIECE,CRYSTAL_BREASTPIECE,SILVER_DOUBLET,MACHINIST_APRON},
+        {HAT_WIZARD,HAT_JESTER,HAT_FEZ,HAT_HOOD_RED,HAT_HOOD_SILVER,STEEL_HELM,CRYSTAL_HELM,PUNISHER_HOOD},
+        {CLOAK_PROTECTION,CLOAK_INVISIBILITY,CLOAK_MAGICREFLECTION,CLOAK_BACKPACK,CLOAK_SILVER},
+        {RING_PROTECTION,RING_STRENGTH,RING_CONSTITUTION,RING_MAGICRESISTANCE,RING_INVISIBILITY,RING_LEVITATION,RING_REGENERATION},
+        {AMULET_POISONRESISTANCE,AMULET_WATERBREATHING,AMULET_MAGICREFLECTION},
+        {STEEL_BOOTS,CRYSTAL_BOOTS,LEATHER_BOOTS_SPEED,IRON_BOOTS_WATERWALKING,STEEL_BOOTS_FEATHER,STEEL_BOOTS_LEVITATION},
+        {GLOVES_DEXTERITY,BRACERS_CONSTITUTION,GAUNTLETS_STRENGTH,CRYSTAL_GLOVES},
+        {STEEL_SHIELD,STEEL_SHIELD_RESISTANCE,CRYSTAL_SHIELD},
+        {MASK_BANDIT,MASK_EYEPATCH,MASK_MASQUERADE,MASK_SHAMAN,MONOCLE}
+    },
+    {
+        {CRYSTAL_SWORD,CRYSTAL_BATTLEAXE,ARTIFACT_SWORD,ARTIFACT_AXE,ARTIFACT_MACE,ARTIFACT_BOW,COMPOUND_BOW},
+        {CRYSTAL_BREASTPIECE,ARTIFACT_BREASTPIECE,STEEL_BREASTPIECE,MACHINIST_APRON},
+        {CRYSTAL_HELM,ARTIFACT_HELM,HAT_WIZARD,HAT_JESTER,HAT_FEZ,PUNISHER_HOOD},
+        {CLOAK_PROTECTION,CLOAK_INVISIBILITY,CLOAK_MAGICREFLECTION,CLOAK_BACKPACK,CLOAK_SILVER},
+        {RING_MAGICRESISTANCE,RING_INVISIBILITY,RING_LEVITATION,RING_REGENERATION,RING_STRENGTH,RING_CONSTITUTION,RING_PROTECTION},
+        {AMULET_POISONRESISTANCE,AMULET_WATERBREATHING,AMULET_MAGICREFLECTION},
+        {CRYSTAL_BOOTS,ARTIFACT_BOOTS,LEATHER_BOOTS_SPEED,IRON_BOOTS_WATERWALKING,STEEL_BOOTS_LEVITATION,STEEL_BOOTS_FEATHER},
+        {CRYSTAL_GLOVES,ARTIFACT_GLOVES,GLOVES_DEXTERITY,BRACERS_CONSTITUTION,GAUNTLETS_STRENGTH},
+        {CRYSTAL_SHIELD,STEEL_SHIELD_RESISTANCE,STEEL_SHIELD},
+        {MASK_BANDIT,MASK_EYEPATCH,MASK_MASQUERADE,MASK_SHAMAN,MONOCLE}
+    }
+};
+ItemType randomEquipment(int tier, std::mt19937& rng, int slot = -1) {
+    const auto& pool = equipmentPools[std::clamp(tier, 0, 2)][slot < 0 ? rng() % 10 : slot];
+    return pool[rng() % pool.size()];
+}
+const std::array<Monster,12> patrols[3] = {
+    {RAT,RAT,RAT,RAT,BAT_SMALL,SKELETON,SKELETON,SKELETON,SKELETON,SKELETON,SLIME,SLIME},
+    {RAT,RAT,RAT,BAT_SMALL,SKELETON,SKELETON,SKELETON,SKELETON,SLIME,SLIME,GOBLIN,GHOUL},
+    {RAT,RAT,BAT_SMALL,SKELETON,SKELETON,SKELETON,SKELETON,SLIME,GOBLIN,GOBLIN,GHOUL,TROLL}};
+ItemType randomMagic(int tier, std::mt19937& rng) {
+    const auto type = magic[std::clamp(tier, 0, 2)][rng() % 4];
+    return items[type].category == SPELLBOOK && rng() % 4 == 0 ? MAGICSTAFF_COLD : type;
+}
+ItemType randomEnemyLoot(int floor, std::mt19937& rng) {
+    const int category = rng() % 100;
+    if (category < 55) return randomEquipment(floor - 1, rng);
+    if (category < 80) return rng() % 3 ? POTION_HEALING : POTION_RESTOREMAGIC;
+    if (category < 92) {
+        const auto type = randomMagic(floor - 1, rng);
+        return items[type].category == SCROLL ? MAGICSTAFF_LIGHTNING : type;
+    }
+    return GEM_DIAMOND;
+}
+// Every floor must also be survivable after a next-floor level-one redeployment.
+const Monster guardians[]={SKELETON,GOBLIN,TROLL};
+const int guardianHealth[]={60,90,140};
+const int guardianLevels[]={3,6,12};
+constexpr int enemySpawnClearance=12, encounterSeparation=3, guardianClearance=4;
+constexpr int harderReplacements[]={0,5,9};
+std::vector<Monster> encounterRoster(int floor,int count,unsigned seed) {
+    std::mt19937 rng(seed ^ (floor*83492791u) ^ 0x68bc21ebu);
+    std::vector<Monster> roster;
+    roster.reserve(count);
+    while(roster.size()<static_cast<size_t>(count)) {
+        auto bag=patrols[floor-1];
+        std::shuffle(bag.begin(),bag.end(),rng);
+        for(auto mob:bag) {
+            if(roster.size()==static_cast<size_t>(count))break;
+            roster.push_back(mob);
+        }
+    }
+    std::shuffle(roster.begin(),roster.end(),rng);
+    std::array<int,NUMMONSTERS> remaining{};
+    for(auto mob:roster)++remaining[mob];
+    int replaced=0;
+    for(auto& mob:roster) {
+        if(replaced>=harderReplacements[floor-1])break;
+        if((mob==RAT || mob==BAT_SMALL || mob==SLIME) && remaining[mob]>1) {
+            --remaining[mob];mob=TROLL;++replaced;
+        }
+    }
+    return roster;
+}
+bool point(const rapidjson::Value& v,int size) {
+    return v.IsObject() && v.HasMember("x") && v["x"].IsInt() && v["x"].GetInt()>0 && v["x"].GetInt()<size-1 &&
+        v.HasMember("y") && v["y"].IsInt() && v["y"].GetInt()>=8 && v["y"].GetInt()<size-1;
+}
+unsigned seedAt(int x,int y) { return mapseed ^ (x*73856093u) ^ (y*19349663u) ^ (worldFloor*83492791u); }
+ItemType delveGuardWeapon(Monster type, int roll) {
+    if(type==GOBLIN)return roll<6 || roll==9 ? BRONZE_AXE : roll<8 ? IRON_MACE : IRON_AXE;
+    return roll<2 ? (roll==0 ? SHORTBOW : CROSSBOW) : BRONZE_SWORD;
+}
+void configureDelveGuard(Entity& guard, unsigned seed) {
+    auto stats=guard.getStats();
+    if(!stats)return;
+    stats->setAttribute("delve_loot_seed", std::to_string(seed));
+    stats->MISC_FLAGS[STAT_FLAG_DISABLE_MINIBOSS]=1;
+    if(stats->type!=SKELETON && stats->type!=GOBLIN)return;
+    std::mt19937 rng(seed ^ 0xa511e9b3u);
+    const int roll=rng()%10;
+    const ItemType weapon=delveGuardWeapon(stats->type,roll);
+    const int beatitude=-1+static_cast<int>(rng()%(stats->type==GOBLIN ? 3:2));
+    stats->weapon=newItem(weapon,WORN,beatitude,1,rng(),false,nullptr);
+}
+}
+// The room generator reads only the owner's installed official room sets.
+bool nativeGeneration() { return nativeGenerating; }
+bool prepareDungeonBase() {
+    if(!nativeGenerating)return true;
+    char name[32],filename[256];int flags[MAPFLAGS];unsigned skybox=map.skybox;
+    const unsigned oldWidth=map.width,oldHeight=map.height;
+    const std::vector<Sint32> baseTiles(map.tiles,map.tiles+map.width*map.height*MAPLAYERS);
+    std::memcpy(name,map.name,sizeof(name));std::memcpy(filename,map.filename,sizeof(filename));
+    std::memcpy(flags,map.flags,sizeof(flags));
+    auto base="delve"+std::to_string(worldFloor);
+    auto path=std::filesystem::absolute(physfsFormatMapName(base.c_str())).string();int hash=0;
+    if(loadMap(path.c_str(),&map,map.entities,map.creatures,&hash)<0)return false;
+    std::memcpy(map.name,name,sizeof(name));std::memcpy(map.filename,filename,sizeof(filename));
+    std::memcpy(map.flags,flags,sizeof(flags));map.skybox=skybox;
+    // Expand the native biome background at runtime; room templates stay at their normal scale.
+    // This preserves natural open terrain linking official Mines/Caves rooms.
+    for(unsigned x=0;x<map.width;++x)for(unsigned y=0;y<map.height;++y) {
+        unsigned sx=std::min(oldWidth-1,x*oldWidth/map.width),sy=std::min(oldHeight-1,y*oldHeight/map.height);
+        for(int layer=0;layer<MAPLAYERS;++layer)
+            map.tiles[layer+MAPLAYERS*(y+x*map.height)]=baseTiles[layer+MAPLAYERS*(sy+sx*oldHeight)];
+    }
+    return true;
+}
+bool configureWorld(int floor) {
+    deathDropOrdinals.fill(0);
+    worldFloor=0;world.SetObject();
+    auto file=PHYSFS_openRead("data/rmf/raid.json");if(!file)return false;
+    auto length=PHYSFS_fileLength(file);std::string json;
+    if(length>0 && length<65536) { json.resize(length);PHYSFS_readBytes(file,json.data(),length); }
+    PHYSFS_close(file);rapidjson::Document d;d.Parse(json.c_str());
+    if(d.HasParseError() || !d.IsObject() || !d.HasMember("layout_version") || !d["layout_version"].IsInt() ||
+        d["layout_version"].GetInt()!=4 || !d.HasMember("layouts") || !d["layouts"].IsArray() ||
+        floor<1 || floor>3 || d["layouts"].Size()!=3)return false;
+    auto& w=d["layouts"][floor-1];
+    const char* themes[]={"mine","swamp","caves"};int sizes[]={90,90,90};
+    if(!w.IsObject() || !w.HasMember("size") || !w["size"].IsInt() || w["size"].GetInt()!=sizes[floor-1] ||
+        !w.HasMember("theme") || !w["theme"].IsString() || std::strcmp(w["theme"].GetString(),themes[floor-1]))return false;
+    for(auto key:{"chest_target","drop_target","guard_target"})
+        if(!w.HasMember(key) || !w[key].IsInt() || w[key].GetInt()<4 || w[key].GetInt()>128)return false;
+    world.CopyFrom(w,world.GetAllocator());worldFloor=floor;
+    return true;
+}
+namespace {
+using Cell=std::pair<int,int>;
+int manhattan(Cell a,Cell b){return std::abs(a.first-b.first)+std::abs(a.second-b.second);}
+Entity* raw(int sprite,Cell p) {
+    auto e=newEntity(sprite,1,map.entities,nullptr);e->x=p.first*16;e->y=p.second*16;
+    setSpriteAttributes(e,nullptr,nullptr);return e;
+}
+bool blocking(Entity& e) {
+    switch(e.sprite) {
+        case 14:case 19:case 20:case 21:case 35:case 59:case 60:case 108:case 109:case 110:return true;
+        case 179:return e.colliderHasCollision==1;
+        default:return false;
+    }
+}
+bool adaptOfficial(unsigned seed) {
+    const int size=map.width;
+    if(size!=world["size"].GetInt() || map.height!=size)return false;
+    auto& allocator=world.GetAllocator();
+    for(auto key:{"chests","drops","encounters","gold","spawns","descents","portals","views"})
+        world.AddMember(rapidjson::StringRef(key),rapidjson::Value(rapidjson::kArrayType),allocator);
+    auto addPoint=[&](const char* key,Cell p,const char* kind=nullptr,int role=-1) {
+        rapidjson::Value v(rapidjson::kObjectType);v.AddMember("x",p.first,allocator);v.AddMember("y",p.second,allocator);
+        if(kind)v.AddMember("kind",rapidjson::Value(kind,allocator),allocator);
+        if(role>=0){v.AddMember("role",role,allocator);v.AddMember("facing",0,allocator);}
+        world[key].PushBack(v,allocator);
+    };
+    std::vector<Cell> nativeGuards;std::set<Cell> occupied;
+    int removedSpellTraps=0;
+    for(auto node=map.entities->first;node;) {
+        auto next=node->next;auto e=static_cast<Entity*>(node->element);
+        Cell p{static_cast<int>(e->x)/16,static_cast<int>(e->y)/16};
+        auto mob=editorSpriteTypeToMonster(e->sprite);
+        bool monster=e->sprite==10 || (mob!=NOTHING && mob!=SHOPKEEPER);
+        bool exit=e->sprite==1 || e->sprite==11 || e->sprite==45 || e->sprite==46 || e->sprite==63 || e->sprite==161;
+        const bool spellTrap=worldFloor==2 && (e->sprite==65 || e->sprite==120);
+        if(monster || exit || p.second<9 || spellTrap) {
+            if(spellTrap)++removedSpellTraps;
+            if(monster)nativeGuards.push_back(p);
+            list_RemoveNode(node);
+        } else occupied.insert(p);
+        node=next;
+    }
+    world.AddMember("removed_spell_traps",removedSpellTraps,allocator);
+    std::vector<bool> dry(size*size,false),safe(size*size,false);
+    auto inside=[&](Cell p){return p.first>1 && p.second>=10 && p.first<size-2 && p.second<size-2;};
+    auto index=[&](Cell p){return p.second+p.first*size;};
+    for(int x=2;x<size-2;++x)for(int y=10;y<size-2;++y) {
+        int off=MAPLAYERS*(y+x*size),f=map.tiles[off];
+        dry[y+x*size]=f>0 && !map.tiles[off+OBSTACLELAYER] && !swimmingtiles[f] && !lavatiles[f];
+    }
+    safe=dry;
+    for(auto node=map.entities->first;node;node=node->next) {
+        auto e=static_cast<Entity*>(node->element);Cell p{static_cast<int>(e->x)/16,static_cast<int>(e->y)/16};
+        if(inside(p) && blocking(*e))safe[index(p)]=false;
+    }
+    const Cell sides[]={{1,0},{-1,0},{0,1},{0,-1}};
+    auto flood=[&](Cell start,const std::vector<bool>& terrain) {
+        std::vector<int> dist(size*size,-1);std::deque<Cell> queue;
+        if(!inside(start) || !terrain[index(start)])return dist;
+        dist[index(start)]=0;queue.push_back(start);
+        while(!queue.empty()) {
+            auto p=queue.front();queue.pop_front();
+            for(auto side:sides) {
+                Cell q{p.first+side.first,p.second+side.second};
+                if(inside(q) && terrain[index(q)] && dist[index(q)]<0) {
+                    dist[index(q)]=dist[index(p)]+1;queue.push_back(q);
+                }
+            }
+        }
+        return dist;
+    };
+    std::vector<int> component(size*size,-1);int largest=0;
+    for(int x=2;x<size-2;++x)for(int y=10;y<size-2;++y)if(safe[y+x*size] && component[y+x*size]<0) {
+        auto d=flood({x,y},safe);int count=std::count_if(d.begin(),d.end(),[](int n){return n>=0;});
+        for(int i=0;i<size*size;++i)if(d[i]>=0)component[i]=0;
+        if(count>largest){largest=count;for(int i=0;i<size*size;++i)if(component[i]==1)component[i]=0;for(int i=0;i<size*size;++i)if(d[i]>=0)component[i]=1;}
+    }
+    printlog("[DELVE] native component floor=%d largest=%d",worldFloor,largest);
+    if(largest<150){printlog("[DELVE] generation rejected: small component");return false;}
+    for(int i=0;i<size*size;++i)safe[i]=component[i]==1;
+    std::vector<Cell> candidates;
+    auto roomy=[&](Cell p) {
+        for(int dx=-1;dx<=1;++dx)for(int dy=-1;dy<=1;++dy) {
+            Cell q{p.first+dx,p.second+dy};
+            if(!inside(q) || !dry[index(q)])return false;
+        }
+        return true;
+    };
+    for(int x=2;x<size-2;++x)for(int y=10;y<size-2;++y)
+        if(safe[y+x*size] && !occupied.count({x,y}))candidates.push_back({x,y});
+    std::vector<Cell> spawns;
+    Cell corners[]={{4,12},{size-5,size-5},{size-5,12},{4,size-5}};
+    auto pick=[&](Cell target,bool room,int clearance=0) {
+        Cell best{-1,-1};int score=std::numeric_limits<int>::max();
+        for(auto p:candidates) {
+            if(occupied.count(p) || (room && !roomy(p)))continue;
+            bool close=false;for(auto s:spawns)if(clearance && manhattan(p,s)<clearance)close=true;
+            if(close)continue;
+            int value=manhattan(p,target);
+            if(value<score){score=value;best=p;}
+        }
+        return best;
+    };
+    printlog("[DELVE] native candidates=%u roomy=%d",(unsigned)candidates.size(),(int)std::count_if(candidates.begin(),candidates.end(),roomy));
+    for(auto corner:corners) {
+        auto p=pick(corner,true,size/4);
+        if(p.first<0){printlog("[DELVE] generation rejected: no separated start %u",(unsigned)spawns.size());return false;}
+        spawns.push_back(p);occupied.insert(p);raw(1,p);addPoint("spawns",p);
+    }
+    // Supply caches belong to separate starting rooms; hazards cannot occupy their immediate exits.
+    for(auto node=map.entities->first;node;) {
+        auto next=node->next;auto e=static_cast<Entity*>(node->element);Cell p{static_cast<int>(e->x)/16,static_cast<int>(e->y)/16};
+        bool hazard=e->sprite==33 || e->sprite==38 || e->sprite==64 || e->sprite==65 || (e->sprite>=102 && e->sprite<=105);
+        if(hazard && std::any_of(spawns.begin(),spawns.end(),[&](Cell s){return manhattan(p,s)<5;})) {
+            occupied.erase(p);list_RemoveNode(node);
+        }
+        node=next;
+    }
+    auto core=pick({size/2,(size+10)/2},true,enemySpawnClearance);
+    if(core.first<0){printlog("[DELVE] generation rejected: no core");return false;}
+    occupied.insert(core);
+    rapidjson::Value boss(rapidjson::kObjectType);boss.AddMember("x",core.first,allocator);boss.AddMember("y",core.second,allocator);
+    boss.AddMember("monster",static_cast<int>(guardians[worldFloor-1]),allocator);
+    boss.AddMember("hp",guardianHealth[worldFloor-1],allocator);
+    boss.AddMember("level",guardianLevels[worldFloor-1],allocator);
+    world.AddMember("boss",boss,allocator);
+    auto coreDistances=flood(core,safe);
+    auto fresh=[&](Cell target,bool room=false) {
+        auto p=pick(target,room);
+        if(p.first>=0)occupied.insert(p);
+        return p;
+    };
+    auto niche=[&](Cell p) {
+        int open=0;
+        for(int dx=-1;dx<=1;++dx)for(int dy=-1;dy<=1;++dy) {
+            Cell q{p.first+dx,p.second+dy};if(inside(q) && dry[index(q)])++open;
+        }
+        return open>=5;
+    };
+    auto canBlock=[&](Cell p) {
+        if(!safe[index(p)])return false;
+        std::vector<Cell> neighbors;
+        for(auto side:sides) {
+            Cell q{p.first+side.first,p.second+side.second};if(inside(q) && safe[index(q)])neighbors.push_back(q);
+        }
+        if(neighbors.empty())return false;
+        // A short local bypass proves this object cannot sever the surrounding route.
+        // Conservatively skip tight sites instead of flooding the whole dungeon per candidate.
+        std::set<Cell> seen;std::deque<Cell> queue;seen.insert(neighbors.front());queue.push_back(neighbors.front());
+        while(!queue.empty()) {
+            auto q=queue.front();queue.pop_front();
+            for(auto side:sides) {
+                Cell next{q.first+side.first,q.second+side.second};
+                if(next==p || std::abs(next.first-p.first)>2 || std::abs(next.second-p.second)>2 ||
+                    !inside(next) || !safe[index(next)] || seen.count(next))continue;
+                seen.insert(next);queue.push_back(next);
+            }
+        }
+        return std::all_of(neighbors.begin(),neighbors.end(),[&](Cell q){return seen.count(q)!=0;});
+    };
+    auto blockingSpot=[&](Cell target) {
+        Cell best{-1,-1};int distance=10000;
+        for(auto p:candidates) {
+            int d=manhattan(p,target);
+            if(d<distance && !occupied.count(p) && niche(p) && canBlock(p)){distance=d;best=p;}
+        }
+        if(best.first>=0)occupied.insert(best);return best;
+    };
+    auto cache=[&](Cell p,int role) {raw(21,p);occupied.insert(p);safe[index(p)]=false;addPoint("chests",p,nullptr,role);};
+    for(auto spawn:spawns) {
+        Cell best{-1,-1};int distance=10000;
+        for(auto p:candidates) {
+            if(occupied.count(p) || manhattan(p,spawn)>5 || manhattan(p,spawn)<2 || !canBlock(p))continue;
+            int d=manhattan(p,spawn);if(d<distance){best=p;distance=d;}
+        }
+        if(best.first<0){printlog("[DELVE] generation rejected: missing start cache");return false;}
+        cache(best,0);
+    }
+    printlog("[DELVE] native starts and starter caches ready");
+    // Retain official cache locations; supplement normal wall niches and room interiors.
+    std::vector<Entity*> nativeChests;
+    for(auto node=map.entities->first;node;node=node->next) {
+        auto e=static_cast<Entity*>(node->element);
+        if(e->sprite==21)nativeChests.push_back(e);
+    }
+    std::sort(nativeChests.begin(),nativeChests.end(),[](Entity* a,Entity* b){return std::make_pair(a->x,a->y)<std::make_pair(b->x,b->y);});
+    int ordinal=0;
+    for(auto e:nativeChests) {
+        Cell p{static_cast<int>(e->x)/16,static_cast<int>(e->y)/16};
+        bool known=false;for(auto& c:world["chests"].GetArray())if(c["x"].GetInt()==p.first && c["y"].GetInt()==p.second)known=true;
+        if(!known)addPoint("chests",p,nullptr,1+(ordinal++%3));
+    }
+    for(int n=0;n<3;++n) {
+        auto p=blockingSpot({core.first+(n-1)*3,core.second+3});
+        if(p.first<0){printlog("[DELVE] generation rejected: no relic site");return false;}cache(p,4);
+    }
+    std::mt19937 rng(seed^0xd31fe123u);std::shuffle(candidates.begin(),candidates.end(),rng);
+    for(auto p:candidates) {
+        if(world["chests"].Size()>=world["chest_target"].GetInt())break;
+        if(occupied.count(p) || !niche(p) || !canBlock(p))continue;
+        int near=0;for(auto& c:world["chests"].GetArray())if(manhattan(p,{c["x"].GetInt(),c["y"].GetInt()})<4)++near;
+        if(near)continue;
+        cache(p,1+(ordinal++%3));
+    }
+    if(world["chests"].Size()<world["chest_target"].GetInt()){printlog("[DELVE] generation rejected: only %u cache sites",world["chests"].Size());return false;}
+    // Endpoints use clear room tiles in the connected dungeon, never a sealed native vault.
+    int descents=BattleRules::descentCount;
+    Cell targets[]={{size/2,14},{size/2,size-7},{7,(size+10)/2},{size-7,(size+10)/2}};
+    for(int n=0;n<descents;++n) {
+        auto p=fresh(targets[n]);if(p.first<0){printlog("[DELVE] generation rejected: missing descent");return false;}raw(11,p);addPoint("descents",p);
+    }
+    for(int n=0;n<BattleRules::victoryPortalCount;++n) {
+        auto p=fresh({core.first+(n==1 ? -5: n==2 ? 5:0),core.second-4+(n%2)*7});
+        if(p.first<0){printlog("[DELVE] generation rejected: missing portal");return false;}raw(45,p);addPoint("portals",p);
+    }
+    int fountains=0,merchants=0;
+    for(auto node=map.entities->first;node;node=node->next) {
+        auto e=static_cast<Entity*>(node->element);fountains+=e->sprite==14;merchants+=e->sprite==35;
+    }
+    while(fountains<3) {auto p=blockingSpot(targets[fountains]);if(p.first<0)return false;raw(14,p);safe[index(p)]=false;++fountains;}
+    if(!merchants) {auto p=blockingSpot({core.first-10,core.second+8});if(p.first<0)return false;raw(35,p);safe[index(p)]=false;}
+    auto away=[&](Cell p){
+        if(manhattan(p,core)<guardianClearance ||
+            !std::all_of(spawns.begin(),spawns.end(),[&](Cell s){return manhattan(p,s)>=enemySpawnClearance;}))return false;
+        for(auto& encounter:world["encounters"].GetArray())
+            if(manhattan(p,{encounter["x"].GetInt(),encounter["y"].GetInt()})<encounterSeparation)return false;
+        return true;
+    };
+    std::shuffle(nativeGuards.begin(),nativeGuards.end(),rng);
+    for(auto p:nativeGuards) {
+        if(world["encounters"].Size()>=world["guard_target"].GetInt())break;
+        if(!inside(p) || !safe[index(p)] || occupied.count(p) || !away(p))continue;
+        occupied.insert(p);addPoint("encounters",p,"patrol");
+    }
+    for(auto p:candidates) {
+        if(world["encounters"].Size()>=world["guard_target"].GetInt())break;
+        if(occupied.count(p) || !safe[index(p)] || !roomy(p) || !away(p))continue;
+        occupied.insert(p);addPoint("encounters",p,"patrol");
+    }
+    if(world["encounters"].Size()!=world["guard_target"].GetInt()) {
+        printlog("[DELVE] generation rejected: insufficient separated encounter sites");return false;
+    }
+    const auto roster=encounterRoster(worldFloor,world["encounters"].Size(),seed);
+    for(size_t index=0;index<roster.size();++index) {
+        auto& encounter=world["encounters"][static_cast<rapidjson::SizeType>(index)];
+        const Monster mob=roster[index];
+        const char* kind=mob==RAT || mob==BAT_SMALL ? "vermin" : mob==TROLL || mob==CRYSTALGOLEM ? "elite" : "patrol";
+        encounter["kind"].SetString(kind,allocator);
+        encounter.AddMember("monster",static_cast<int>(mob),allocator);
+    }
+    const char* kinds[]={"medicine","gear","food","magic","tool","treasure"};
+    for(auto p:candidates) {
+        if(world["drops"].Size()>=world["drop_target"].GetInt())break;
+        if(occupied.count(p) || !safe[index(p)] || !roomy(p))continue;
+        occupied.insert(p);addPoint("drops",p,kinds[world["drops"].Size()%6]);
+    }
+    for(int n=0;n<6;++n) {
+        auto p=fresh({core.first+(n%3-1)*5,core.second+(n/3 ? 5:-5)},false);
+        if(p.first<0)return false;
+        addPoint("gold",p);world["gold"][n].AddMember("scale",n%3+1,allocator);
+    }
+    // Insert four disconnected cells in the reserved strip, matching park().
+    const int surface=map.tiles[MAPLAYERS*(spawns[0].second+spawns[0].first*size)];
+    const int wall=worldFloor==1 ? 20:worldFloor==2 ? 37:156;
+    for(int x=0;x<size;++x)for(int y=0;y<9;++y) {
+        int off=MAPLAYERS*(y+x*size);map.tiles[off]=surface;map.tiles[off+1]=wall;map.tiles[off+2]=8;
+    }
+    for(int n=0;n<4;++n) {
+        int x=3+n*8;
+        for(int dx=-1;dx<=2;++dx)for(int y=2;y<=5;++y)map.tiles[MAPLAYERS*(y+(x+dx)*size)+OBSTACLELAYER]=0;
+        raw(12,{x+1,3});
+    }
+    // Reject a placement if added furniture/caches closed a required route.
+    for(auto node=map.entities->first;node;node=node->next) {
+        auto e=static_cast<Entity*>(node->element);Cell p{static_cast<int>(e->x)/16,static_cast<int>(e->y)/16};
+        if(inside(p) && blocking(*e))safe[index(p)]=false;
+    }
+    auto reachable=flood(spawns[0],safe);
+    auto reached=[&](Cell p){return inside(p) && reachable[index(p)]>=0;};
+    for(auto p:spawns)if(!reached(p)){printlog("[DELVE] generation rejected: disconnected start");return false;}
+    if(!reached(core)){printlog("[DELVE] generation rejected: disconnected core");return false;}
+    for(auto key:{"descents","portals","drops","encounters","gold"})for(auto& v:world[key].GetArray())
+        if(!reached({v["x"].GetInt(),v["y"].GetInt()})){printlog("[DELVE] generation rejected: disconnected %s",key);return false;}
+    // Capture points and a straight combat lane are smoke-only diagnostics.
+#ifdef BARONY_SMOKE_TESTS
+    Cell lane{-1,-1};
+    for(auto p:candidates) {
+        bool good=true;for(int dx=0;dx<=4;++dx) {
+            Cell q{p.first+dx,p.second};
+            if(!reached(q) || occupied.count(q))good=false;
+        }
+        if(good){lane=p;break;}
+    }
+    if(lane.first<0){printlog("[DELVE] generation rejected: no test lane");return false;}
+    rapidjson::Value combat(rapidjson::kObjectType);combat.AddMember("x",lane.first,allocator);combat.AddMember("y",lane.second,allocator);
+    world.AddMember("combat_lane",combat,allocator);
+    Cell viewTargets[]={{spawns[0].first+2,spawns[0].second},{size/3,size/2},{core.first-4,core.second},{size*3/4,size*3/4}};
+    for(int n=0;n<4;++n) {
+        auto p=pick(viewTargets[n],true);if(p.first<0)return false;addPoint("views",p);
+        int longest=-1,dir=0;
+        for(int d=0;d<4;++d) {
+            Cell step=d==0 ? Cell{1,0}:d==1 ? Cell{0,1}:d==2 ? Cell{-1,0}:Cell{0,-1};
+            int count=0;for(int k=1;k<=12;++k) {
+                Cell q{p.first+k*step.first,p.second+k*step.second};
+                if(!inside(q) || !dry[index(q)])break;++count;
+            }
+            if(count>longest){longest=count;dir=d;}
+        }
+        world["views"][n].AddMember("yaw",dir*PI/2,allocator);
+    }
+#endif
+    std::uint64_t fingerprint=1469598103934665603ull;
+    for(unsigned i=0;i<map.width*map.height*MAPLAYERS;++i){fingerprint^=static_cast<unsigned>(map.tiles[i]);fingerprint*=1099511628211ull;}
+    world.AddMember("seed",seed,allocator);world.AddMember("geometry_fingerprint",rapidjson::Value().SetUint64(fingerprint),allocator);
+    world.AddMember("reachable_tiles",largest,allocator);
+    int spellTraps=0;
+    for(auto node=map.entities->first;node;node=node->next) {
+        auto entity=static_cast<Entity*>(node->element);
+        if(entity->sprite==65 || entity->sprite==120)++spellTraps;
+    }
+    world.AddMember("spell_traps",spellTraps,allocator);
+#ifdef BARONY_SMOKE_TESTS
+    rapidjson::Value diagram(rapidjson::kArrayType);
+    for (int y=0;y<size;++y) {
+        std::string row;
+        for (int x=0;x<size;++x) {
+            const int offset=MAPLAYERS*(y+x*size),surface=map.tiles[offset];
+            row += map.tiles[offset+OBSTACLELAYER] ? '#' : !surface ? ' ' : lavatiles[surface] ? '^' : swimmingtiles[surface] ? '~' : '.';
+        }
+        diagram.PushBack(rapidjson::Value(row.c_str(),allocator),allocator);
+    }
+    world.AddMember("diagram_tiles",diagram,allocator);
+#endif
+    rapidjson::Value uids(rapidjson::kArrayType);
+    for(auto node=map.entities->first;node;node=node->next) {
+        auto e=static_cast<Entity*>(node->element);
+        if(e->sprite!=11 && e->sprite!=45 && e->sprite!=14 && e->sprite!=21 && e->sprite!=35)continue;
+        rapidjson::Value v(rapidjson::kArrayType);v.PushBack(e->sprite,allocator);v.PushBack((int)e->x/16,allocator);v.PushBack((int)e->y/16,allocator);v.PushBack(e->getUID(),allocator);uids.PushBack(v,allocator);
+    }
+    world.AddMember("interaction_uids",uids,allocator);
+    rapidjson::StringBuffer buffer;rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);world.Accept(writer);
+    std::ofstream output("delve-generated-floor"+std::to_string(worldFloor)+".json",std::ios::binary|std::ios::trunc);
+    output.write(buffer.GetString(),buffer.GetSize());
+    printlog("[DELVE] native_layout floor=%d theme=%s size=%d chests=%u drops=%u reachable=%d fingerprint=%llu",
+        worldFloor,world["theme"].GetString(),size,world["chests"].Size(),world["drops"].Size(),largest,(unsigned long long)fingerprint);
+    return true;
+}
+}
+int generateOfficialFloor(unsigned seed,int* checkMapHash) {
+    rapidjson::Document spec;spec.CopyFrom(world,spec.GetAllocator());
+    for(int attempt=0;attempt<4;++attempt) {
+        world.CopyFrom(spec,world.GetAllocator());
+        char theme[32];std::strncpy(theme,world["theme"].GetString(),sizeof(theme)-1);theme[31]=0;
+        Uint32 began=SDL_GetTicks();
+        nativeGenerating=true;minotaurlevel=false;darkmap=false;
+        int result=generateDungeon(theme,seed+attempt*0x9e3779b9u,std::make_tuple(0,0,0,1));
+        nativeGenerating=false;mapseed=seed;
+        Uint32 generated=SDL_GetTicks();
+        if(result>=0 && adaptOfficial(seed)) {
+            printlog("[DELVE] generation_time floor=%d native_ms=%u adaptation_ms=%u",worldFloor,generated-began,SDL_GetTicks()-generated);
+            if(checkMapHash)*checkMapHash=-1;
+            return result;
+        }
+        printlog("[DELVE] retry native layout floor=%d attempt=%d",worldFloor,attempt+1);
+    }
+    printlog("[DELVE] could not generate a connected native dungeon");worldFloor=0;mainloop=0;return -1;
+}
+
+
+void configureChest(Entity& chest) {
+    const int x=static_cast<int>(chest.x)/16,y=static_cast<int>(chest.y)/16;
+    chest.chestMimicChance=0;chest.skill[20]=0;chest.chestLocked=0;
+    if(!worldFloor)return;
+    for(auto& c:world["chests"].GetArray()) if(c["x"].GetInt()==x && c["y"].GetInt()==y) {
+        chest.skill[20]=c["role"].GetInt();chest.yaw=c["facing"].GetInt();
+        // Valuable vaults can be locked. Starting supplies and ordinary caches stay accessible.
+        chest.chestLocked=worldFloor>1 && chest.skill[20]>=3 ? 65 : 0;return;
+    }
+}
+void populateWorld() {
+    const int floor=currentlevel;
+    if(multiplayer!=SERVER || floor!=worldFloor || floor<1 || floor>3)return;
+    Entity* anchor=nullptr;
+    for(int p=0;p<MAXPLAYERS;++p)if(players[p] && players[p]->entity){anchor=players[p]->entity;break;}
+    if(!anchor)return;
+    int count=0,dropped=0;
+    for(auto& v:world["encounters"].GetArray()) {
+        int x=v["x"].GetInt(),y=v["y"].GetInt();
+        const Monster mob=static_cast<Monster>(v["monster"].GetInt());
+        if(auto guard=summonMonster(mob,x*16+8,y*16+8)) {
+            configureDelveGuard(*guard,seedAt(x,y));++count;
+        }
+    }
+    for(auto& v:world["drops"].GetArray()) {
+        int x=v["x"].GetInt(),y=v["y"].GetInt();std::mt19937 rng(seedAt(x,y));
+        auto kind=v["kind"].GetString();ItemType type=randomEquipment(floor-1,rng);int qty=1;
+        if(!std::strcmp(kind,"medicine"))type=rng()%3 ? POTION_HEALING : POTION_RESTOREMAGIC;
+        else if(!std::strcmp(kind,"food")) { type=FOOD_BREAD;qty=2; }
+        else if(!std::strcmp(kind,"tool")) { const ItemType tools[]={TOOL_LOCKPICK,TOOL_TOWEL,TOOL_BEARTRAP};type=tools[rng()%3]; }
+        else if(!std::strcmp(kind,"magic"))type=randomMagic(floor-1,rng);
+        else if(!std::strcmp(kind,"treasure")) { type=GEM_DIAMOND;qty=floor; }
+        auto item=newItem(type,SERVICABLE,floor-1,qty,rng(),instantIdentification(),nullptr);
+        const auto rarityRoll=rng();
+        DelveRarity::rollLoot(item,floor,rarityRoll,rng());
+        if(auto drop=dropItemMonster(item,anchor,nullptr)) {
+            drop->x=x*16+8;drop->y=y*16+8;drop->vel_x=drop->vel_y=0;++dropped;
+        }
+    }
+    for(auto& v:world["gold"].GetArray()) {
+        auto gold=newEntity(130,1,map.entities,nullptr);gold->behavior=&actGoldBag;
+        gold->x=v["x"].GetInt()*16+8;gold->y=v["y"].GetInt()*16+8;
+        gold->sizex=gold->sizey=3;gold->z=6;gold->goldAmount=50*floor*floor*v["scale"].GetInt();
+        gold->flags[PASSABLE]=true;gold->flags[UPDATENEEDED]=true;
+    }
+    if(auto boss=summonMonster(guardians[floor-1],world["boss"]["x"].GetInt()*16+8,world["boss"]["y"].GetInt()*16+8)) {
+        configureDelveGuard(*boss,seedAt(world["boss"]["x"].GetInt(),world["boss"]["y"].GetInt()));
+        if(auto s=boss->getStats()) {
+            std::strcpy(s->name,floor==1 ? "Outpost Warden" : floor==2 ? "Jungle Warden" : "Sanctum Guardian");
+            s->MAXHP=s->HP=s->OLDHP=guardianHealth[floor-1];s->LVL=guardianLevels[floor-1];s->GOLD=200*floor;
+            s->RANDOM_HP=s->RANDOM_MAXHP=s->RANDOM_LVL=0;
+        }
+    }
+    printlog("[DELVE] floor_ready floor=%d size=%ux%u monsters=%d chests=%u loose=%d seed=%u",
+        floor,map.width,map.height,count+1,world["chests"].Size(),dropped,mapseed);
+}
+#ifdef BARONY_SMOKE_TESTS
+bool smokePopulationAudit() {
+    int ranged=0;
+    for(int roll=0;roll<10;++roll) {
+        const auto weapon=delveGuardWeapon(SKELETON,roll);
+        ranged+=weapon==SHORTBOW || weapon==CROSSBOW;
+    }
+    if(ranged!=2)return false;
+    printlog("[SMOKE][DELVE] check PASS skeleton_ranged_two_of_ten");
+    const int targets[]={56,56,56};
+    for(int floor=1;floor<=3;++floor)for(unsigned seed=0;seed<1000;++seed) {
+        const auto roster=encounterRoster(floor,targets[floor-1],seed);
+        if(roster.size()!=targets[floor-1] || roster!=encounterRoster(floor,targets[floor-1],seed))return false;
+        std::array<int,NUMMONSTERS> weights{},counts{};
+        for(auto mob:patrols[floor-1])++weights[mob];
+        for(auto mob:roster)++counts[mob];
+        for(int mob=0;mob<NUMMONSTERS;++mob) {
+            int minimum=targets[floor-1]/12*weights[mob];
+            int maximum=minimum+(targets[floor-1]%12 ? weights[mob]:0);
+            if(mob==TROLL) {minimum+=harderReplacements[floor-1];maximum+=harderReplacements[floor-1];}
+            if(mob==RAT || mob==BAT_SMALL || mob==SLIME)minimum=std::max(1,minimum-harderReplacements[floor-1]);
+            if(counts[mob]<minimum || counts[mob]>maximum)return false;
+        }
+        if(!counts[RAT] || !counts[BAT_SMALL] || !counts[SKELETON])return false;
+        if(counts[DEMON] || counts[INSECTOID] || counts[INCUBUS] || counts[VAMPIRE] || counts[CRYSTALGOLEM])return false;
+        if(floor==1 && (counts[GOBLIN] || counts[GHOUL] || counts[TROLL]))return false;
+        if(floor==2 && (!counts[GOBLIN] || !counts[GHOUL] || counts[TROLL]!=5))return false;
+        if(floor==3 && (!counts[GOBLIN] || !counts[GHOUL] || !counts[TROLL]))return false;
+    }
+    return true;
+}
+#endif
+void fillChest(Entity& chest) {
+    auto inventory=chest.getChestInventoryList();if(!inventory)return;
+    int role=std::clamp(chest.skill[20],0,4),floor=std::clamp(currentlevel,1,3);
+    int tier=std::min(2,floor-1+(role==4 ? 1 : 0));
+    std::mt19937 rng(seedAt(static_cast<int>(chest.x)/16,static_cast<int>(chest.y)/16));
+    auto add=[&](ItemType type,int qty=1,bool bless=false) {
+        auto item=newItem(type,EXCELLENT,bless ? (tier ? 1+rng()%(tier==2 ? 5:3):0):0,qty,rng(),instantIdentification(),inventory);
+        const auto rarityRoll=rng();
+        DelveRarity::rollLoot(item,floor,rarityRoll,rng());
+        return item;
+    };
+    switch(role) {
+        case 0: // Camp supplies: one upgrade, sustenance and tools, not a full armory.
+            add(randomEquipment(floor-1,rng),1,true);add(POTION_HEALING,2);add(POTION_RESTOREMAGIC);
+            add(FOOD_BREAD,3);add(FOOD_BLOOD);add(TOOL_METAL_SCRAP,4);
+            add(TOOL_LOCKPICK,3);add(TOOL_TORCH,2);add(TOOL_BEARTRAP);break;
+        case 1:
+            for(int n=0;n<4;++n)add(randomEquipment(floor-1,rng),1,true);
+            add(POTION_HEALING,2);add(TOOL_LOCKPICK,2);break;
+        case 2:
+            for(int n=0;n<4;++n)add(randomMagic(floor-1,rng),1,true);
+            add(POTION_RESTOREMAGIC,3);add(POTION_HEALING);add(GEM_DIAMOND,floor);break;
+        case 3:
+            for(int n=0;n<3;++n)add(randomEquipment(tier,rng),1,true);
+            add(GEM_DIAMOND,floor*3);add(SCROLL_ENCHANTWEAPON);add(POTION_HEALING,2);add(TOOL_LOCKPICK);break;
+        default: // Guarded relics: guaranteed advanced gear and enchantments.
+            for(int n=0;n<4;++n)add(randomEquipment(tier,rng),1,true);
+            add(GEM_DIAMOND,floor*3);add(SCROLL_ENCHANTWEAPON);add(SCROLL_ENCHANTARMOR);add(POTION_HEALING,3);break;
+    }
+    const int accessorySlot = 2 + (static_cast<int>(chest.x / 16) + static_cast<int>(chest.y / 16) + role) % 6;
+    add(randomEquipment(floor-1,rng,accessorySlot),1,true);
+}
+
+void dropEnemyLoot(Entity& enemy) {
+    if (!active() || multiplayer != SERVER || enemy.behavior != &actMonster) return;
+    auto stats = enemy.getStats();
+    if (!stats || stats->HP > 0 || stats->leader_uid || stats->getAttribute("delve_loot_seed").empty()
+        || !stats->getAttribute("delve_loot_dropped").empty()) return;
+    stats->setAttribute("delve_loot_dropped", "1");
+    for (auto item : {stats->helmet, stats->breastplate, stats->gloves, stats->shoes, stats->shield,
+        stats->weapon, stats->cloak, stats->amulet, stats->ring, stats->mask})
+        if (item && (!item->ownerUid || item->ownerUid == enemy.getUID())) item->isDroppable = false;
+    for (auto node = stats->inventory.first; node; node = node->next)
+        if (auto item = static_cast<Item*>(node->element); !item->ownerUid || item->ownerUid == enemy.getUID())
+            item->isDroppable = false;
+    const int floor = std::clamp(currentlevel, 1, 3);
+    std::mt19937 rng(static_cast<unsigned>(std::stoul(stats->getAttribute("delve_loot_seed"))) ^ 0x7c4a9d13u);
+    const auto type = randomEnemyLoot(floor, rng);
+    auto item = newItem(type, SERVICABLE, 0, 1, rng(), instantIdentification(), nullptr);
+    const auto rarityRoll = rng();
+    DelveRarity::rollLoot(item, floor, rarityRoll, rng());
+    if (auto drop = dropItemMonster(item, &enemy, nullptr)) {
+        drop->flags[USERFLAG1] = true;
+        printlog("[DELVE] enemy_loot floor=%d enemy=%u type=%d rarity=%d", floor, enemy.getUID(), type,
+            static_cast<int>(DelveRarity::roll(floor, rarityRoll)));
+    }
+}
+
+#ifdef BARONY_SMOKE_TESTS
+bool smokeEnemyLootRules(int player) {
+    for (int floor = 1; floor <= 3; ++floor) {
+        std::set<ItemType> types;
+        int originalBooks = 0, reducedBooks = 0;
+        for (unsigned seed = 0; seed < 10000; ++seed) {
+            std::mt19937 rng(seed), repeat(seed), baseline(seed), reduced(seed);
+            const auto type = randomEnemyLoot(floor, rng);
+            if (type != randomEnemyLoot(floor, repeat)) return false;
+            types.insert(type);
+            auto item = newItem(type, SERVICABLE, 0, 1, rng(), true, nullptr);
+            const auto roll = rng();
+            DelveRarity::rollLoot(item, floor, roll, rng());
+            const bool valid = DelveRarity::eligible(*item) && DelveRarity::stored(*item) == DelveRarity::roll(floor, roll);
+            free(item);
+            if (!valid) return false;
+            originalBooks += items[magic[floor - 1][baseline() % 4]].category == SPELLBOOK;
+            reducedBooks += items[randomMagic(floor - 1, reduced)].category == SPELLBOOK;
+        }
+        if (types.size() < 30 || reducedBooks < originalBooks * 70 / 100 || reducedBooks > originalBooks * 80 / 100) return false;
+        printlog("[SMOKE][DELVE] loot_distribution floor=%d types=%u books_before=%d books_after=%d",
+            floor, static_cast<unsigned>(types.size()), originalBooks, reducedBooks);
+    }
+    auto source = players[player]->entity;
+    auto enemy = summonMonster(SKELETON, source->x + 32, source->y);
+    if (!enemy || !enemy->getStats()) return false;
+    configureDelveGuard(*enemy, 12345);
+    auto stats = enemy->getStats();
+    auto scavenged = newItem(IRON_SWORD, SERVICABLE, 0, 1, 0, true, &stats->inventory);
+    scavenged->ownerUid = source->getUID();
+    const int before = list_Size(map.entities);
+    dropEnemyLoot(*enemy);
+    if (list_Size(map.entities) != before) return false;
+    stats->HP = 0;
+    stats->leader_uid = source->getUID();
+    dropEnemyLoot(*enemy);
+    if (list_Size(map.entities) != before) return false;
+    stats->leader_uid = 0;
+    dropEnemyLoot(*enemy);
+    if (list_Size(map.entities) != before + 1 || !scavenged->isDroppable
+        || !stats->weapon || stats->weapon->isDroppable) return false;
+    auto drop = static_cast<Entity*>(map.entities->last->element);
+    if (drop->behavior != &actItem || drop->skill[13] != 1 || drop->skill[15] != instantIdentification()) return false;
+    const auto count = list_Size(map.entities);
+    dropEnemyLoot(*enemy);
+    return list_Size(map.entities) == count;
+}
+#endif
+
+void scatterDeathLoot(int player, double x, double y, const Item& item) {
+    if (!active() || multiplayer != SERVER || player < 0 || player >= MAXPLAYERS || itemCategory(&item) == SPELL_CAT) return;
+    const unsigned int ordinal = deathDropOrdinals[player]++;
+    const double angle = ordinal * (PI * (3.0 - std::sqrt(5.0)));
+    auto drop = newEntity(-1, 1, map.entities, nullptr);
+    drop->behavior = &actItem;
+    drop->x = x; drop->y = y; drop->z = -2;
+    drop->sizex = drop->sizey = 4;
+    drop->yaw = angle;
+    drop->vel_x = std::cos(angle) * 1.6;
+    drop->vel_y = std::sin(angle) * 1.6;
+    drop->vel_z = -0.7;
+    drop->flags[INVISIBLE] = true;
+    drop->flags[PASSABLE] = drop->flags[UPDATENEEDED] = drop->flags[USERFLAG1] = true;
+    drop->skill[10] = item.type; drop->skill[11] = item.status;
+    drop->skill[12] = item.beatitude; drop->skill[13] = item.count;
+    drop->skill[14] = item.appearance; drop->skill[15] = item.identified;
+    printlog("[DELVE] death_scatter slot=%d ordinal=%u type=%d count=%d", player, ordinal, item.type, item.count);
+}
+bool stormBoulder(const Entity& entity) {
+    return active() && entity.behavior == &actBoulder && entity.skill[16] == BattleRules::stormMarker;
+}
+void spawnStormWave(int overtime) {
+    if (!active() || multiplayer != SERVER || gamePaused || matchComplete() || overtime % BattleRules::waveInterval(overtime)) return;
+    int count = 0;
+    for (auto node = map.entities->first; node; node = node->next)
+        if (stormBoulder(*static_cast<Entity*>(node->element))) ++count;
+    std::mt19937 rng(mapseed ^ (static_cast<unsigned int>(overtime) * 0x9e3779b9u));
+    int spawned = 0;
+    for (int ordinal = 0; ordinal < BattleRules::waveSize(overtime) && count < BattleRules::maximumStormBoulders; ++ordinal, ++count) {
+        const int edge = rng() % 4;
+        const int tileX = 1 + rng() % (map.width - 2);
+        const int tileY = BattleRules::dungeonTop + 1 + rng() % (map.height - BattleRules::dungeonTop - 2);
+        auto boulder = newEntity(245, 1, map.entities, nullptr);
+        boulder->behavior = &actBoulder;
+        boulder->skill[2] = -16; boulder->skill[16] = BattleRules::stormMarker;
+        boulder->x = (edge == 0 ? 1 : edge == 1 ? map.width - 2 : tileX) * 16 + 8;
+        boulder->y = (edge == 2 ? BattleRules::dungeonTop + 1 : edge == 3 ? map.height - 2 : tileY) * 16 + 8;
+        boulder->yaw = edge == 0 ? 0 : edge == 1 ? PI : edge == 2 ? PI / 2 : 3 * PI / 2;
+        boulder->vel_x = std::cos(boulder->yaw) * 2.5;
+        boulder->vel_y = std::sin(boulder->yaw) * 2.5;
+        boulder->z = 0; boulder->sizex = boulder->sizey = 7;
+        boulder->flags[UPDATENEEDED] = boulder->flags[PASSABLE] = true;
+        ++spawned;
+    }
+    printlog("[DELVE] boulder_wave floor=%d overtime=%d spawned=%d interval=%d", currentlevel, overtime, spawned, BattleRules::waveInterval(overtime));
+}
+bool tickStormBoulder(Entity& boulder) {
+    if (!stormBoulder(boulder) || multiplayer == CLIENT) return false;
+    if (gamePaused || loading || matchComplete()) return true;
+    boulder.x += boulder.vel_x; boulder.y += boulder.vel_y; boulder.roll += 0.12;
+    const int tileX = static_cast<int>(boulder.x / 16), tileY = static_cast<int>(boulder.y / 16);
+    if (tileX < 1 || tileY <= BattleRules::dungeonTop || tileX >= map.width - 1 || tileY >= map.height - 1) {
+        list_RemoveNode(boulder.mynode); return true;
+    }
+    bool walls = false;
+    for (int x = std::max(1, static_cast<int>((boulder.x - 7) / 16)); x <= std::min<int>(map.width - 2, (boulder.x + 7) / 16); ++x)
+        for (int y = std::max(BattleRules::dungeonTop + 1, static_cast<int>((boulder.y - 7) / 16)); y <= std::min<int>(map.height - 2, (boulder.y + 7) / 16); ++y) {
+            auto& wall = map.tiles[OBSTACLELAYER + y * MAPLAYERS + x * MAPLAYERS * map.height];
+            if (!wall) continue;
+            wall = 0; walls = true;
+            for (int player = 1; player < MAXPLAYERS; ++player) {
+                if (client_disconnected[player] || players[player]->isLocalPlayer()) continue;
+                std::memcpy(net_packet->data, "WALD", 4);
+                SDLNet_Write16(x, net_packet->data + 4); SDLNet_Write16(y, net_packet->data + 6);
+                net_packet->address = net_clients[player - 1]; net_packet->len = 8;
+                sendPacketSafe(net_sock, -1, net_packet, player - 1);
+            }
+        }
+    if (walls) generatePathMaps();
+    for (auto node = map.entities->first; node;) {
+        auto next = node->next;
+        auto target = static_cast<Entity*>(node->element);
+        if (target != &boulder && (!target->parent || target->behavior == &actPlayer || target->behavior == &actMonster) && !stormBoulder(*target)
+            && target->y > BattleRules::dungeonTop * 16 && target->behavior
+            && target->behavior != &actLadder && target->behavior != &actPortal
+            && std::abs(target->x - boulder.x) < target->sizex + 7
+            && std::abs(target->y - boulder.y) < target->sizey + 7) {
+            if (target->behavior == &actPlayer || target->behavior == &actMonster) {
+                auto character = target->getStats();
+                if (character && character->HP > 0 && (target->behavior != &actPlayer || !protectedPlayer(target->skill[2]))) {
+                    target->modHP(-100000);
+                    target->setObituary("crushed by the boulder storm");
+                }
+            } else if (!target->flags[PASSABLE] || target->behavior == &actBoulder || target->behavior == &actChest || target->behavior == &actDoor
+                || target->behavior == &actFurniture || target->behavior == &actFountain || target->behavior == &actSink || target->behavior == &actColumn) {
+                list_RemoveNode(target->mynode);
+            }
+        }
+        node = next;
+    }
+    return true;
+}
+
+void useShrine(Entity& shrine) {
+    if (!active() || multiplayer != SERVER || shrine.skill[24] > (int)ticks) return;
+    for (int p = 0; p < MAXPLAYERS; ++p) {
+        if (client_disconnected[p] || outcome(p) != Outcome::Playing || !players[p]->entity || stats[p]->HP <= 0 ||
+            (selectedEntity[p] != &shrine && client_selected[p] != &shrine) || std::hypot(players[p]->entity->x-shrine.x,players[p]->entity->y-shrine.y) > TOUCHRANGE) continue;
+        auto player = players[p]->entity;
+        switch ((shrine.skill[20]-1)%3) {
+            case 0: player->modHP(30); messagePlayer(p,MESSAGE_MISC,"Shrine of Healing: +30 health."); break;
+            case 1: player->setEffect(EFF_FAST,true,TICKS_PER_SECOND*30,true); messagePlayer(p,MESSAGE_MISC,"Shrine of Speed: 30 seconds."); break;
+            default:
+                if (!stats[p]->weapon || stats[p]->weapon->beatitude >= 5) continue;
+                ++stats[p]->weapon->beatitude;
+                if (p > 0 && !players[p]->isLocalPlayer()) {
+                    std::memcpy(net_packet->data,"BLE1",4); SDLNet_Write32(5,&net_packet->data[4]);
+                    net_packet->address = net_clients[p-1]; net_packet->len = 8; sendPacketSafe(net_sock,-1,net_packet,p-1);
+                }
+                messagePlayer(p,MESSAGE_MISC,"Shrine of Enchantment: weapon blessed +1."); break;
+        }
+        shrine.skill[24] = ticks+TICKS_PER_SECOND*60;
+        selectedEntity[p] = client_selected[p] = nullptr;
+        playSoundEntity(&shrine,167,128);
+        printlog("[DELVE] shrine slot=%d kind=%d",p,shrine.skill[20]); break;
+    }
+}
+}

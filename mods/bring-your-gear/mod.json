@@ -1,0 +1,11 @@
+{
+  "id": "bring-your-gear",
+  "name": "Bring Your Gear",
+  "version": "0.1.2",
+  "kind": "quality-of-life",
+  "api_version": 1,
+  "requires": {
+    "vending_machine_framework": 1
+  },
+  "launcher_mode": "bring-your-gear"
+}
