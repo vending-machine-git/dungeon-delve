@@ -1,121 +1,93 @@
 # Dungeon Delve 0.17.2 - Windows x64
 
-Dungeon Delve and vending_machine framework are included together. No Workshop
-subscriptions, separate framework download, Python, compiler or installer required.
-Requires an owned Steam Windows installation of Barony, tested build 5.0.2.
-Experimental private Direct IP play for 2-4 players; protocol 28, framework API 1.
+The full Windows package includes Dungeon Delve, vending_machine framework,
+the native runtime and mod content. Requires an owned compatible Steam Barony
+5.0.2 installation, Windows x64 and .NET Framework 4.5+ (included with Windows 10/11).
+Private Direct IP play for 2-4 players; protocol 28, framework API 1.
 
-## Optional installer
+## Install with Setup
 
-The release asset **Dungeon-Delve-0.17.2-Setup.exe** installs the
-same complete mod as the ZIP. Verify its SHA256, run it, select a detected Barony
-installation or use Browse/paste a manual game path, then click Install.
-Steam libraries are detected automatically; no whole-disk scan is performed.
-An optional desktop shortcut starts the mod. No previous mod version is needed.
-Windows x64 with .NET Framework 4.5 or later is required (included with Windows
-10/11). The installer needs write access to the selected game directory.
+1. Install Barony through Steam, run it once, then keep Steam running.
+2. Download Dungeon-Delve-0.17.2-Setup.exe and verify its SHA256 against the
+   accompanying SHA256SUMS.txt.
+3. Run Setup. Select the detected Barony folder or Browse to the folder containing
+   barony.exe. Steam > Barony > Properties > Installed Files > Browse shows it.
+4. Leave the desktop shortcut checked if wanted, then click Install.
+5. Double-click Dungeon Delve.exe in the main Barony directory, beside barony.exe,
+   or use the desktop shortcut. Steam's normal Play button still starts vanilla.
 
-The installer verifies the owned game and required DLLs before extracting into
-`Dungeon-Delve-0.17.2`. It never replaces retail files or saves. A modified or
-partial existing versioned mod folder is preserved and installation is refused;
-rename that folder yourself before reinstalling. No admin request, auto-update,
-registry registration or automatic game launch. For a protected game directory,
-use the portable ZIP in a writable location instead.
+Setup verifies the owned game and DLLs. It adds the launcher to the game directory
+and puts supporting files into Dungeon-Delve-0.17.2. Personal saves, configuration,
+retail executable and assets are not replaced. No admin request, auto-updater or
+background service. A modified/same-version supporting folder is preserved;
+rename it before a full reinstall, or add the standalone root launcher instead.
+An unrelated existing Dungeon Delve.exe is preserved and installation is refused.
 
-## Portable ZIP: install and play
+## Extract the ZIP instead
 
-1. Install Barony through Steam and run it normally once. Keep Steam running.
-2. Download **Dungeon-Delve-0.17.2-windows-x64.zip** from this project's GitHub
-   Releases page, not GitHub's automatic "Source code" downloads. Verify its
-   SHA256 against the accompanying SHA256SUMS.txt from the trusted publisher.
-3. Extract the ZIP into your Barony installation folder (Steam > Barony >
-   Properties > Installed Files > Browse). The ZIP contains one new folder:
+1. Download Dungeon-Delve-0.17.2-windows-x64.zip and verify its checksum.
+2. Right-click > Extract All. Set the destination to the Barony installation
+   directory containing barony.exe. Extract all contents directly there.
+3. Double-click Dungeon Delve.exe beside barony.exe. Keep the supporting folder.
 
-   ```text
-   Barony/
-     barony.exe                         <- original, never replace
-     Dungeon-Delve-0.17.2/
-       Dungeon Delve.exe                <- double-click this (custom portal icon)
-       Play-Dungeon-Delve.cmd            <- optional legacy console launcher
-       Launch.ps1
-       release.json
-       runtime/barony-rmf.exe
-       mods/vending_machine_framework/
-       mods/extraction-raid/
-   ```
+```text
+Barony/
+  barony.exe                       <- retail base game
+  Dungeon Delve.exe                <- mod launcher
+  Dungeon-Delve-0.17.2/
+    Launch.ps1
+    release.json
+    runtime/barony-rmf.exe
+    mods/vending_machine_framework/
+    mods/extraction-raid/
+```
 
-4. Open **Dungeon-Delve-0.17.2** and double-click **Dungeon Delve.exe**.
-   A desktop shortcut to this file is optional. No administrator access or
-   global PowerShell policy change is needed. Normal Steam Play starts vanilla.
-   A small startup window closes automatically when the game opens. No command
-   window appears. The EXE needs .NET Framework 4.5+ (included with Windows 10/11).
-5. Everyone uses the same release. Host/join a fresh private **Direct IP** lobby;
-   everyone must join before starting. Use the port shown by the game; host
-   firewall/router setup may be necessary. Steam matchmaking/invites and joining
-   an already-running match are not supported.
+Do not add another outer folder when extracting, or copy mod files over retail
+files. GitHub's automatic Source code archives are not playable packages.
+The launcher has a custom portal icon and opens without a command window.
+It finds the adjacent supporting folder automatically. A complete portable copy
+also works outside the game directory through Steam discovery.
 
-You can also extract anywhere writable outside Barony; the launcher discovers
-Steam libraries. If your game folder is protected, use that portable option
-instead of running the mod as administrator. Keep the complete folder together.
-Do not copy runtime files over retail files or mix releases/native frameworks.
+## Existing complete 0.17.2 installation
+
+Download the small Dungeon-Delve.exe asset. Save it as Dungeon Delve.exe beside
+retail barony.exe, with the existing Dungeon-Delve-0.17.2 supporting folder next
+to it. Double-click the root launcher. The small EXE alone in Downloads cannot
+run the mod. Older launchers inside the supporting folder can remain in place.
+
+## Play with friends
+
+Everyone uses the same release. Host/join a fresh private Direct IP lobby and
+join before the match starts. Use the host IP and the displayed port; Internet
+connections may need host firewall/router setup. No Steam invites/matchmaking
+or joining an already-running match.
 
 ## What the launcher does
 
-It prefers the Barony installation directly above the extracted folder, then
-Steam library discovery. It uses the two bundled mods, not Workshop downloads or
-unrelated installed mods, and verifies their complete file lists and SHA256s.
-It also verifies the native runtime, tested retail executable and ten DLLs
-copied locally from your owned installation; game DLLs/assets are not shipped.
-Matching version strings alone do not establish binary compatibility.
+The launcher checks the runtime, bundled content, compatible retail executable
+and ten owned-game DLL hashes. Required DLLs are copied locally from your game;
+they are not included in downloads. Matching version strings alone do not prove
+compatibility. Every launch creates an isolated session under
+%LOCALAPPDATA%\vending_machine_framework\0.17.2\sessions\.
+Personal campaigns and configuration are not imported or edited. Back up normal
+saves before trying unofficial software. Logs and launch.json stay in each session.
 
-Each launch runs from a fresh isolated session under
-`%LOCALAPPDATA%\vending_machine_framework\0.17.2\sessions\`.
-Retail executable, assets, personal saves and configuration are not replaced,
-imported or edited. Back up normal saves before trying unofficial software.
-No background service, scheduled task or auto-updater is installed.
+## Troubleshooting, updates and removal
 
-## Adding the EXE to an existing 0.17.2 installation
-
-Download the optional **Dungeon-Delve.exe** release asset and save it inside your
-existing `Dungeon-Delve-0.17.2` folder, next to `Launch.ps1` and `release.json`.
-Double-click it to play. Do not put it beside retail `barony.exe` or run it alone
-from Downloads. It adds the custom-icon launcher to the existing full package;
-it is not a game installer. The old CMD entrypoint can remain in place.
-For the updated launch script and installer shortcut, use the complete new ZIP
-or Setup instead. Setup preserves an older same-version folder and asks you
-to rename it yourself rather than overwriting it.
-
-## Manual paths and checking installation
-
-If discovery fails, click **Choose Barony folder...** in the launcher and select
-the owned game folder containing `barony.exe`. The launcher checks it and tries
-again. For optional diagnostics, open a terminal in the extracted folder:
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Launch.ps1 -GamePath "D:\SteamLibrary\steamapps\common\Barony" -CheckOnly
-```
-
-Remove `-CheckOnly` to launch. `-PrepareOnly` stages an isolated session without
-opening the game. Paths with spaces/brackets work. **Play-Framework.cmd** is an
-optional framework-only normal-game launcher; it does not enable Bring Your
-Gear or Join In Progress. Those separate mods are not included.
-
-## Updates, uninstall and troubleshooting
-
-- Close modded games before updating. Download/extract the complete new release
-  into its own versioned folder; update your shortcut and have all peers update.
-  Do not overlay versions or rely on automatic Workshop updates.
-- If Barony updates and checksum checks fail, obtain a compatible mod release.
-  Never edit expected hashes to bypass compatibility checks.
-- To uninstall, close modded games and remove only the Dungeon-Delve versioned
-  folder and its shortcut. Optionally remove old isolated sessions after keeping
-  useful logs. Do not delete the Barony folder or personal saves.
-- Missing/damaged bundled content: extract a fresh complete release ZIP rather
-  than falling back to a different Workshop or local copy.
-- Report release/game versions, reproduction steps and sanitized `launch.json`
-  and session logs. Do not post private IPs, usernames or personal saves.
-- This executable is unsigned third-party software. Trust the publisher and
-  verify checksums; do not disable antivirus to run it.
+- Missing files: the main Barony directory must contain the mod EXE and the
+  complete Dungeon-Delve-0.17.2 supporting folder. Extract the full ZIP again.
+- Game not found: choose the folder containing barony.exe in the launcher.
+- Incompatible hashes: verify Barony files in Steam or obtain a matching release;
+  do not edit expected hashes to bypass the check.
+- Updating: close modded games and update every peer. Setup preserves older or
+  modified supporting folders; rename those folders yourself before reinstalling.
+  The small EXE can update only the launcher for an existing complete 0.17.2 package.
+- Uninstall: close the mod, remove only Dungeon Delve.exe and its
+  Dungeon-Delve-0.17.2 supporting folder/shortcut. Keep barony.exe and retail assets.
+  Keep any logs you need before optionally removing old isolated sessions.
+- For support, provide versions, steps and sanitized session logs/launch.json.
+  Do not post private IPs, usernames or personal saves. This is unsigned software;
+  verify its publisher/checksum rather than disabling antivirus.
 
 ## Game and release limits
 

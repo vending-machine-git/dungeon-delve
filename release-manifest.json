@@ -7,8 +7,9 @@
   "game_version": "5.0.2",
   "audio_backend": "fmod",
   "audio_version": "2.02.14",
-  "distribution_revision": "exe-launcher-1",
-  "launcher_sha256": "19a370f6d6f17c7da739ddb843f621fe363c1ca2aa3cf3667f0d0f179e2d3bcc",
+  "distribution_revision": "exe-launcher-2",
+  "install_layout": "game-root-launcher",
+  "launcher_sha256": "07678c67e9dc2070859a01a14162890e6cef93dfeec3bad3d39607bdd0ad1a40",
   "game_sha256": "8566da37bc39ea5a1ed08a8ad57608af4f019fb415869258fb3c1d310b4419e4",
   "runtime_sha256": "d5c04f39488084547e45e4017e86feb3fd7182aae2f485101f6b78bbdd581782",
   "game_dlls": [
