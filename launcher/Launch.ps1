@@ -11,6 +11,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+[Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false)
 
 function Read-Json([string]$Path) {
     return Get-Content -LiteralPath $Path -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -86,6 +87,10 @@ try {
         }
     }
     if (!$GamePath) { throw 'Cannot locate Barony. Run Launch.ps1 -GamePath "your Steam Barony folder".' }
+    if (!(Test-Path -LiteralPath $GamePath -PathType Container) -or
+        !(Test-Path -LiteralPath (Join-Path $GamePath 'barony.exe') -PathType Leaf)) {
+        throw 'Choose the Barony game folder containing barony.exe. Use Choose Barony folder to locate it, or pass -GamePath when using the script.'
+    }
     $GamePath = (Get-Item -LiteralPath $GamePath).FullName
     if ((Get-FileHash -LiteralPath (Join-Path $GamePath 'barony.exe') -Algorithm SHA256).Hash -ne $release.game_sha256) {
         throw 'This Barony build is not the tested Steam Windows 5.0.2 build. Verify Steam files or obtain a matching framework release. Nothing was overwritten.'

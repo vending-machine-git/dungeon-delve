@@ -35,7 +35,8 @@ use the portable ZIP in a writable location instead.
    Barony/
      barony.exe                         <- original, never replace
      Dungeon-Delve-0.17.2/
-       Play-Dungeon-Delve.cmd            <- double-click this
+       Dungeon Delve.exe                <- double-click this (custom portal icon)
+       Play-Dungeon-Delve.cmd            <- optional legacy console launcher
        Launch.ps1
        release.json
        runtime/barony-rmf.exe
@@ -43,9 +44,11 @@ use the portable ZIP in a writable location instead.
        mods/extraction-raid/
    ```
 
-4. Open **Dungeon-Delve-0.17.2** and double-click **Play-Dungeon-Delve.cmd**.
+4. Open **Dungeon-Delve-0.17.2** and double-click **Dungeon Delve.exe**.
    A desktop shortcut to this file is optional. No administrator access or
    global PowerShell policy change is needed. Normal Steam Play starts vanilla.
+   A small startup window closes automatically when the game opens. No command
+   window appears. The EXE needs .NET Framework 4.5+ (included with Windows 10/11).
 5. Everyone uses the same release. Host/join a fresh private **Direct IP** lobby;
    everyone must join before starting. Use the port shown by the game; host
    firewall/router setup may be necessary. Steam matchmaking/invites and joining
@@ -71,9 +74,22 @@ Retail executable, assets, personal saves and configuration are not replaced,
 imported or edited. Back up normal saves before trying unofficial software.
 No background service, scheduled task or auto-updater is installed.
 
+## Adding the EXE to an existing 0.17.2 installation
+
+Download the optional **Dungeon-Delve.exe** release asset and save it inside your
+existing `Dungeon-Delve-0.17.2` folder, next to `Launch.ps1` and `release.json`.
+Double-click it to play. Do not put it beside retail `barony.exe` or run it alone
+from Downloads. It adds the custom-icon launcher to the existing full package;
+it is not a game installer. The old CMD entrypoint can remain in place.
+For the updated launch script and installer shortcut, use the complete new ZIP
+or Setup instead. Setup preserves an older same-version folder and asks you
+to rename it yourself rather than overwriting it.
+
 ## Manual paths and checking installation
 
-Open a terminal in the extracted Dungeon-Delve-0.17.2 folder:
+If discovery fails, click **Choose Barony folder...** in the launcher and select
+the owned game folder containing `barony.exe`. The launcher checks it and tries
+again. For optional diagnostics, open a terminal in the extracted folder:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Launch.ps1 -GamePath "D:\SteamLibrary\steamapps\common\Barony" -CheckOnly
