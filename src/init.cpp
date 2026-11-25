@@ -53,6 +53,7 @@
 #include "mod_tools.hpp"
 #include "ui/MainMenu.hpp"
 #include "interface/consolecommand.hpp"
+#include "steam_invites.hpp"
 static ConsoleVariable<bool> cvar_sdl_disablejoystickrawinput("/sdl_joystick_rawinput_disable", false, "disable SDL rawinput for gamepads (helps SDL_HapticOpen())");
 #endif
 
@@ -259,6 +260,9 @@ int initApp(char const * const title, int fullscreen)
 		printlog("failed to initialize SDL: %s\n", SDL_GetError());
 		return 1;
 	}*/
+
+	// Framework Steam invites: before the window so the overlay can attach.
+	SteamInvites::startup();
 
 	// init steamworks
 #ifdef STEAMWORKS
@@ -1396,6 +1400,8 @@ int deinitApp()
 	}
 	TTF_Quit();
 	SDL_Quit();
+
+	SteamInvites::shutdown();
 
 	// shutdown steamworks
 #ifdef STEAMWORKS

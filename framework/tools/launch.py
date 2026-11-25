@@ -56,6 +56,8 @@ def main():
     parser.add_argument('--gear-import', type=Path, help='campaign save whose physical gear to copy into new normal runs')
     parser.add_argument('--mod', action='append', default=[], help='load a folder under project/mods; repeat for multiple mods')
     parser.add_argument('--profile', type=Path)
+    parser.add_argument('--connect-lobby', help='Steam invite code (steam:<lobby>) or lobby id to join once the game opens')
+    parser.add_argument('--no-steam-invites', action='store_true', help='Direct IP only: do not start Steam lobbies or the relay')
     parser.add_argument('--dry-run', action='store_true', help='validate and show the launch plan without writing or opening the game')
     args = parser.parse_args()
     if args.raid_import:
@@ -87,6 +89,16 @@ def main():
     profile = args.profile or ROOT / 'framework/profiles' / slug
     profile = profile.resolve()
     cmd = [str(binary), '-windowed', '-size=1280x720', '-datadir=' + str(GAME)]
+    connect_lobby = None
+    if args.connect_lobby:
+        text = args.connect_lobby.strip()
+        text = text[6:].strip() if text.lower().startswith('steam:') else text
+        if not text.isdigit() or int(text) == 0 or int(text) >= 2 ** 64:
+            parser.error('Invalid Steam invite code: ' + args.connect_lobby)
+        connect_lobby = str(int(text))
+        cmd += ['+connect_lobby', connect_lobby]
+    if args.no_steam_invites:
+        cmd += ['-no-steam-invites']
     if join_in_progress:
         cmd += ['-join-in-progress']
     if raid:
@@ -100,7 +112,7 @@ def main():
         cmd += ['-delve-menu-profile=' + str(profile / 'delve-profile.json')]
     mod_ids = [manifest['id'] for _, manifest in mods]
     report = dict(framework='vending_machine framework', profile=str(profile), binary=str(binary),
-                  selftest=False, mods=mod_ids, mode='extraction-raid' if raid else 'normal', gear_import=str(args.gear_import) if args.gear_import else None, join_in_progress=join_in_progress)
+                  selftest=False, mods=mod_ids, mode='extraction-raid' if raid else 'normal', gear_import=str(args.gear_import) if args.gear_import else None, join_in_progress=join_in_progress, connect_lobby=connect_lobby, steam_invites=not args.no_steam_invites)
     if args.dry_run:
         print(json.dumps(report, indent=2))
         return

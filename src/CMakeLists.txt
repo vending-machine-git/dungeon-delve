@@ -98,6 +98,7 @@ list(APPEND GAME_SOURCES
 	"${CMAKE_CURRENT_SOURCE_DIR}/gear_loadout.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/bring_gear.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/join_progress.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/steam_invites.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/steam.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/hash.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/player.cpp"

@@ -46,6 +46,7 @@
 #include <future>
 #include <chrono>
 #include "dlc_entitlements.hpp"
+#include "steam_invites.hpp"
 
 namespace {
 DLC::Entitlements localDLC;
@@ -98,6 +99,26 @@ void refreshInstalledSteamDLC(bool force)
         }
     }
 #endif
+    // Steam invites keep one long-lived Steam session. Never initialize or shut
+    // down a second one beside it; query through the shared session instead.
+    if ( SteamInvites::enabled() )
+    {
+        const int installed = SteamInvites::installedDlcMask();
+        if ( installed < 0 )
+        {
+            if (lastStatus != -1) printlog("[LICENSE]: Steam client unavailable; retrying while retaining standalone licenses.");
+            lastStatus = -1;
+            return;
+        }
+        localDLC.steam(true, static_cast<std::uint8_t>(installed));
+        publishLocalDLC();
+        const int status = (enabledDLCPack1 ? 1 : 0) | (enabledDLCPack2 ? 2 : 0) | (enabledDLCPack3 ? 4 : 0);
+        if (status != lastStatus) printlog("[LICENSE]: Steam installed DLC: myths=%d legends=%d deserters=%d.",
+            enabledDLCPack1, enabledDLCPack2, enabledDLCPack3);
+        lastStatus = status;
+        nextAttempt = now + 30000;
+        return;
+    }
     const std::string libraryPath = std::string(BASE_DATA_DIR) + "/steam_api64.dll";
     void* library = SDL_LoadObject(libraryPath.c_str());
     if ( !library )

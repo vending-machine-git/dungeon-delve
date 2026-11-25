@@ -49,6 +49,7 @@
 #include "raid.hpp"
 #include "bring_gear.hpp"
 #include "join_progress.hpp"
+#include "steam_invites.hpp"
 #ifdef BARONY_SMOKE_TESTS
 #include "smoke/SmokeTestHooks.hpp"
 #endif
@@ -7278,7 +7279,8 @@ int main(int argc, char** argv)
 						strncpy(datadir, argv[c] + 9, datadirsz);
 						datadir[datadirsz] = '\0';
 					}
-					else if ( Raid::parseArgument(argv[c]) || BringGear::parseArgument(argv[c]) || JoinProgress::parseArgument(argv[c]) )
+					else if ( Raid::parseArgument(argv[c]) || BringGear::parseArgument(argv[c]) || JoinProgress::parseArgument(argv[c])
+						|| SteamInvites::parseArgument(argv[c]) )
 					{
 						continue;
 					}
@@ -7465,6 +7467,8 @@ int main(int argc, char** argv)
 			}
 			DebugStats.t21PostHandleMessages = std::chrono::high_resolution_clock::now();
 			JoinProgress::tick();
+			SteamInvites::tick();
+			if ( intro ) MainMenu::tickSteamInvites();
             bool ranframes = handleEvents();
 #ifdef BARONY_SMOKE_TESTS
             MainMenu::tickRaidSmokeLobby();

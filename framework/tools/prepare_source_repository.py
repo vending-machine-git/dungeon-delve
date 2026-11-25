@@ -103,7 +103,7 @@ def export_sources(destination, source_root=ROOT):
         (destination / name).write_text('1 ICON "framework/launcher/DungeonDelve.ico"\n', encoding='utf-8', newline='\n')
         records.append(dict(path=name, sha256=hashlib.sha256((destination / name).read_bytes()).hexdigest()))
     (destination / '.gitignore').write_text(SOURCE_IGNORE, encoding='utf-8', newline='\n')
-    manifest = dict(format_version=1, native_version='0.20.3', framework_api=1, protocol=35,
+    manifest = dict(format_version=1, native_version='0.20.4', framework_api=1, protocol=35,
                     upstream='https://github.com/TurningWheel/Barony',
                     upstream_commit='not recorded in the supplied workspace',
                     scope='Current source, build tools and authored content; no retail data or compiled binaries',

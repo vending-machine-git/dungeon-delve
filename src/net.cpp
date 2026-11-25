@@ -22,6 +22,7 @@
 #include "delve_effects.hpp"
 #include "bring_gear.hpp"
 #include "join_progress.hpp"
+#include "steam_invites.hpp"
 #include "messages.hpp"
 #include "entity.hpp"
 #include "files.hpp"
@@ -99,6 +100,7 @@ void pollNetworkForShutdown() {
 			}
 		}
 	}
+	SteamInvites::tick();
 #ifdef STEAMWORKS
 	SteamAPI_RunCallbacks();
 #endif // STEAMWORKS
@@ -128,7 +130,7 @@ int sendPacket(UDPsocket sock, int channel, UDPpacket* packet, int hostnum, bool
 {
 	if ( directConnect )
 	{
-		return SDLNet_UDP_Send(sock, channel, packet);
+		return SteamInvites::send(sock, channel, packet);
 	}
 	else
 	{
@@ -238,7 +240,7 @@ int sendPacketSafe(UDPsocket sock, int channel, UDPpacket* packet, int hostnum)
 
 	if ( directConnect )
 	{
-		return SDLNet_UDP_Send(sock, channel, packetsend->packet);
+		return SteamInvites::send(sock, channel, packetsend->packet);
 	}
 	else
 	{
@@ -6950,7 +6952,7 @@ void clientHandleMessages(Uint32 framerateBreakInterval)
 		//Direct-connect goes here.
 
 		// receive packets from server
-		while (SDLNet_UDP_Recv(net_sock, net_packet))
+		while (SteamInvites::recv(net_sock, net_packet) > 0)
 		{
 			// filter out broken packets
 			if ( !net_packet->data[0] )
@@ -9652,7 +9654,7 @@ void serverHandleMessages(Uint32 framerateBreakInterval)
 	{
 		//Direct-connect goes here.
 
-		while (SDLNet_UDP_Recv(net_sock, net_packet))
+		while (SteamInvites::recv(net_sock, net_packet) > 0)
 		{
 			// filter out broken packets
 			if ( !net_packet->data[0] )
@@ -9812,6 +9814,7 @@ bool handleSafePacket()
 void closeNetworkInterfaces()
 {
 	printlog("closing network interfaces...\n");
+	SteamInvites::networkClosed();
 
 	receivedclientnum = false;
 

@@ -19,20 +19,33 @@ namespace DungeonDelve
         internal bool CheckOnly;
         internal bool PrepareOnly;
         internal bool Framework;
+        internal string ConnectLobby;
     }
 
     internal static class Launcher
     {
         internal static readonly string Root = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        internal const string PayloadFolder = "Dungeon-Delve-0.20.3";
+        internal const string PayloadFolder = "Dungeon-Delve-0.20.4";
 
         internal static string FindPayload()
         {
             string nested = Path.Combine(Root, PayloadFolder);
             string candidate = Directory.Exists(nested) ? nested : Root;
             if (!File.Exists(Path.Combine(candidate, "Launch.ps1")) || !File.Exists(Path.Combine(candidate, "release.json")))
-                throw new IOException("Extract the complete Dungeon Delve ZIP into your Barony folder. Keep Dungeon Delve.exe beside barony.exe and the Dungeon-Delve-0.20.3 supporting folder. Launch.ps1 or release.json is missing.");
+                throw new IOException("Extract the complete Dungeon Delve ZIP into your Barony folder. Keep Dungeon Delve.exe beside barony.exe and the Dungeon-Delve-0.20.4 supporting folder. Launch.ps1 or release.json is missing.");
             return candidate;
+        }
+
+        // Steam invite code ("steam:<lobby>") or bare lobby id; digits only reach the runtime.
+        internal static string ParseLobby(string value)
+        {
+            string text = value.Trim();
+            if (text.StartsWith("steam:", StringComparison.OrdinalIgnoreCase)) text = text.Substring(6).Trim();
+            ulong lobby;
+            if (text.Length == 0 || !ulong.TryParse(text, System.Globalization.NumberStyles.None,
+                    System.Globalization.CultureInfo.InvariantCulture, out lobby) || lobby == 0)
+                throw new ArgumentException("Invalid Steam invite code: " + value);
+            return lobby.ToString(System.Globalization.CultureInfo.InvariantCulture);
         }
 
         // Windows command-line escaping, including trailing backslashes. No shell evaluates these arguments.
@@ -63,6 +76,7 @@ namespace DungeonDelve
             if (options.ProfileRoot != null) { arguments.Add("-ProfileRoot"); arguments.Add(options.ProfileRoot); }
             if (options.CheckOnly) arguments.Add("-CheckOnly");
             if (options.PrepareOnly) arguments.Add("-PrepareOnly");
+            if (options.ConnectLobby != null) { arguments.Add("-ConnectLobby"); arguments.Add(options.ConnectLobby); }
             string powershell = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows),
                 @"System32\WindowsPowerShell\v1.0\powershell.exe");
             ProcessStartInfo start = new ProcessStartInfo {
@@ -117,12 +131,14 @@ namespace DungeonDelve
                     if (option == "--check") options.CheckOnly = true;
                     else if (option == "--prepare") options.PrepareOnly = true;
                     else if (option == "--framework") options.Framework = true;
-                    else if (option == "--game-dir" || option == "--profile-root" || option == "--report")
+                    else if (option == "--game-dir" || option == "--profile-root" || option == "--report"
+                        || option == "--connect-lobby" || option == "+connect_lobby")
                     {
                         if (++index >= arguments.Length) throw new ArgumentException("Missing value for " + option);
                         if (option == "--game-dir") options.GamePath = arguments[index];
                         else if (option == "--profile-root") options.ProfileRoot = arguments[index];
-                        else options.Report = arguments[index];
+                        else if (option == "--report") options.Report = arguments[index];
+                        else options.ConnectLobby = ParseLobby(arguments[index]);
                     }
                     else throw new ArgumentException("Unknown option: " + option);
                 }

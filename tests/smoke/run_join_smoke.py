@@ -27,6 +27,8 @@ def main():
  ap.add_argument('--host-gear',action='store_true',help='enable Bring Your Gear on the host')
  ap.add_argument('--plain-extra-guests',action='store_true',help='additional guests use class starters without Bring Your Gear')
  ap.add_argument('--timeout',type=int,default=75)
+ ap.add_argument('--steam',choices=['invite','joingame','code'],help='host invites guests through the local Steam stand-in; all play uses the relay layer')
+ ap.add_argument('--steam-drop',type=int,default=0,help='with --steam, drop every Nth unreliable relay packet')
  args=ap.parse_args()
  if args.simultaneous and args.extra_guests!=1:ap.error('--simultaneous currently uses exactly one additional guest')
  if args.gear_import and not (args.host_gear or args.reject_import):ap.error('--gear-import requires --host-gear or --reject-import')
@@ -35,12 +37,17 @@ def main():
  run=ROOT/'framework/profiles'/('jip-smoke-'+uuid.uuid4().hex[:12]);run.mkdir(parents=True)
  sync=run/'sync';sync.mkdir();players={};streams=[]
  print('ARTIFACTS '+str(run),flush=True)
+ steam=None
+ if args.steam:
+  from steam_fixture import SteamFixture
+  steam=SteamFixture(run,method=args.steam,click='game',drop=args.steam_drop)
  def start(role):
   folder=run/role;(folder/'config').mkdir(parents=True)
   (folder/'config/config.json').write_text(json.dumps(dict(skipintro=True,mods=[],port_number=57167,music_volume=1)))
   env=os.environ.copy();env['PATH']=str(args.data)+os.pathsep+env.get('PATH','')
   env.update(BARONY_SMOKE_AUTOPILOT='1',BARONY_SMOKE_ROLE=role,BARONY_SMOKE_CONNECT_ADDRESS='127.0.0.1:57167',BARONY_SMOKE_JIP_SYNC=str(sync),BARONY_SMOKE_JIP_FLOOR=str(args.floor))
   if role=='host':env['BARONY_SMOKE_JIP_SOLO_HOST']='1'
+  if steam:env.update(steam.env(role,folder,host=role=='host'))
   if args.loss and role.startswith('client'):env['BARONY_SMOKE_JIP_LOSS']='1'
   if args.snapshot_write_failure==role:(folder/'jip').write_text('test-owned file blocking snapshot directory')
   if args.simultaneous and role=='client':env['BARONY_SMOKE_JIP_DELAY']='1'
@@ -60,6 +67,7 @@ def main():
   deadline=time.monotonic()+args.timeout
   while True:
    logs={role:(folder/'log.txt').read_text(errors='replace') if (folder/'log.txt').exists() else '' for role,(folder,_) in players.items()}
+   if steam:steam.check()
    for role,(folder,p) in players.items():
     if p.poll() is not None:raise RuntimeError(role+' exited: '+str(p.returncode))
     if '[SMOKE][JIP] fail' in logs[role] or ('[JIP] join failed:' in logs[role] and not (args.corrupt_transfer and 'World transfer failed its checksum.' in logs[role]) and not args.snapshot_write_failure) or ('[JIP] sync cancelled' in logs[role] and not allow_cancel):raise RuntimeError(role+' reported join failure; see '+str(folder/'log.txt'))
@@ -149,7 +157,8 @@ def main():
   if args.check_full:
    assert args.extra_guests==2,'Full test requires all four player slots'
    start('client-full')
-   wait(lambda logs:'connection attempt denied by server, error code: 4' in logs['client-full'])
+   # Over Steam the full four-member lobby refuses a fifth player before any connection.
+   wait(lambda logs:'connection attempt denied by server, error code: 4' in logs['client-full'] or (steam and '[STEAM-INVITE] join failed: The Steam lobby is full' in logs['client-full']))
    full_rejected=True
   advanced=None
   if args.advance_floor:
@@ -197,11 +206,22 @@ def main():
     return True
    callback=CALLBACK(window_callback);ctypes.windll.user32.EnumWindows(callback,0)
    for role,hwnd in handles.items():subprocess.run([os.environ.get('UNIVERSAL_MODDER', str(Path.home() / 'Documents/Projects/[Tools]/universal-modder/bin/um.cmd')),'win','shot','--hwnd',str(hwnd),'--scale','0.5',str(run/(role+'.png'))],check=True)
-  result=dict(status='PASS',gear_checks=gear_checks,floor=args.floor,loss=args.loss,additional_guests=additional,full_rejected=full_rejected,host_dead=args.host_dead,advanced_floor=advanced,fixture=fixture,guest=observed,host=host,pickup=done)
+  steam_checks=None
+  if steam:
+   hostlog=(run/'host/log.txt').read_text(errors='replace')
+   assert '[SMOKE][STEAM] invite command issued in game' in hostlog,'Host /invite did not run during gameplay'
+   assert '[STEAM-INVITE] lobby closed to new arrivals' not in hostlog,'Join In Progress lobby closed during gameplay'
+   for role in [r for r in players if r.startswith('client') and r!='client-full']:
+    guestlog=(run/role/'log.txt').read_text(errors='replace')
+    assert '[STEAM-INVITE] relaying to host' in guestlog,'Guest did not use the Steam relay: '+role
+    assert '[STEAM-INVITE] accepted relay session '+str(steam.user(role)) in hostlog,'Host did not accept relay session: '+role
+   steam_checks=steam.summary()
+  result=dict(status='PASS',steam=steam_checks,gear_checks=gear_checks,floor=args.floor,loss=args.loss,additional_guests=additional,full_rejected=full_rejected,host_dead=args.host_dead,advanced_floor=advanced,fixture=fixture,guest=observed,host=host,pickup=done)
   (run/'result.json').write_text(json.dumps(result,indent=2)+'\n');print('PASS: joined ongoing floor with live terrain/entities, preserved host, and picked up one item.',flush=True)
  except Exception as exc:
   (run/'result.json').write_text(json.dumps(dict(status='FAIL',error=str(exc)),indent=2)+'\n');raise
  finally:
+  if steam:steam.close()
   for _,p in players.values():
    if p.poll() is None:p.terminate()
   for _,p in players.values():

@@ -15,6 +15,7 @@
 #include "../delve_lobby.hpp"
 #include "../bring_gear.hpp"
 #include "../join_progress.hpp"
+#include "../steam_invites.hpp"
 #include "../player.hpp"
 #include "../stat.hpp"
 #include "../menu.hpp"
@@ -12015,7 +12016,7 @@ bind_failed:
 
 		for (int numpacket = 0; numpacket < PACKET_LIMIT; numpacket++) {
 			if (directConnect) {
-				if (!SDLNet_UDP_Recv(net_sock, net_packet)) {
+				if (!(SteamInvites::recv(net_sock, net_packet) > 0)) {
 					break;
 				}
 			} else {
@@ -12486,7 +12487,7 @@ bind_failed:
 			// receive the packet:
 			bool gotPacket = false;
 			if (directConnect) {
-			    if (SDLNet_UDP_Recv(net_sock, net_packet)) {
+			    if ((SteamInvites::recv(net_sock, net_packet) > 0)) {
 			        if (!handleSafePacket()) {
 			            Uint32 packetId = SDLNet_Read32(&net_packet->data[0]);
 			            if (packetId == 'HELO') {
@@ -12706,7 +12707,7 @@ bind_failed:
 #endif
 		    for (int numpacket = 0; numpacket < PACKET_LIMIT && net_packet; numpacket++) {
 			    if (directConnect) {
-				    if (!SDLNet_UDP_Recv(net_sock, net_packet)) {
+				    if (!(SteamInvites::recv(net_sock, net_packet) > 0)) {
 					    break;
 				    }
 			    } else {
@@ -12935,6 +12936,16 @@ bind_failed:
 	    if ((!address || address[0] == '\0') && (!pLobby || lobbyType != LobbyType::LobbyOnline)) {
 	        soundError();
 	        return false;
+	    }
+	    {
+	        // A pasted Steam invite code joins the lobby first; tickSteamInvites
+	        // connects through the relay once the host's lobby is validated.
+	        Uint64 inviteLobby = 0;
+	        if (lobbyType == LobbyType::LobbyLAN && address && SteamInvites::parseInviteCode(address, inviteLobby)) {
+	            stringCopyUnsafe(last_address, address, sizeof(last_address));
+	            SteamInvites::requestJoin(inviteLobby, "code");
+	            return true;
+	        }
 	    }
 	    if ( Raid::requested() )
 	    {
@@ -13230,12 +13241,18 @@ bind_failed:
                 port = DEFAULT_PORT;
 		    }
 
-		    // save address for next time
-		    stringCopyUnsafe(last_address, address, sizeof(last_address));
+		    // save address for next time (a relay peer is not reusable)
+		    const bool steamPeer = SteamInvites::isSteamAddress(address);
+		    if (!steamPeer) stringCopyUnsafe(last_address, address, sizeof(last_address));
 
 		    // resolve host's address
 		    printlog("resolving host's address at %s...\n", address);
-		    if (SDLNet_ResolveHost(&net_server, address_copy, port) == -1) {
+		    if (steamPeer) {
+		        if (!SteamInvites::resolve(address, &net_server)) {
+		            systemErrorPrompt("Steam is no longer available to reach the host.");
+		            goto failed;
+		        }
+		    } else if (SDLNet_ResolveHost(&net_server, address_copy, port) == -1) {
 			    char buf[1024];
 			    snprintf(buf, sizeof(buf), Language::get(5345), address);
 				systemErrorPrompt(buf);
@@ -18743,7 +18760,8 @@ failed:
 	        createLockedStone(index);
 	        return;
 	    }
-		if (LobbyHandler.getHostingType() != LobbyHandler_t::LobbyServiceType::LOBBY_STEAM) {
+		const bool frameworkSteamInvite = multiplayer == SERVER && directConnect && SteamInvites::active();
+		if (LobbyHandler.getHostingType() != LobbyHandler_t::LobbyServiceType::LOBBY_STEAM && !frameworkSteamInvite) {
 			createWaitingStone(index);
 			return;
 		}
@@ -18800,12 +18818,28 @@ failed:
 		invite->setColor(0);
 		invite->setBorderColor(0);
 		invite->setHighlightColor(0);
-		invite->setCallback([](Button&){buttonInviteFriends(NULL);});
+		if (frameworkSteamInvite) {
+			invite->setCallback([](Button&){
+				soundActivate();
+				const std::string message = SteamInvites::inviteFriends();
+				if (!message.empty()) {
+					errorPrompt(message.c_str(), "Okay", [](Button&){soundCancel(); closeMono();});
+				}
+			});
+		} else {
+			invite->setCallback([](Button&){buttonInviteFriends(NULL);});
+		}
 	}
 
 	static void createWaitingStone(int index) {
 	    if (playerSlotsLocked[index]) {
 	        createLockedStone(index);
+	        return;
+	    }
+	    // A Direct IP host with Steam available offers a Steam invite in open slots.
+	    // Same condition as createInviteButton, so the two never recurse.
+	    if (multiplayer == SERVER && directConnect && SteamInvites::active()) {
+	        createInviteButton(index);
 	        return;
 	    }
 
@@ -23745,6 +23779,9 @@ failed:
 
 		// create lobby
 		createLobby(LobbyType::LobbyLAN);
+
+		// Also advertise a friends-only Steam lobby for invites and relay play.
+		SteamInvites::hostStarted(nullptr);
 #endif
 	}
 
@@ -23791,7 +23828,28 @@ failed:
                 printlog("[SMOKE][RAID] host_ready");
             } else {
                 const char* address = std::getenv("BARONY_SMOKE_CONNECT_ADDRESS");
-                connectToServer(address ? address : "127.0.0.1:57165", nullptr, LobbyType::LobbyLAN);
+                if (address && !std::strcmp(address, "steam-invite")) {
+                    // Wait for an invite through the ordinary Steam callback path.
+                    printlog("[SMOKE][STEAM] waiting for invite");
+                } else {
+                    connectToServer(address ? address : "127.0.0.1:57165", nullptr, LobbyType::LobbyLAN);
+                }
+            }
+        }
+        if (const char* click = std::getenv("BARONY_SMOKE_STEAM_INVITE_CLICK")) {
+            // Press the real lobby-card invite button once the Steam lobby exists.
+            static bool pressed = false;
+            auto lobby = main_menu_frame->findFrame("lobby");
+            if (!pressed && !std::strcmp(click, "card") && lobby && SteamInvites::hostLobbyReady()) {
+                for (int c = 1; c < MAXPLAYERS && !pressed; ++c) {
+                    auto card = lobby->findFrame((std::string("card") + std::to_string(c)).c_str());
+                    auto button = card ? card->findButton("invite_button") : nullptr;
+                    if (button) {
+                        pressed = true;
+                        printlog("[SMOKE][STEAM] pressing invite card slot=%d", c);
+                        button->activate();
+                    }
+                }
             }
         }
         if (std::getenv("BARONY_SMOKE_TAVERN") && main_menu_frame->findFrame("lobby")) {
@@ -43964,5 +44022,31 @@ void showJoinProgressError(const char* error) {
   beginFade(FadeDestination::RootMainMenu);return;
  }
  disconnectFromLobby(false);destroyMainMenu();createMainMenu(false);connectionErrorPrompt(error);
+}
+}
+
+namespace MainMenu {
+// Accepted Steam invites, friends-list Join Game, +connect_lobby and pasted
+// invite codes all arrive here once the host's lobby is validated.
+void tickSteamInvites() {
+ if (!main_menu_frame || fadeout || ticks < TICKS_PER_SECOND) return;
+ std::string address, error;
+ if (!SteamInvites::takeConnectAddress(address, error)) return;
+ if (!error.empty()) {
+  closePrompt("connect_prompt");
+  connectionErrorPrompt(error.c_str());
+  return;
+ }
+ if (multiplayer != SINGLE) {
+  connectionErrorPrompt("Leave your current lobby, then accept the invite again.");
+  SteamInvites::cancelJoin();
+  return;
+ }
+ printlog("[STEAM-INVITE] connecting to %s", address.c_str());
+ directConnect = true;
+ loadingsavegame = 0;
+ loadinglobbykey = 0;
+ soundActivate();
+ (void)connectToServer(address.c_str(), nullptr, LobbyType::LobbyLAN);
 }
 }
