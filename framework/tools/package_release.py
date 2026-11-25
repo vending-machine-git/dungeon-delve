@@ -6,9 +6,9 @@ import shutil
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = '0.17.2'
+VERSION = '0.20.2'
 GAME = Path(r'F:\Steam\steamapps\common\Barony')
-PRODUCTION_HASH = 'd5c04f39488084547e45e4017e86feb3fd7182aae2f485101f6b78bbdd581782'
+PRODUCTION_HASH = 'bb79de44fc7211ffd4463bbe40f89bd898a82bf0241a8518245a8e34ec1c780e'
 GAME_HASH = '8566da37bc39ea5a1ed08a8ad57608af4f019fb415869258fb3c1d310b4419e4'
 DLLS = ('fmod.dll', 'glew32.dll', 'libfreetype-6.dll', 'libpng16-16.dll', 'physfs.dll',
         'SDL2.dll', 'SDL2_image.dll', 'SDL2_net.dll', 'SDL2_ttf.dll', 'zlib1.dll')
@@ -49,7 +49,7 @@ def main():
     for path in sorted(ROOT.glob('LICENSE*.txt')):
         shutil.copy2(path, licenses / path.name)
     shutil.copy2(ROOT / 'framework/LICENSE-RMF.txt', licenses / 'LICENSE-RMF.txt')
-    release = dict(version=VERSION, protocol=28, api_version=1, platform='windows-x64',
+    release = dict(version=VERSION, protocol=34, api_version=1, platform='windows-x64',
                    launcher_sha256=launcher['sha256'],
                    game_version='5.0.2', game_sha256=GAME_HASH, runtime_sha256=PRODUCTION_HASH,
                    game_dlls=[dict(name=name, sha256=digest(GAME / name)) for name in DLLS])

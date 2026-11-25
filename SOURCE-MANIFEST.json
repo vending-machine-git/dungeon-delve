@@ -1,8 +1,8 @@
 {
   "format_version": 1,
-  "native_version": "0.17.2",
+  "native_version": "0.20.2",
   "framework_api": 1,
-  "protocol": 28,
+  "protocol": 34,
   "upstream": "https://github.com/TurningWheel/Barony",
   "upstream_commit": "not recorded in the supplied workspace",
   "scope": "Current source, build tools and authored content; no retail data or compiled binaries",
@@ -21,7 +21,7 @@
     },
     {
       "path": "SOURCE.md",
-      "sha256": "2fe14a0af373e6df8fb897705bd30aef1e8db1014c31860e243093b242025897"
+      "sha256": "f497436802db32077285e46baa32c9b753448f52403f98cb59b6f47573175a79"
     },
     {
       "path": "barony.rc",
@@ -165,15 +165,15 @@
     },
     {
       "path": "framework/README.md",
-      "sha256": "b720d948c5e14bca9c6512b27ab68f754f0b202a8b7220bcf8c7c1ff8b81aef2"
+      "sha256": "adb9ee9cc729db7e425cc5e8f0a15b4c6befd792084d03f8562246428bc8c097"
     },
     {
       "path": "framework/installer/Installer.cs",
-      "sha256": "43a391e8f3b5ab73124d8abe4e1c1746197d736b8c8cc8f2fdc87d619ee7616c"
+      "sha256": "d591d06fcdeb6769f10ac1a07dcf2684e81b4b5d8369c7f516b03d7efe96184a"
     },
     {
       "path": "framework/installer/README.md",
-      "sha256": "6d317d870babcc3c24c85f2e6043e052e296be0acdc6b255ab91c158910d91d6"
+      "sha256": "67b1f4f1c309a51c182b5ed3881b9b571ed08d6b0ce356004d39be02d342c747"
     },
     {
       "path": "framework/installer/app.manifest",
@@ -189,11 +189,11 @@
     },
     {
       "path": "framework/launcher/Launcher.cs",
-      "sha256": "358ffdbac4aea0a832ffbd2907b29d697e2812573410fbb409da6a9fb13f57b2"
+      "sha256": "fa982732294304cc02bc4e1bcc5a471385d7816d6bb07e037e9c6c75a4a22251"
     },
     {
       "path": "framework/launcher/README.md",
-      "sha256": "a714ad29722fc6c61db765798d2e6ba5194781ec6d176ac4496d32d9442e3102"
+      "sha256": "8468cb7a07d4b4e2cdf73f17747db7b8f8ea798268114ad014e86bec24aa5c61"
     },
     {
       "path": "framework/launcher/app.manifest",
@@ -217,43 +217,43 @@
     },
     {
       "path": "framework/release/UPLOAD-CHECKLIST.md",
-      "sha256": "a877e35e0e7387e77318ef65a87eb7adf574fa77de0fa60a748c2f555878a464"
+      "sha256": "6224351e975fb70244d6ce5883909b9d59fa42d01326d6c7f010d74ec27c19b8"
     },
     {
       "path": "framework/release/delve-description.bbcode",
-      "sha256": "ec044e3f7b646713e576a8017270b0067c5a660708c4a009acc5ce88edd651c9"
+      "sha256": "cba6b9e4e1151269b4b458b272e9ebe6070aa1fa729977e1a05209f09c05b35b"
     },
     {
       "path": "framework/release/framework-description.bbcode",
-      "sha256": "c0074fa96fd9f468ce6808f618f649642a85028c572f99e474ae384c94e7e3ff"
+      "sha256": "044125b21156a502a085f180cee6df8516a66d59bd9b091ccdeac6c212c4def3"
     },
     {
       "path": "framework/release/github/FRAMEWORK-SOURCE-README.md",
-      "sha256": "b720d948c5e14bca9c6512b27ab68f754f0b202a8b7220bcf8c7c1ff8b81aef2"
+      "sha256": "adb9ee9cc729db7e425cc5e8f0a15b4c6befd792084d03f8562246428bc8c097"
     },
     {
       "path": "framework/release/github/LAUNCHER-README.md",
-      "sha256": "c1029489a4fd4506a33ce1d3c04ee09be97971018bfd7d84c4b5f8364cbc00b5"
+      "sha256": "c18bdc1ebf96c66e30bd5bbe3b8278fd202ce69ee8db2ad2f470e46c9c131dfc"
     },
     {
       "path": "framework/release/github/PLAYER-README.md",
-      "sha256": "8073a8160dd94762ee483e8896082e2c0c8b9480f62df29a64292b62070ebc3d"
+      "sha256": "e70c0c5a16dc4b3049ffecafb402e5d52366fb35ecbc7403dedd76132930271d"
     },
     {
       "path": "framework/release/github/PUBLISH-CHECKLIST.md",
-      "sha256": "7c851cb7fdf7b4f3b06471c56153559886feefbe2f7702ae39a9fc3c0f4b53d3"
+      "sha256": "336f4f95156bf02c1bd729b5a31642aee0ab05d8cdf502540b5ad299f9c1ad90"
     },
     {
       "path": "framework/release/github/RELEASE-NOTES.md",
-      "sha256": "933e10802c8864983791bc8ce5c7900d511b35b8d18e411065c52d25b1694355"
+      "sha256": "5bea81b23ab293bf824347d29476fbb27722ce2990d2804f88c5d662a1ce74ad"
     },
     {
       "path": "framework/release/github/REPOSITORY-README.md",
-      "sha256": "91cf5ce8dbc42f4084a91cb7693c9c59245039d41e785a4e204d5581c521fdc2"
+      "sha256": "3878bc912d7ffa206c549b6b88d27489efad41af26f255198c287c3fd904b1be"
     },
     {
       "path": "framework/release/github/SOURCE.md",
-      "sha256": "2fe14a0af373e6df8fb897705bd30aef1e8db1014c31860e243093b242025897"
+      "sha256": "f497436802db32077285e46baa32c9b753448f52403f98cb59b6f47573175a79"
     },
     {
       "path": "framework/schemas/item.schema.json",
@@ -309,7 +309,7 @@
     },
     {
       "path": "framework/tools/make_class_builds.py",
-      "sha256": "b72a002b6fd6c729c6ee744a83138a8c6278a6a7b289e68742d289cecdc603d3"
+      "sha256": "689fb91d61a0dba9181e08502256261050732b9564c747be0e7031c1dd107a1d"
     },
     {
       "path": "framework/tools/make_cooldown_art.py",
@@ -321,7 +321,7 @@
     },
     {
       "path": "framework/tools/master_intro_audio.py",
-      "sha256": "e12f58f70b0ebdbe0b92cee54b0605380c2eafe03611789e37ec4202483894f4"
+      "sha256": "dcbe5f4b2ad6c595afcff2d89f1582f9b6e2bc58d39837b0645d69df21c384ef"
     },
     {
       "path": "framework/tools/mingw-toolchain.cmake",
@@ -329,11 +329,11 @@
     },
     {
       "path": "framework/tools/package_github_release.py",
-      "sha256": "0f7e138bb1b19a1299cd027e16e406858ad656d1d467fc3b8319c4ebff943c1a"
+      "sha256": "1c12e723e7e9585773dc2ebc2af183be1e3a47cef4b1d224505fd719784ca78a"
     },
     {
       "path": "framework/tools/package_release.py",
-      "sha256": "9be710e46daaa0bac1a257cfbcfd76c6843b34f2d6fa3f39b3c323fbbc6eb889"
+      "sha256": "614fc71a1989648d6b4a6943f8fb1e2fe3d6a4746642b779aceaecda37535f23"
     },
     {
       "path": "framework/tools/prepare_fmod.py",
@@ -341,7 +341,7 @@
     },
     {
       "path": "framework/tools/prepare_source_repository.py",
-      "sha256": "50cb2bb18605b6944ef0c01735dce527e9d0d9952efb5c452a0fe58fc88e410c"
+      "sha256": "4321f97b9a0f292adabf70970fdf81dd62a5edd06e97448169dae0a041232330"
     },
     {
       "path": "framework/tools/render_floor_diagrams.py",
@@ -417,7 +417,7 @@
     },
     {
       "path": "mods/extraction-raid/README.md",
-      "sha256": "da64129bb4d3c984b535853920b0bac09764d079169946147fcddfc26a27437b"
+      "sha256": "73307a57267341f37338ea33ed6ab7f5b5574ed311976c69b847ae7aa694db6e"
     },
     {
       "path": "mods/extraction-raid/data/rmf/class_builds.json",
@@ -449,7 +449,7 @@
     },
     {
       "path": "mods/extraction-raid/data/rmf/raid.json",
-      "sha256": "2f45fcf73ecb3e8a9f00950d3216b8ee8f47c140084a7edf0b9efbaab75f4ad0"
+      "sha256": "7be813ff2f50633871fb5bcb5c1f833fa402ef045507ad618d67943a168da8b3"
     },
     {
       "path": "mods/extraction-raid/images/rmf/cooldown-disc.png",
@@ -481,19 +481,19 @@
     },
     {
       "path": "mods/extraction-raid/mod.json",
-      "sha256": "c1f9c02ee3750254e217e0406f88d351cf24ccdb649cf660f1a3d74d50a3c251"
+      "sha256": "ba3ab474d1655ce3dd06b18d7ead447ec34ac0633b5b169ce0058eed3c9088a2"
     },
     {
       "path": "mods/extraction-raid/music/rmf/dungeon-floor-2.wav",
-      "sha256": "8074ddf09fec5d9659bfa4148dc4b8ed695aaa88f8081700c2a240d096046e70"
+      "sha256": "375dcb3d643251d5075770062be5bcefc4ca27b62df161c63e1394e63587adef"
     },
     {
       "path": "mods/extraction-raid/music/rmf/dungeon-floor-3.wav",
-      "sha256": "f0923182c0f7052aeb09dabbc1808228bc0f69d8b7895fc1671ec72e2f1dfa6a"
+      "sha256": "04d571126c90eca44bff3ee36722a424990f8dbd79d1262237a30e457a2ef10a"
     },
     {
       "path": "mods/extraction-raid/music/rmf/dungeon-intro.wav",
-      "sha256": "32ece1b9af89cadd74df43b66faa27e40729711d749b4024b5073d1f7e33b06a"
+      "sha256": "62f6985b7f98930d815a026f8eede11e0e903f6a5e2d1409f0e7f8483a1234c2"
     },
     {
       "path": "mods/extraction-raid/music/rmf/embers-before-the-delve.wav",
@@ -529,15 +529,15 @@
     },
     {
       "path": "mods/vending_machine_framework/README.md",
-      "sha256": "a1ac1f6d699d453eebeed3352a2c441f68b4edc88a03ea69406d640326fc8c64"
+      "sha256": "44800693c8aee421bd36ac02b398e39b50f2ab643d4a6c16597c27034465821a"
     },
     {
       "path": "mods/vending_machine_framework/data/rmf/framework.json",
-      "sha256": "d3e2828e23e51a748f8a613c2d6ab1db751a31d3f0d4ba7e7b5b8fac2703af43"
+      "sha256": "494450688586a49aabc8d0c37fc58093027f65cb9053722f3a527cb2ffca6db4"
     },
     {
       "path": "mods/vending_machine_framework/mod.json",
-      "sha256": "00dfccf586b46ee2504e41b578d8e302daeb6f8589d5cc6c2fae97fd1beb62e3"
+      "sha256": "ce1d743373840f353f1ff10d54cf583a65683d9c879c1efc5b3518dac84e7d4c"
     },
     {
       "path": "mods/vending_machine_framework/preview.png",
@@ -597,7 +597,7 @@
     },
     {
       "path": "src/actgate.cpp",
-      "sha256": "aef54ffe2994f710b9374aa82f7a1b28677c318da3fc7d33206312157f799f51"
+      "sha256": "beeeeb697a7bbde7d936f521c114fe88c4bfef3361ec5b7447508889becae5c7"
     },
     {
       "path": "src/actgeneral.cpp",
@@ -605,7 +605,7 @@
     },
     {
       "path": "src/actgib.cpp",
-      "sha256": "56ca3ae823155efd2e2628b5dcc0f5ebc2ebba3710e710aa1d11e24c6c3831c4"
+      "sha256": "23fc85af2a97cbc9f36051e5c7d70e9eacc5d17d225ed333e5d2a0adc61c6423"
     },
     {
       "path": "src/actgold.cpp",
@@ -621,7 +621,7 @@
     },
     {
       "path": "src/actitem.cpp",
-      "sha256": "03146acb950d8df3551a9da48dd1c182a5635a5946cccce98803cdd0019aeeda"
+      "sha256": "d631f708e56b1b55d3e6db2c4d0b98cd7d0330434208b7889139d9f24712c42a"
     },
     {
       "path": "src/actladder.cpp",
@@ -633,7 +633,7 @@
     },
     {
       "path": "src/actmonster.cpp",
-      "sha256": "9a6890154c8f2a7fb01f28bf2251ffd0ebbf20e4bb3a2c2e9ad6c64a85242b41"
+      "sha256": "7db64a2b9f73e76d809e19f615f4b1e6b1629d32bc9041687a1611b7c6c0e70f"
     },
     {
       "path": "src/actpedestal.cpp",
@@ -641,7 +641,7 @@
     },
     {
       "path": "src/actplayer.cpp",
-      "sha256": "e9c76f7a967960e1bd811380984477bb37cb2b4013e49b093d3018bce1787e08"
+      "sha256": "2fa0609d5129027859aa839aa2eff1699deeb6fd4a2ca37ed8e596244fd03c86"
     },
     {
       "path": "src/actpowercrystal.cpp",
@@ -741,7 +741,7 @@
     },
     {
       "path": "src/delve_builds.cpp",
-      "sha256": "1fdc5d3c6b70270f3b09f24f7c39a4136a65ee24d2cbb18df98bf111b415d7de"
+      "sha256": "1463c33ce576bf69df4b6e30dcea6214192768c80fb0a5d83bc9cc375f904f01"
     },
     {
       "path": "src/delve_builds.hpp",
@@ -790,6 +790,10 @@
     {
       "path": "src/delve_lobby.hpp",
       "sha256": "1e69a4cc8ccc007277b8a2b5a6783682afe7106c0f38f997a72556497a054526"
+    },
+    {
+      "path": "src/delve_net_position.hpp",
+      "sha256": "f90151f798cc50aae3f0425caa2c713129130e264dae146afa60a6f93d0a811f"
     },
     {
       "path": "src/delve_passives.cpp",
@@ -893,7 +897,7 @@
     },
     {
       "path": "src/entity.cpp",
-      "sha256": "c5c77bf399dd3cc37f3782aaafca79f1e695f716c95a95e35030ec9715e2582d"
+      "sha256": "541290d52e1a52bf3a7b2745fbbc15e41deada46262232f7616235c6c95f3c0a"
     },
     {
       "path": "src/entity.hpp",
@@ -1221,7 +1225,7 @@
     },
     {
       "path": "src/maps.cpp",
-      "sha256": "761867bdb266fd81fc53155a8a4321c31a86b0f070b1c9489d858bfb7b1b351f"
+      "sha256": "d86c7b39875ed662bf29f3c54b90aaf0054bb2a1ef7d5d269c8bd29a389f28ae"
     },
     {
       "path": "src/mechanisms.cpp",
@@ -1397,7 +1401,7 @@
     },
     {
       "path": "src/monster_shopkeeper.cpp",
-      "sha256": "acfefd84ddb39eb4410ac446a08326ea5da38c8c6187ab1aa3555076f3b3ae53"
+      "sha256": "c0e2b9002e80ec0ffa2637e4d8513163ebfb11be3a9dc05ecba24cddc2eb07b7"
     },
     {
       "path": "src/monster_skeleton.cpp",
@@ -1429,7 +1433,7 @@
     },
     {
       "path": "src/net.cpp",
-      "sha256": "39e371a33d2a2c64911e781c2d3662d31d63153fcd943302b0513253073542d4"
+      "sha256": "c49e389687c5d81a396c81b0c44c3e0ce11246f61ad07dd655f4318a88e276ca"
     },
     {
       "path": "src/net.hpp",
@@ -1477,15 +1481,15 @@
     },
     {
       "path": "src/raid.cpp",
-      "sha256": "703bea3c471443056345dbcb425d3f1a45ca40f8ccf5c82cf7612260e4ac2912"
+      "sha256": "10cefe6529cbcdbfd4ae0dbcb7e4d9a71618a4030b4a1c56e95f448d19c8f871"
     },
     {
       "path": "src/raid.hpp",
-      "sha256": "31bff2bd69057e1fcc21241e870d32aa84b6659ddd86ea47962a8d48a5288932"
+      "sha256": "a106f583aebb0e8b38bb2e086f51058b1d14b116da7f76245c35f70d1b00d560"
     },
     {
       "path": "src/raid_battle_rules.hpp",
-      "sha256": "d3bcf42a994453e4cc9dead9e97ce14b9ab76bc900b9106784fc9af5e6005388"
+      "sha256": "732adc4f6fba09b72bca2d35ffc6222bd941d586730dd416c4249e551024b33f"
     },
     {
       "path": "src/raid_revenants.inc",
@@ -1493,7 +1497,7 @@
     },
     {
       "path": "src/raid_world.cpp",
-      "sha256": "f1f83317b8f950458f4007434abdfab252d763a9f33b97a895d82e3c61e390d5"
+      "sha256": "4e6243a3406a2771527dfe3897e9bd4ab0b0afe973d4cf9817bfac6beae299d3"
     },
     {
       "path": "src/savepng.cpp",
@@ -1537,7 +1541,11 @@
     },
     {
       "path": "src/smoke/DelveBattleAudit.inc",
-      "sha256": "006f31b6c3a6d88f1b3de28d3cbfecdd52c77513f02495c6d9d508fd059345eb"
+      "sha256": "a0b91bd9b1cead1c56dde0d3a4b4ce2203ef21c45ab525d1e985679280a904ab"
+    },
+    {
+      "path": "src/smoke/DelveBoulderAudit.inc",
+      "sha256": "2adc27bba2ed670b34ba6a4a89d2cc902790e7b3c0556548862ee2fb49effd14"
     },
     {
       "path": "src/smoke/DelvePassiveAudit.inc",
@@ -1548,12 +1556,16 @@
       "sha256": "f29df6f71a3b3fa515a553055fd723458ea1d5745f1e4df933eaa74177fbcbed"
     },
     {
+      "path": "src/smoke/DelveShopAudit.inc",
+      "sha256": "496bba05740c32f73d0c3967452e512d7d2da664a0f1b7ddbb45cce7e80af507"
+    },
+    {
       "path": "src/smoke/DelveSpellbookAudit.inc",
       "sha256": "405bc27dd954e205590e1c4b1262b568364550db174d620e8cbd38043a90f19b"
     },
     {
       "path": "src/smoke/SmokeHooksBalance.cpp",
-      "sha256": "c2741c907e06b1e439ab041631a5418a41da65b769ceb189978a758e697ec2eb"
+      "sha256": "2ec850b70c9c082feee516e805fdbce88650f13a4254815a63d8dd9ed870dd5f"
     },
     {
       "path": "src/smoke/SmokeHooksCommon.hpp",
@@ -1561,7 +1573,7 @@
     },
     {
       "path": "src/smoke/SmokeHooksDelve.cpp",
-      "sha256": "601f78f2228770cb140789472374652ea0f2307e8dedca57874a1fd3ca1cc2f4"
+      "sha256": "ecd3aa44779ea71e9e74aaa0aef72d4a952654ac52e797d447ecffc515f1d58b"
     },
     {
       "path": "src/smoke/SmokeHooksGear.cpp",
@@ -1673,7 +1685,7 @@
     },
     {
       "path": "src/ui/MainMenu.cpp",
-      "sha256": "7c85657c5b1c5e8e198071e2087b95cab52990aeaf3abfc08e40b8da54d99bc7"
+      "sha256": "7f03d6a560b42e84374e543c6e96e3e1ed31458b9df5e7e5ac30810d02be0b23"
     },
     {
       "path": "src/ui/MainMenu.hpp",
@@ -1765,7 +1777,7 @@
     },
     {
       "path": "tests/balance/run_balance_audit.py",
-      "sha256": "e2d8c0c875ff9003cf8815f4f82da7a88f7e8acabbb59d12c69714465e815d2d"
+      "sha256": "57ad3c2131c99ad68d1a80e8df789af3489ae56131cbb8c0265ec4d3dfb4fe7f"
     },
     {
       "path": "tests/balance/run_balance_suite.py",
@@ -1785,7 +1797,7 @@
     },
     {
       "path": "tests/regression/InstallerUiSmoke.cs",
-      "sha256": "7a8589f5399e355c2ae8f7cc726f04c0ac4fc7fabf21ce15b6f7d488b774683c"
+      "sha256": "626710bebb8aabf8094bf70ef29fd29f5d7ca13a9f9463817e71406fe82413ea"
     },
     {
       "path": "tests/regression/LauncherUiSmoke.cs",
@@ -1797,11 +1809,11 @@
     },
     {
       "path": "tests/regression/battle_rules_test.cpp",
-      "sha256": "8b6ae71099215bf7895dc2bc57a2ec464c16d2e85600c49d153a88ba04560be7"
+      "sha256": "69bbc6992ec3bdb1fdf9ef56b1f63666a1b2effde494e23ba135ee92cd4b9fcb"
     },
     {
       "path": "tests/regression/check_delve_maps.py",
-      "sha256": "419a50fa39ac71838646d612dbe63d01c2dc465774ab490a77fedc5ec0482c2b"
+      "sha256": "a6efb94955000f1782da7a0071f620d10a42d2469d8a7e7a2ca6b5cde8f3b87e"
     },
     {
       "path": "tests/regression/check_dlc_entitlements.py",
@@ -1809,19 +1821,19 @@
     },
     {
       "path": "tests/regression/check_github_release.py",
-      "sha256": "7d182b8f6e392c959cc1f86f6d202abf00328516593c1636e2f7970bc9aa1de3"
+      "sha256": "588243503be9fe69f132b3b739116f70be663b4faa36d8028cbbf46451853ed3"
     },
     {
       "path": "tests/regression/check_installer.py",
-      "sha256": "bb147333d428f25aa56c71abab1086a55e1964c474045b3b291e058438cc2a3a"
+      "sha256": "96befcc8a240ce6c764c92a3ff5701c26a042d11b5f26e973920c746407723c9"
     },
     {
       "path": "tests/regression/check_intro_audio.py",
-      "sha256": "db86da687fd29c6811164f8ac615dc3dd3bea25eca0c1b9aa0acc969ad794dbe"
+      "sha256": "360ad407fa20fb0b55ebbc5985c7da0ac93da48b1ef268c79f318b98d08d7172"
     },
     {
       "path": "tests/regression/check_launcher.py",
-      "sha256": "802640cb4255c5504a931f57aab0e2fca1945fb7b619fcb658d4cf6cbfcfb268"
+      "sha256": "6370ec6a3d8655c0481bc6b6b401796fc3a5236007c9b5fcb1c6e5f08afa13c0"
     },
     {
       "path": "tests/regression/check_packages.py",
@@ -1834,6 +1846,10 @@
     {
       "path": "tests/regression/dlc_entitlements_test.cpp",
       "sha256": "ea1cb1e3e8bb27f36158fda6bf92ef2f202e269f41125bb27a03870546551b25"
+    },
+    {
+      "path": "tests/regression/net_position_test.cpp",
+      "sha256": "2db6e6ca69f6b6d9ab9173b9dbd9d8130f1cef2daa7b9ac23a81c8da3ca593af"
     },
     {
       "path": "tests/regression/run_extended.py",
@@ -1852,12 +1868,16 @@
       "sha256": "e43552a5c25e3e987e307083671370a53936853b83859186411924368d472e6d"
     },
     {
+      "path": "tests/smoke/check_delve_generation.py",
+      "sha256": "ddad59055124618c1d2cce7586b8a9ee9d0a4219e78d072df09be35cb6de55ea"
+    },
+    {
       "path": "tests/smoke/dlc_ownership.py",
       "sha256": "eee1f9a772254129592bca8fe845bd8f5ab9af06bd17b6716b801b61dbaff7cc"
     },
     {
       "path": "tests/smoke/run_delve_smoke.py",
-      "sha256": "4944ef7f636cb8ed4e330efc936bc18de16d160e60c8906ba7c9fc460207b6f3"
+      "sha256": "c33e0f93758f48aaa344343ab024aafe7ac8cafc1b678d8ea9b142827e5dcf66"
     },
     {
       "path": "tests/smoke/run_dlc_matrix_smoke.py",
@@ -1869,7 +1889,7 @@
     },
     {
       "path": "tests/smoke/run_intro_smoke.py",
-      "sha256": "7434b31fce769b0ceddd9c37e3b97909cc601397aa6d39315690d246b396ef21"
+      "sha256": "3aa9543d9f24e31c40f6bef3d4c0008c00cdb17497d606a44f8f8b9f31ab85d8"
     },
     {
       "path": "tests/smoke/run_join_smoke.py",

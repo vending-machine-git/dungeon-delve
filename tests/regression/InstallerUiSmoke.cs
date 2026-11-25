@@ -117,12 +117,12 @@ internal static class InstallerUiSmoke
         };
         form.Shown += delegate { timer.Start(); };
         Application.Run(form);
-        string shortcutPath = Path.Combine(arguments[2], "Dungeon Delve 0.17.2.lnk");
+        string shortcutPath = Path.Combine(arguments[2], "Dungeon Delve 0.20.2.lnk");
         try
         {
             Type installer = assembly.GetType("DungeonDelve.Installer");
             MethodInfo create = installer.GetMethod("CreateShortcut", BindingFlags.Static | BindingFlags.NonPublic);
-            string destination = Path.Combine(arguments[1], "Dungeon-Delve-0.17.2");
+            string destination = Path.Combine(arguments[1], "Dungeon-Delve-0.20.2");
             create.Invoke(null, new object[] { destination, arguments[2] });
             byte[] original = File.ReadAllBytes(shortcutPath);
             create.Invoke(null, new object[] { destination, arguments[2] });

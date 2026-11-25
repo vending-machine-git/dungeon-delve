@@ -3,7 +3,7 @@
 Historical Workshop route. The owner now selected the combined GitHub ZIP:
 see `github/PUBLISH-CHECKLIST.md` instead. Retained for reference only.
 
-Prepared locally, NOT published. Runtime/content 0.17.1, protocol 28, API 1.
+Prepared locally, NOT published. Runtime/content 0.17.1, protocol 30, API 1.
 The two Workshop packages are content-only. The native runtime must be hosted
 separately before making the Workshop entries public. No real download URL or
 Workshop item ID has been supplied; description placeholders are intentional.
@@ -56,7 +56,7 @@ Workshop item ID has been supplied; description placeholders are intentional.
   builds and genuine per-player DLC gates. Steam invites are NOT supported.
 - Play all three floors: six-minute clocks, one hatch/three portals, first portal
   at 1:00 remaining/two at timeout, final-floor storm at 1:00; one winner only.
-- Check randomized rarity loot, 2.5x XP, preserved death progression, monster
+- Check randomized rarity loot, 1.75x XP, preserved death progression, monster
   picker/rat cooldown, cheese evolution, spell learning and readable rarity slots.
 - Check runtime update rejection, uninstall steps and log-report instructions.
 

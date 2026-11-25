@@ -27,10 +27,10 @@ def main():
     evidence = ROOT / 'modding-evidence' / ('exe-launcher-' + uuid.uuid4().hex[:10])
     evidence.mkdir()
     # Exercise paths passed as arguments, not shell source, including non-ASCII and shell punctuation.
-    bundle = evidence / "[portable] Delve & O'Brien Ω"
+    bundle = evidence / "[portable] Delve & O'Brien Î©"
     shutil.copytree(source, bundle)
     executable = bundle / 'Dungeon Delve.exe'
-    profiles = evidence / "[sessions] & O'Brien Ω"
+    profiles = evidence / "[sessions] & O'Brien Î©"
     release = json.loads((bundle / 'release.json').read_text())
     assert digest(executable) == release['launcher_sha256']
     original_game_hash = digest(GAME / 'barony.exe')
@@ -79,9 +79,9 @@ def main():
     root_layout.mkdir()
     root_executable = root_layout / 'Dungeon Delve.exe'
     shutil.copy2(source.parent / 'Dungeon Delve.exe', root_executable)
-    shutil.copytree(source, root_layout / 'Dungeon-Delve-0.17.2')
+    shutil.copytree(source, root_layout / 'Dungeon-Delve-0.20.2')
     root_checked = run('root-exe-resolves-sibling-support-folder', ['--check'], binary=root_executable)
-    assert all(str(root_layout / 'Dungeon-Delve-0.17.2/mods') in path for path in root_checked['content'])
+    assert all(str(root_layout / 'Dungeon-Delve-0.20.2/mods') in path for path in root_checked['content'])
     compiler = Path(os.environ.get('WINDIR', r'C:\Windows')) / 'Microsoft.NET/Framework64/v4.0.30319/csc.exe'
     harness = evidence / 'LauncherUiSmoke.exe'
     subprocess.run([str(compiler), '/nologo', '/target:winexe', '/out:' + str(harness),

@@ -10,7 +10,7 @@
   "instant_identification": true,
   "starting_loadout": "fresh-class-balanced",
   "pvp": "free-for-all",
-  "xp_multiplier": 2.5,
+  "xp_multiplier": 1.75,
   "layout_version": 4,
   "layouts": [
     {
@@ -58,7 +58,31 @@
     "web_seconds": 2,
     "confusion_seconds": 3
   },
-  "experience_multiplier": 2.5,
+  "experience_multiplier": 1.75,
+  "shopkeepers": {
+    "building": "kiosk",
+    "footprint_tiles": [
+      5,
+      5
+    ],
+    "mob_relationship": "mutually-neutral",
+    "player_aggression": "native",
+    "implemented_by_runtime": "0.20.2",
+    "raid_protocol": 34,
+    "count_per_floor": 3,
+    "minimum_spacing_tiles": 22,
+    "stock_slots": 16,
+    "stock_pool": "floor-enemy-loot",
+    "stock_rarity": "floor-loot-weights",
+    "clearings_tiles": [
+      7,
+      7
+    ],
+    "bookshelf_wall_tile": 55,
+    "torches_per_kiosk": 4,
+    "tables_per_kiosk": 1,
+    "chairs_per_kiosk": 1
+  },
   "class_builds": {
     "catalogue": "data/rmf/class_builds.json",
     "classes": 26,
@@ -93,7 +117,11 @@
   "enemy_balance": {
     "implemented_by_runtime": "0.17.0",
     "raid_protocol": 28,
-    "harder_replacements_per_floor": [0, 5, 9],
+    "harder_replacements_per_floor": [
+      0,
+      5,
+      9
+    ],
     "harder_replacement_species": "troll",
     "regular_enemies_per_floor": 56,
     "spawn_clearance_tiles": 12,
@@ -116,5 +144,20 @@
         "level": 12
       }
     ]
+  },
+  "generation_quality": {
+    "implemented_by_runtime": "0.20.2",
+    "raid_protocol": 34,
+    "native_full_shops": false,
+    "chest_minimum_manhattan_spacing_tiles": 4,
+    "chest_door_clearance_tiles": 2,
+    "native_chest_policy": "replace-with-validated-budget",
+    "native_puzzle_gate_policy": "preserve-native-model-with-reachable-native-lever",
+    "ordinary_doors": "unlocked",
+    "essential_routes": "reachable-with-all-reward-locks-closed",
+    "maximum_optional_wooden_reward_locks": 3,
+    "empty_reward_rooms": "populate-within-existing-loose-loot-budget",
+    "gate_groups": "adjacent-native-panels-share-one-lever-and-reward",
+    "essential_gate_routes": "initially-open"
   }
 }

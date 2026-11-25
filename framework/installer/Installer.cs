@@ -35,7 +35,13 @@ namespace DungeonDelve
             if (File.Exists(target))
             {
                 string hash = FileHash(target);
-                if (hash != (string)Config["root_launcher"] && hash != "19a370f6d6f17c7da739ddb843f621fe363c1ca2aa3cf3667f0d0f179e2d3bcc")
+                if (hash != (string)Config["root_launcher"] && hash != "19a370f6d6f17c7da739ddb843f621fe363c1ca2aa3cf3667f0d0f179e2d3bcc"
+                    && hash != "07678c67e9dc2070859a01a14162890e6cef93dfeec3bad3d39607bdd0ad1a40"
+                    && hash != "7655255b1b43102484024319a4ff50d317fa90679160d314dc0bdb08cdcdc0d8"
+                    && hash != "2ee7b6da4e0c4c3b2b6912688af47f7867a71d7141e160af6832c3836eae8715"
+                    && hash != "2bad2ea0e639dd2b8f3decc30fba70661eba8c6dd09dcea365d5f1ea19e537fa"
+                    && hash != "336755622e56ca41ebf59d371a66c2f495e2a458296cec022884a8f2188abdff"
+                    && hash != "8d0352739ec0f121d8b76fc7797e031f69db0bd4f336b4ceca7553d34d552b46")
                     throw new IOException("A different Dungeon Delve.exe already exists beside barony.exe. Rename that file before installing. Nothing was overwritten.");
             }
         }

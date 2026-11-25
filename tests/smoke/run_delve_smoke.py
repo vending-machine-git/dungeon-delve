@@ -8,6 +8,7 @@ import argparse
 from collections import Counter
 import ctypes
 from ctypes import wintypes
+from check_delve_generation import check_generation
 import json
 import os
 import re
@@ -23,6 +24,17 @@ UM = Path(os.environ.get('UNIVERSAL_MODDER', str(Path.home() / 'Documents/Projec
 
 
 def check_tuned_roster(layout, floor):
+    check_generation(layout)
+    assert len(layout.get('kiosks', [])) == 3, 'Expected exactly three shopkeepers per floor'
+    distances = [(a['x']-b['x'])**2+(a['y']-b['y'])**2 for i,a in enumerate(layout['kiosks']) for b in layout['kiosks'][i+1:]]
+    assert min(distances) >= 22**2, 'Shopkeepers are clustered together'
+    assert max(distances) <= 4*min(distances), 'Shopkeepers are not evenly spread'
+    for kiosk in layout['kiosks']:
+        assert (kiosk['width'],kiosk['height'])==(5,5), 'Kiosk must have room for its furnished interior'
+        assert (kiosk['entrance_x'],kiosk['entrance_y'])==(kiosk['x'],kiosk['y']+2)
+        assert (kiosk['approach_x'],kiosk['approach_y'])==(kiosk['x'],kiosk['y']+3)
+        assert (kiosk['merchant_x'],kiosk['merchant_y'])==(kiosk['x'],kiosk['y']+1)
+        assert len(set(kiosk['torch_uids']))==4 and kiosk['table_uid']!=kiosk['chair_uid']
     assert len(layout['descents']) == 1 and len(layout['portals']) == 3, 'Expected one hatch and three portal sites'
     species = Counter(encounter['monster'] for encounter in layout['encounters'])
     assert sum(species.values()) == 56 and all(species[kind] > 0 for kind in (2, 4, 6, 9))
@@ -100,6 +112,7 @@ def scenario(args, name):
     (run/'sync').mkdir(parents=True)
     print('ARTIFACTS '+str(run), flush=True)
     peers = 4 if name in ('battle-royale', 'battle-wipe', 'battle-host-win', 'progression', 'population', 'concealment', 'results', 'revenants') else 2
+    if args.players is not None: peers=args.players
     processes, streams, logs = {}, [], {}
     result = dict(status='RUNNING', scenario=name, players=peers)
     try:
@@ -134,6 +147,9 @@ def scenario(args, name):
                        BARONY_SMOKE_PLAYERS=str(peers), BARONY_SMOKE_DELVE=name,
                        BARONY_SMOKE_DELVE_TOUR='1' if args.tour_capture and slot == 0 else '0',
                        BARONY_SMOKE_RAID_SYNC=str(run/'sync'), BARONY_SMOKE_CONNECT_ADDRESS='127.0.0.1:'+str(args.port))
+            for floor in (1,2,3):
+                forced=getattr(args,'floor'+str(floor)+'_seed')
+                if forced is not None:env['BARONY_SMOKE_DELVE_FLOOR'+str(floor)+'_SEED']=str(forced)
             if args.builds or name == 'abilities':env['BARONY_SMOKE_EQUIP_BUILD']='1'
             # A stale/invalid prototype kit must never affect fresh class selection.
             (folder/'delve-profile.json').write_text('{"legacy_profile_must_not_be_loaded":true}')
@@ -153,6 +169,8 @@ def scenario(args, name):
         deadline = time.monotonic()+args.timeout
         retry_verified = False
         captured_views=set()
+        captured_scenes=set()
+        captured_gates=set()
         restarted=set()
         while True:
             for role, proc in processes.items():
@@ -172,6 +190,32 @@ def scenario(args, name):
                     menu_keys(processes['client1'], [0x09])
                 (run/'sync/rarity-smoke-captured').write_text('1')
                 captured_views.add('smoke')
+            if name == 'shops' and (run/'sync/gate-view').exists():
+                view=(run/'sync/gate-view').read_text().strip()
+                if view and view not in captured_gates:
+                    if args.capture:
+                        time.sleep(.35)
+                        destination=run/'gate-scenes'/view;destination.mkdir(parents=True)
+                        capture({'client1':processes['client1']},destination)
+                    (run/'sync'/('gate-captured-'+view)).write_text('1')
+                    captured_gates.add(view)
+            if name == 'shops' and (run/'sync/shop-scene-view').exists():
+                view=(run/'sync/shop-scene-view').read_text().strip()
+                if view and view not in captured_scenes:
+                    if args.capture:
+                        time.sleep(.35)
+                        destination=run/'shop-scenes'/view;destination.mkdir(parents=True)
+                        capture({'client1':processes['client1']},destination)
+                    (run/'sync'/('shop-scene-captured-'+view)).write_text('1')
+                    captured_scenes.add(view)
+            if name == 'shops' and (run/'sync/shop-view').exists():
+                view=(run/'sync/shop-view').read_text().strip()
+                if view and view not in captured_views:
+                    if args.capture:
+                        destination=run/'shops'/view;destination.mkdir(parents=True)
+                        capture({'client1':processes['client1']},destination)
+                    (run/'sync'/('shop-captured-'+view)).write_text('1')
+                    captured_views.add(view)
             if name == 'revenants':
                 for view in ('return-menu-first', 'return-menu-rat'):
                     if (run/'sync'/view).exists() and view not in captured_views:
@@ -254,15 +298,15 @@ def scenario(args, name):
         reports = {role: json.loads((run/role/'delve-results.json').read_text()) for role in processes}
         assert len({json.dumps(r, sort_keys=True) for r in reports.values()}) == 1, 'Results disagree across peers'
         report = reports['host']; assert report['complete'] and len(report['ranking']) == peers
-        assert ('enemy=1 friend=0 friendlyfire=1' in logs['host'] or (name == 'rarity' and 'check PASS rarity_ffa_enforced' in logs['host']) or (name.startswith('battle-') and 'check PASS battle_ffa_enforced' in logs['host'])), 'FFA is not enforced'
+        assert peers==1 or ('enemy=1 friend=0 friendlyfire=1' in logs['host'] or (name == 'rarity' and 'check PASS rarity_ffa_enforced' in logs['host']) or (name.startswith('battle-') and 'check PASS battle_ffa_enforced' in logs['host'])), 'FFA is not enforced'
         assert '[SMOKE][DELVE] check FAIL' not in logs['host'], 'Gameplay check failed'
         for role,text in logs.items():
             limits=re.findall(r'\[DELVE\] load floor=\d+ portals=\d+ limit=(\d+)',text)
             assert limits and all(int(limit)==360 for limit in limits), (role, 'Six-minute floor timer not loaded', limits)
-        if not name.startswith('battle-') and name not in ('restart', 'revenants', 'rarity'):
+        if not name.startswith('battle-') and name not in ('restart', 'revenants', 'rarity', 'shops', 'storm-wipe'):
             assert 'check PASS outpost_physical_guards_no_random_minibosses' in logs['host'], 'First-floor loadouts were not validated'
             assert 'check PASS outpost_has_no_goblins' in logs['host'], 'First-floor goblin exclusion was not verified'
-        if not name.startswith('battle-') and name not in ('restart', 'results', 'cooldowns', 'abilities', 'appraisal', 'appraisal-disabled', 'revenants', 'rarity'):
+        if not name.startswith('battle-') and name not in ('restart', 'results', 'cooldowns', 'abilities', 'appraisal', 'appraisal-disabled', 'revenants', 'rarity', 'shops', 'storm-wipe'):
             assert 'check PASS population_3000_seeded_rosters' in logs['host'], 'Seeded population distribution was not validated'
         if name.startswith('battle-'):
             assert all('check FAIL' not in text for text in logs.values())
@@ -271,7 +315,7 @@ def scenario(args, name):
                 generated = [json.loads((run/role/f'delve-generated-floor{floor}.json').read_text()) for role in processes]
                 assert all(data['size'] == 90 and data['theme'] == layout['theme'] for data in generated)
                 assert len({data['geometry_fingerprint'] for data in generated}) == 1, 'Peers generated different terrain'
-                for key in ('spawns', 'boss', 'descents', 'portals', 'encounters'):
+                for key in ('spawns', 'boss', 'descents', 'portals', 'encounters', 'kiosks'):
                     assert len({json.dumps(data[key], sort_keys=True) for data in generated}) == 1, 'Peer layout mismatch: '+key
                 assert len(generated[0]['spawns']) == 4 and generated[0]['reachable_tiles'] >= 150
                 assert len(generated[0]['encounters']) == layout['guard_target']
@@ -299,7 +343,7 @@ def scenario(args, name):
                           'battle_guest_monster_returns_normal_next_floor', 'battle_host_same_floor_monster_return',
                           'battle_live_host_monster_does_not_block_floor', 'battle_host_monster_returns_normal_next_floor'):
                 assert 'check PASS ' + label in logs['host'], label
-            for label in ('battle_one_hatch_three_portal_sites', 'battle_one_early_hatch_only', 'battle_xp_two_point_five',
+            for label in ('battle_one_hatch_three_portal_sites', 'battle_one_early_hatch_only', 'battle_xp_one_point_seven_five',
                           'battle_portal_hidden_before_last_minute', 'battle_one_portal_at_one_minute_left',
                           'battle_overtime_portals_hidden_before_zero', 'battle_two_more_portals_at_zero',
                           'battle_final_hatch_cannot_win_early', 'battle_final_overtime_portals_hidden_before_zero',
@@ -315,6 +359,31 @@ def scenario(args, name):
             for role in ('client1', 'client2', 'client3'):
                 assert 'check PASS battle_guest_storm_wall_replicated' in logs[role]
                 assert logs[role].count('check PASS battle_guest_retains_progression') == 2
+        elif name == 'storm-wipe':
+            assert all('check FAIL' not in log for log in logs.values())
+            assert logs['host'].count('check PASS storm_collision_killed_player')==peers*3
+            assert logs['host'].count('check PASS storm_death_obituary')==peers*3
+            assert logs['host'].count('check PASS storm_return_three_reachable_spaced_shops')==3
+            assert logs['host'].count('check PASS storm_return_alive_class_starter')==peers*3
+            assert report['last_standing_slot']==-1
+            for floor in (1,2,3):
+                generated=[json.loads((run/role/f'delve-generated-floor{floor}.json').read_text()) for role in processes]
+                assert len({data['geometry_fingerprint'] for data in generated})==1
+                for data in generated: check_tuned_roster(data,floor)
+            if args.floor2_seed is not None:
+                assert json.loads((run/'host/delve-generated-floor2.json').read_text())['seed']==args.floor2_seed
+        elif name == 'shops':
+            assert logs['host'].count('check PASS gate_guest_lever_native_interaction_opens_original_gate') == len(captured_gates)
+            assert logs['client1'].count('check PASS gate_guest_sees_native_gate_motion_and_collision') == len(captured_gates)
+            assert len(captured_scenes)==9, 'Missing furnished kiosk scene snapshots'
+            assert len(captured_views)==9, 'Missing shop inventory snapshots'
+            assert logs['host'].count('check PASS shops_three_spaced_kiosks_and_floor_rarity_stock')==3
+            assert logs['host'].count('check PASS shops_host_removes_exact_rarity_item_and_charges_gold')==9
+            assert logs['client1'].count('check PASS shops_guest_exact_stock_appearance_status_quantity_and_slots')==9
+            assert logs['client1'].count('check PASS shops_guest_native_purchase_preserves_rarity_and_rolls')==9
+            assert all('check FAIL' not in log for log in logs.values())
+            for floor in (1,2,3):
+                check_tuned_roster(json.loads((run/'host'/f'delve-generated-floor{floor}.json').read_text()),floor)
         elif name == 'rarity':
             assert 'check PASS rarity_host_complete' in logs['host']
             assert 'check PASS rarity_guest_complete' in logs['client1']
@@ -524,9 +593,12 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--exe', type=Path, default=ROOT/'framework/runtime/barony-raid-smoke.exe')
     ap.add_argument('--output', type=Path, default=ROOT/'framework/profiles')
-    ap.add_argument('--scenario', choices=['battle-royale', 'battle-wipe', 'battle-host-win', 'rarity', 'revenants', 'population', 'concealment', 'results', 'progression', 'host-early', 'faults', 'combat', 'quality', 'quality-unidentified', 'restart', 'cooldowns', 'abilities', 'appraisal', 'appraisal-disabled'], action='append')
+    ap.add_argument('--scenario', choices=['storm-wipe', 'shops', 'battle-royale', 'battle-wipe', 'battle-host-win', 'rarity', 'revenants', 'population', 'concealment', 'results', 'progression', 'host-early', 'faults', 'combat', 'quality', 'quality-unidentified', 'restart', 'cooldowns', 'abilities', 'appraisal', 'appraisal-disabled'], action='append')
     ap.add_argument('--builds',action='store_true',help='equip recommended class builds and verify one-time host staging across floors')
     ap.add_argument('--faults', action='store_true')
+    for floor in (1,2,3):
+        ap.add_argument('--floor'+str(floor)+'-seed', type=int, help='reproduce a map seed in the smoke runtime only')
+    ap.add_argument('--players', type=int, choices=(1,2,4), help='storm-wipe only: exercise solo or matched Direct IP deaths')
     ap.add_argument('--capture', action='store_true')
     ap.add_argument('--size', choices=['1024x720', '1280x720', '1920x1080', '3440x1440'], default='1280x720', help='owned test window resolution; native minimum is 1024x720')
     ap.add_argument('--ui-scale', type=int, choices=[50, 75, 100], default=100, help='native UI scale for isolated HUD layout checks')
@@ -537,6 +609,7 @@ def main():
     ap.add_argument('--classes',type=lambda text:list(map(int,text.split(','))),help='four selected class IDs for a mixed progression test')
     ap.add_argument('--races',type=lambda text:list(map(int,text.split(','))),help='four selected race IDs for a mixed progression test')
     args = ap.parse_args()
+    if args.players is not None and args.scenario!=['storm-wipe']: ap.error('--players is only supported by --scenario storm-wipe')
     if args.classes and (len(args.classes)!=4 or any(c<0 or c>=26 for c in args.classes)):ap.error('--classes needs four IDs in 0..25')
     if args.races and (len(args.races)!=4 or any(r not in [0,1,2,3,4,5,6,7,8,13,14,15,16,17] for r in args.races)):ap.error('--races needs four selectable race IDs')
     names = args.scenario or (['battle-royale', 'battle-wipe', 'battle-host-win'] if args.faults else ['battle-royale'])

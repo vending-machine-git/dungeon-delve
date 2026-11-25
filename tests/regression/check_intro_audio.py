@@ -7,6 +7,11 @@ import wave
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
+SOURCE_HASHES = {
+    1: 'e86372b38dc9b452cc3715b6621f310522033bafc4a17b27008772cf32c85a35',
+    2: 'b27ff90847bb828030902338010fc39765b5a7c29b8566a4b44e6af784596c0c',
+    3: '3fa9c8e6307ab88cb347bc497f29616413f8fe6cae81717cbd736ea8a8628850',
+}
 
 
 def samples(path):
@@ -34,10 +39,14 @@ def check_floor(floor):
     rate, original = samples(source)
     final_rate, rendered = samples(delivery)
     assert rate == final_rate == 48000 and rendered.shape == original.shape
-    assert rendered.shape[1] == 2 and np.array_equal(rendered[:, 0], rendered[:, 1])
+    assert rendered.shape[1] == 2
+    # The effect now has stereo doubles/room, with a strongly centered dry lead.
+    stereo_correlation = float(np.corrcoef(rendered.astype(float).T)[0, 1])
+    assert .75 < stereo_correlation < .99, stereo_correlation
+    assert hashlib.sha256(source.read_bytes()).hexdigest() == SOURCE_HASHES[floor]
     assert not np.any(np.abs(rendered.astype(np.int32)) >= 32767)
     fft_size = 1 << (len(original)*2-1).bit_length()
-    correlation = np.fft.irfft(np.fft.rfft(rendered[:, 0], fft_size)*np.conj(np.fft.rfft(original[:, 0], fft_size)), fft_size)
+    correlation = np.fft.irfft(np.fft.rfft(rendered.mean(axis=1), fft_size)*np.conj(np.fft.rfft(original[:, 0], fft_size)), fft_size)
     lag = int(np.argmax(correlation))
     if lag > fft_size//2:
         lag -= fft_size
@@ -73,16 +82,29 @@ def check_floor(floor):
     assert srt == (ROOT/'framework/audio/masters'/(stem+'-subtitles.srt')).read_text()
     assert not (ROOT/'mods/extraction-raid/data/story/intro.json').exists()
     mastering = json.loads((evidence/'mastering.json').read_text())
+    assert mastering['revision'] == 'depop-dungeon-1'
+    assert not mastering['effect']['stock_audio_sampled']
     loudness = float(mastering['measured_delivery']['input_i'])
     true_peak = float(mastering['measured_delivery']['input_tp'])
     assert abs(loudness+16) < .5 and true_peak <= -1.4
+    def phrase_levels(audio):
+        values = audio.astype(float)/32768
+        return [float(20*np.log10(np.sqrt(np.mean(
+            values[int(cue['start']*rate):int(cue['end']*rate)]**2))+1e-12))
+                for cue in story['cues']]
+    source_levels, delivered_levels = phrase_levels(original), phrase_levels(rendered)
+    source_spread = max(source_levels)-min(source_levels)
+    delivered_spread = max(delivered_levels)-min(delivered_levels)
+    assert delivered_spread < 1.5 and delivered_spread < source_spread
     report = dict(status='PASS', floor=floor, duration_seconds=len(rendered)/rate, sample_rate=rate,
                   channels=rendered.shape[1], pcm_bits=16, alignment_ms=alignment_ms,
                   loudness_lufs=loudness, true_peak_dbtp=true_peak, subtitle_cards=len(story['cues']),
+                  stereo_correlation=stereo_correlation,
+                  source_phrase_spread_db=source_spread, delivered_phrase_spread_db=delivered_spread,
                   original_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
                   delivery_sha256=hashlib.sha256(delivery.read_bytes()).hexdigest(),
                   original_peak_samples=int(np.count_nonzero(np.abs(original.astype(np.int32)) >= 32767)),
-                  delivered_peak_samples=0, cleaned_transcription_matches=True)
+                  delivered_peak_samples=0, authored_transcript_matches_reference_asr=True)
     (evidence/'audio-qa.json').write_text(json.dumps(report, indent=2)+'\n')
     return report
 

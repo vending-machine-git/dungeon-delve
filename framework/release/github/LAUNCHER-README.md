@@ -2,10 +2,10 @@
 
 Install the complete release or extract all ZIP contents directly into the Barony
 folder containing barony.exe. Double-click Dungeon Delve.exe beside barony.exe.
-Its Dungeon-Delve-0.17.2 supporting folder stays beside it; the launcher finds it
+Its Dungeon-Delve-0.20.2 supporting folder stays beside it; the launcher finds it
 automatically. Setup desktop shortcuts target the EXE in the main game directory.
 
-Already have a complete 0.17.2 package? Save the small Dungeon-Delve.exe download
+Already have a complete 0.20.2 package? Save the small Dungeon-Delve.exe download
 as Dungeon Delve.exe in that main Barony directory, alongside the existing
 supporting folder. The small EXE alone in Downloads is not a playable package.
 

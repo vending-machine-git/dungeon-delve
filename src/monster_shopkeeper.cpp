@@ -23,6 +23,7 @@
 #include "shops.hpp"
 #include "mod_tools.hpp"
 #include "prng.hpp"
+#include "raid.hpp"
 
 std::vector<Item*> generateShopkeeperConsumables(Entity& my, Stat& myStats, int storetype)
 {
@@ -157,6 +158,12 @@ void initShopkeeper(Entity* my, Stat* myStats)
 		auto& rng = my->entity_rng ? *my->entity_rng : local_rng;
 
 		my->createPathBoundariesNPC();
+		if (Raid::active())
+		{
+			// Keep the idle trader behind the kiosk opening instead of roaming the room.
+			my->monsterPathBoundaryXStart = my->monsterPathBoundaryXEnd = static_cast<int>(my->x / 16) * 16;
+			my->monsterPathBoundaryYStart = my->monsterPathBoundaryYEnd = static_cast<int>(my->y / 16) * 16;
+		}
 
 		for ( int x = my->monsterPathBoundaryXStart - 16; x <= my->monsterPathBoundaryXEnd + 16; x += 16 )
 		{
@@ -1141,6 +1148,8 @@ void initShopkeeper(Entity* my, Stat* myStats)
 				}
 			}
 		}
+		// Run after native potion appearance normalization so rarity/affix bits survive.
+		Raid::fillShop(*my);
 	}
 
 	// torso

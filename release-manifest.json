@@ -1,17 +1,18 @@
 {
-  "version": "0.17.2",
-  "protocol": 28,
+  "version": "0.20.2",
+  "protocol": 34,
   "api_version": 1,
   "platform": "windows-x64",
   "distribution": "github-combined-portable",
   "game_version": "5.0.2",
   "audio_backend": "fmod",
   "audio_version": "2.02.14",
+  "narration_revision": "depop-dungeon-1",
   "distribution_revision": "exe-launcher-2",
   "install_layout": "game-root-launcher",
-  "launcher_sha256": "07678c67e9dc2070859a01a14162890e6cef93dfeec3bad3d39607bdd0ad1a40",
+  "launcher_sha256": "b0cc811417ee214b0c04e873e9682448e92de40d8b8e898f099a813327484aeb",
   "game_sha256": "8566da37bc39ea5a1ed08a8ad57608af4f019fb415869258fb3c1d310b4419e4",
-  "runtime_sha256": "d5c04f39488084547e45e4017e86feb3fd7182aae2f485101f6b78bbdd581782",
+  "runtime_sha256": "bb79de44fc7211ffd4463bbe40f89bd898a82bf0241a8518245a8e34ec1c780e",
   "game_dlls": [
     {
       "name": "fmod.dll",
@@ -60,7 +61,7 @@
       "files": [
         {
           "path": "data/rmf/framework.json",
-          "sha256": "d3e2828e23e51a748f8a613c2d6ab1db751a31d3f0d4ba7e7b5b8fac2703af43"
+          "sha256": "494450688586a49aabc8d0c37fc58093027f65cb9053722f3a527cb2ffca6db4"
         },
         {
           "path": "LICENSE.txt",
@@ -68,7 +69,7 @@
         },
         {
           "path": "mod.json",
-          "sha256": "00dfccf586b46ee2504e41b578d8e302daeb6f8589d5cc6c2fae97fd1beb62e3"
+          "sha256": "ce1d743373840f353f1ff10d54cf583a65683d9c879c1efc5b3518dac84e7d4c"
         },
         {
           "path": "preview.png",
@@ -76,7 +77,7 @@
         },
         {
           "path": "README.md",
-          "sha256": "a1ac1f6d699d453eebeed3352a2c441f68b4edc88a03ea69406d640326fc8c64"
+          "sha256": "44800693c8aee421bd36ac02b398e39b50f2ab643d4a6c16597c27034465821a"
         }
       ]
     },
@@ -113,7 +114,7 @@
         },
         {
           "path": "data/rmf/raid.json",
-          "sha256": "2f45fcf73ecb3e8a9f00950d3216b8ee8f47c140084a7edf0b9efbaab75f4ad0"
+          "sha256": "7be813ff2f50633871fb5bcb5c1f833fa402ef045507ad618d67943a168da8b3"
         },
         {
           "path": "images/rmf/cooldown-disc.png",
@@ -149,19 +150,19 @@
         },
         {
           "path": "mod.json",
-          "sha256": "c1f9c02ee3750254e217e0406f88d351cf24ccdb649cf660f1a3d74d50a3c251"
+          "sha256": "ba3ab474d1655ce3dd06b18d7ead447ec34ac0633b5b169ce0058eed3c9088a2"
         },
         {
           "path": "music/rmf/dungeon-floor-2.wav",
-          "sha256": "8074ddf09fec5d9659bfa4148dc4b8ed695aaa88f8081700c2a240d096046e70"
+          "sha256": "375dcb3d643251d5075770062be5bcefc4ca27b62df161c63e1394e63587adef"
         },
         {
           "path": "music/rmf/dungeon-floor-3.wav",
-          "sha256": "f0923182c0f7052aeb09dabbc1808228bc0f69d8b7895fc1671ec72e2f1dfa6a"
+          "sha256": "04d571126c90eca44bff3ee36722a424990f8dbd79d1262237a30e457a2ef10a"
         },
         {
           "path": "music/rmf/dungeon-intro.wav",
-          "sha256": "32ece1b9af89cadd74df43b66faa27e40729711d749b4024b5073d1f7e33b06a"
+          "sha256": "62f6985b7f98930d815a026f8eede11e0e903f6a5e2d1409f0e7f8483a1234c2"
         },
         {
           "path": "music/rmf/embers-before-the-delve.wav",
@@ -173,7 +174,7 @@
         },
         {
           "path": "README.md",
-          "sha256": "da64129bb4d3c984b535853920b0bac09764d079169946147fcddfc26a27437b"
+          "sha256": "73307a57267341f37338ea33ed6ab7f5b5574ed311976c69b847ae7aa694db6e"
         }
       ]
     }

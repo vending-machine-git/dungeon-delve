@@ -10,7 +10,14 @@ def main():
     config = json.loads((ROOT/'mods/extraction-raid/data/rmf/raid.json').read_text())
     assert config['layout_version'] == 4
     assert config['rules_version'] == 7 and config['floor_seconds'] == 360
-    assert config['xp_multiplier'] == config['experience_multiplier'] == 2.5
+    assert config['xp_multiplier'] == config['experience_multiplier'] == 1.75
+    assert config['shopkeepers']['count_per_floor'] == 3
+    assert config['shopkeepers']['minimum_spacing_tiles'] == 22
+    assert config['shopkeepers']['stock_slots'] == 16
+    assert config['shopkeepers']['stock_rarity'] == 'floor-loot-weights'
+    assert config['shopkeepers']['footprint_tiles'] == [5, 5]
+    assert config['shopkeepers']['mob_relationship'] == 'mutually-neutral'
+    assert config['shopkeepers']['raid_protocol'] == 34
     assert config['descent_sites_per_floor'] == 1 and config['portal_sites_per_floor'] == 3
     assert config['portal_unlock_seconds_remaining'] == [60, 0, 0]
     assert config['final_hatch_seconds_remaining'] == 60 and config['victory_portals'] == 3

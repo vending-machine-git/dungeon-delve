@@ -208,6 +208,7 @@ def main():
         if args.normal_scope:
             row=rows[0];assert row['kind']=='normal_scope' and row['raid_active']==0
             assert row['normal_xp_multiplier']==2 and row['normal_skill_xp']==2 and row['delve_ability_rejected']==1
+            assert row['normal_xp_multiplier_inert']==1
             assert row['normal_skill_penalty_retained']==1 and row['normal_tooltip_penalty_retained']==1
             assert row['normal_passives_inert']==1
             assert row['normal_shopkeeper_race_rules_retained']==1 and row['normal_cooldown_hud_inert']==1
