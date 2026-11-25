@@ -31,6 +31,7 @@ def main():
     parser.add_argument('--audio-controls', action='store_true', help='record real mute/unmute and lobby-exit playback')
     parser.add_argument('--dlc-masks', help='four comma-separated restriction masks; only hide genuine ownership')
     parser.add_argument('--dlc-classes', default='0,13,17,0', help='four class selections for mixed-ownership check')
+    parser.add_argument('--steam', choices=['invite', 'joingame', 'code'], help='guests arrive through Steam invites over the relay layer (local Steam stand-in)')
     parser.add_argument('--dlc-races', default='0,1,5,0', help='four race selections for mixed-ownership check')
     args = parser.parse_args()
     masks = list(map(int,args.dlc_masks.split(','))) if args.dlc_masks else None
@@ -54,6 +55,10 @@ def main():
     processes, streams = {}, []
     folders = {}
     report = dict(status='RUNNING', checks={}, size=args.size, run=str(run))
+    steam = None
+    if args.steam:
+        from steam_fixture import SteamFixture
+        steam = SteamFixture(run, method=args.steam, click='card')
 
     def log(role):
         file = folders[role]/'log.txt'
@@ -103,6 +108,8 @@ def main():
                    BARONY_SMOKE_CLASS=str(slot), BARONY_SMOKE_RACE=str(slot),
                    BARONY_SMOKE_RAID_SYNC=str(run/'sync'),
                    BARONY_SMOKE_CONNECT_ADDRESS='127.0.0.1:'+str(args.port))
+        if steam:
+            env.update(steam.env(role, folder, host=slot == 0))
         if masks is not None:
             env.update(BARONY_SMOKE_DLC_RESTRICT=str(masks[slot]),
                        BARONY_SMOKE_CLASS=str(classes[slot]),BARONY_SMOKE_RACE=str(races[slot]))
@@ -234,11 +241,20 @@ def main():
                 role='host' if slot==0 else 'client'+str(slot)
                 check(role+'_no_invalid_license_key_logged',
                     'DLC license key invalid' not in log(role) and 'DELVE-CLASS-TEST] FAIL' not in log(role))
+        if steam:
+            hostlog = log('host')
+            check('steam_lobby_opened_from_invite_control', '[STEAM-INVITE] opened overlay invite dialog' in hostlog)
+            for slot in (1, 2, 3):
+                role = 'client'+str(slot)
+                check(role+'_arrived_through_steam_relay', '[STEAM-INVITE] relaying to host' in log(role))
+            check('delve_lobby_closed_when_match_started', '[STEAM-INVITE] lobby closed to new arrivals for gameplay' in hostlog)
+            report['steam'] = steam.summary()
         report['status']='PASS'
     except Exception as error:
         report['status']='FAIL';report['error']=repr(error)
         print('FAIL '+repr(error), flush=True)
     finally:
+        if steam: steam.close()
         for proc in processes.values():
             if proc.poll() is None: proc.terminate()
         for proc in processes.values():

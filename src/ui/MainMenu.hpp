@@ -104,6 +104,7 @@ namespace MainMenu {
 	void settingsReset();					// default settings
 
 	void doMainMenu(bool ingame);           // call in a loop to update the menu
+	void tickSteamInvites();                // connect accepted Steam invites from the idle main menu
 	void createTitleScreen();               // creates a fresh title screen
 	void createMainMenu(bool ingame);       // creates a fresh main menu
 	void destroyMainMenu();                 // destroys the main menu tree

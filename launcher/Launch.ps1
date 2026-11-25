@@ -6,7 +6,9 @@ param(
     [ValidateSet('Delve', 'Framework')][string]$Mode = 'Delve',
     [switch]$CheckOnly,
     [switch]$PrepareOnly,
-    [string]$ProfileRoot
+    [string]$ProfileRoot,
+    # Steam invite code (steam:<lobby>) or lobby id to join once the game opens.
+    [string]$ConnectLobby
 )
 
 $ErrorActionPreference = 'Stop'
@@ -170,6 +172,16 @@ try {
     }
     $arguments = @('-windowed', '-size=1280x720', ('-datadir=' + $GamePath))
     if ($Mode -eq 'Delve') { $arguments += '-raid-profile=' + (Join-Path $profile 'delve-profile.json') }
+    if ($ConnectLobby) {
+        $lobbyText = $ConnectLobby.Trim()
+        if ($lobbyText -match '^(?i:steam:)\s*') { $lobbyText = $lobbyText -replace '^(?i:steam:)\s*', '' }
+        [UInt64]$lobbyId = 0
+        if (!($lobbyText -match '^\d+$') -or ![UInt64]::TryParse($lobbyText, [ref]$lobbyId) -or $lobbyId -eq 0) {
+            throw 'Invalid Steam invite code: ' + $ConnectLobby
+        }
+        $arguments += @('+connect_lobby', [string]$lobbyId)
+        $report['connect_lobby'] = [string]$lobbyId
+    }
     $report['profile'] = $profile
     $report['binary'] = Join-Path $runtimeFolder 'barony-rmf.exe'
     if (!$PrepareOnly) {

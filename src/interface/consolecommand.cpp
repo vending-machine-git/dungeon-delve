@@ -36,6 +36,7 @@
 #include "../ui/LoadingScreen.hpp"
 #include "../classdescriptions.hpp"
 #include "../ui/MainMenu.hpp"
+#include "../steam_invites.hpp"
 
 bool spamming = false;
 bool showfirst = false;
@@ -200,6 +201,16 @@ void ConsoleCommand::add_to_map()
 
 static ConsoleCommand ccmd_delveability("/delveability", "activate equipped Delve ability (1 or 2)", [](int argc, const char **argv){
     if (argc == 2 && (!strcmp(argv[1], "1") || !strcmp(argv[1], "2"))) DelveBuilds::requestActivation(atoi(argv[1])-1);
+});
+
+static ConsoleCommand ccmd_invite("/invite", "invite Steam friends to this game (host)", [](int argc, const char **argv){
+    if (multiplayer != SERVER || !directConnect) {
+        messagePlayer(clientnum, MESSAGE_MISC, "Only the host can send Steam invites.");
+        return;
+    }
+    const std::string message = SteamInvites::inviteFriends();
+    if (!message.empty()) messagePlayer(clientnum, MESSAGE_MISC, "%s", message.c_str());
+    else messagePlayer(clientnum, MESSAGE_MISC, "Opened Steam invites. Code: %s", SteamInvites::inviteCode().c_str());
 });
 
 void consoleCommand(char const* const command_str)

@@ -1,6 +1,8 @@
-# vending_machine framework 0.20.3
+# vending_machine framework 0.20.4
 
-0.20.3 makes gates behave like vanilla: they start closed and their lever sits a
+0.20.4 adds Steam invites: open lobby seats show INVITE cards, friends join
+through Steam's relay without port forwarding, and Direct IP still works.
+0.20.3 made gates behave like vanilla: they start closed and their lever sits a
 few tiles away against a wall. Gates that divide the floor have a lever on each
 side, and either lever toggles them. Empty optional rooms keep their lock and get
 a cache chest (or gear/treasure) from the existing floor loot budget. Only
@@ -14,10 +16,10 @@ Unofficial experimental software, not an official Turning Wheel release.
 
 ## Combined GitHub release (current)
 
-The selected distribution is **Dungeon-Delve-0.20.3-windows-x64.zip** from the
+The selected distribution is **Dungeon-Delve-0.20.4-windows-x64.zip** from the
 project's GitHub Releases page. It includes this framework, its native runtime
 and Dungeon Delve together. Extract into the owned Barony installation and run
-**Dungeon-Delve-0.20.3/Play-Dungeon-Delve.cmd**, or extract elsewhere and use Steam
+**Dungeon-Delve-0.20.4/Play-Dungeon-Delve.cmd**, or extract elsewhere and use Steam
 library discovery. No Workshop subscriptions or separate framework download are
 required. Follow the combined ZIP's root README for installation/checksums,
 compatibility, updates, logs and removal. Retail files/saves stay untouched.
@@ -37,13 +39,13 @@ Steam's retail `barony.exe` or combine this with another native framework.
 ## Player installation
 
 1. Install/run the owned Steam Windows edition of Barony once; keep Steam running.
-2. Subscribe to this package and **Dungeon Delve 0.20.3**. Wait for downloads.
-3. Download **vending_machine-framework-0.20.3-windows.zip** using this Workshop
+2. Subscribe to this package and **Dungeon Delve 0.20.4**. Wait for downloads.
+3. Download **vending_machine-framework-0.20.4-windows.zip** using this Workshop
    page's release link. Extract into a writable folder outside Barony.
 4. Read its README, verify the posted SHA256 and run **Play-Dungeon-Delve.cmd**.
    No Python/compiler/admin access or global PowerShell policy change needed.
 5. Host/join a fresh private Direct IP lobby with 2-4 matching players before
-   starting. Everyone needs runtime/content **0.20.3**, API **1**, protocol **35**.
+   starting. Everyone needs runtime/content **0.20.4**, API **1**, protocol **35**.
 
 The launcher discovers Steam libraries and subscriptions by manifest, checks
 runtime/game/dependency hashes and stages content into a fresh isolated session.
@@ -67,9 +69,17 @@ Progress mods. Do not mix raid/normal clients or profiles, native frameworks or
 untested third-party content. Developer launcher commands remain in the source
 workspace, not this upload root.
 
-Steam matchmaking/invites and EOS networking are disabled: use private Direct IP.
-Host firewall/router setup may be needed; WAN/human balance testing is limited.
-0.20.3 restores native FMOD effects/music; Delve lobby music/narration use SDL.
+**Steam invites.** With Steam running, hosting also opens a friends-only Steam
+lobby. Click an open slot's **INVITE** card (or type `/invite` in chat while a Join
+In Progress game is running) to open Steam's invite dialog. Friends must already
+have the same framework release open: Steam starts its retail Barony for invites
+accepted while the game is closed. Without the overlay, the invite code
+(`steam:<number>`) is copied instead; friends paste it into the Direct IP box.
+Invited players connect through Steam's relay, so the host needs no port
+forwarding. Direct IP still works unchanged; EOS crossplay stays disabled.
+Steam invites are new: confirmed on one real Steam account and multi-instance
+tests, not yet between two real accounts. WAN/human balance testing is limited.
+Native FMOD effects/music are enabled; Delve lobby music/narration use SDL.
 FMOD is verified/copied from the owned installation, never shipped. Genuine DLC is checked per player;
 a base-game host can play with DLC owners without sharing unlocks. No DLC bypass.
 
@@ -77,7 +87,7 @@ a base-game host can play with DLC owners without sharing unlocks. No DLC bypass
 
 Update both subscriptions and the separate runtime together on every peer.
 Each launch uses a fresh session under
-`%LOCALAPPDATA%\vending_machine_framework\0.20.3\sessions\`, containing
+`%LOCALAPPDATA%\vending_machine_framework\0.20.4\sessions\`, containing
 `launch.json`, logs and results. Retail saves/config are not copied or edited.
 Back up normal saves before modded play. Report versions, reproduction steps and
 sanitized session logs; never post private saves or IPs publicly.

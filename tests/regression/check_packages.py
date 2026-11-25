@@ -24,6 +24,10 @@ def main():
   'path-traversal-reject':(['--mod','../src'],False,None),
   'missing-mod-reject':(['--mod','does-not-exist'],False,None),
   'selftest-mode-reject':(['--selftest','--join-in-progress'],False,None),
+  'steam-invite-code':(['--connect-lobby','steam:109775241323497676'],True,['vending_machine_framework']),
+  'steam-lobby-id-join':(['--join-in-progress','--connect-lobby','109775241323497676'],True,['vending_machine_framework','join-in-progress']),
+  'steam-invite-code-reject':(['--connect-lobby','steam:not-a-lobby'],False,None),
+  'steam-invites-off':(['--no-steam-invites'],True,['vending_machine_framework']),
  }
  for name,(args,good,mods) in tests.items():
   r=subprocess.run([sys.executable,str(ROOT/'framework/tools/launch.py'),*args,'--dry-run'],cwd=ROOT,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)

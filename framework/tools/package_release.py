@@ -6,9 +6,9 @@ import shutil
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = '0.20.3'
+VERSION = '0.20.4'
 GAME = Path(r'F:\Steam\steamapps\common\Barony')
-PRODUCTION_HASH = 'bffe195af690fc0ff33461cc91aff2e7605e9941d1eb2292f1501eabcb1760b4'
+PRODUCTION_HASH = 'c447b84053b2aa104e1d69d6dc9946eb8d612303f240d50c3dbebf0040dd5d81'
 GAME_HASH = '8566da37bc39ea5a1ed08a8ad57608af4f019fb415869258fb3c1d310b4419e4'
 DLLS = ('fmod.dll', 'glew32.dll', 'libfreetype-6.dll', 'libpng16-16.dll', 'physfs.dll',
         'SDL2.dll', 'SDL2_image.dll', 'SDL2_net.dll', 'SDL2_ttf.dll', 'zlib1.dll')

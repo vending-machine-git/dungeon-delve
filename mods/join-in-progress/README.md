@@ -12,7 +12,7 @@ Run `framework/Play-Join-In-Progress.cmd`, or:
 python framework/tools/launch.py --join-in-progress
 ```
 
-The host starts a normal Direct IP multiplayer campaign. A guest creates their chosen character and joins the host's address through Direct IP, even after gameplay has started. Use a separate profile for every simultaneous process on one computer. Each peer must enable Join In Progress and use the same runtime. Bring Your Gear is optional per guest when the host enables both mods.
+The host starts a normal Direct IP multiplayer campaign. A guest creates their chosen character and joins the host's address through Direct IP, even after gameplay has started. With Steam running, the host can instead type `/invite` in chat to invite Steam friends who already have the same runtime open; they join through Steam's relay without port forwarding. Use a separate profile for every simultaneous process on one computer. Each peer must enable Join In Progress and use the same runtime. Bring Your Gear is optional per guest when the host enables both mods.
 
 The host briefly pauses simulation to capture and transfer live terrain and entities. Transfer chunks are checked against the expected peer and transfer ID, bounded in size, checksummed, acknowledged, and retried when lost. The joining client applies the snapshot and confirms readiness before play resumes. Failed or abandoned synchronization times out and lets the existing host continue. The host does not regenerate its dungeon or restart the run.
 
@@ -38,7 +38,7 @@ Only physical backpack items and equipment are copied. The guest keeps their cho
 
 ## Current limits
 
-Private Direct IP only in the current offline runtime; Steamworks, EOS, and audio remain disabled. There is no dedicated server, host migration, extra player capacity, or secure public-server inventory service. Wider floor/boss/custom-map coverage, extended combat and networking tests, and the reconnect experience remain release validation work. See JOIN_IN_PROGRESS_PLAN.md in the development project and tests/smoke/README.md for current evidence and reproduction.
+Private Direct IP or framework Steam invites (friends-only lobby, Steam relay); EOS remains disabled. An invite accepted while the game is closed starts Steam's retail Barony, so friends open the framework runtime first. There is no dedicated server, host migration, extra player capacity, or secure public-server inventory service. Wider floor/boss/custom-map coverage, extended combat and networking tests, and the reconnect experience remain release validation work. See JOIN_IN_PROGRESS_PLAN.md in the development project and tests/smoke/README.md for current evidence and reproduction.
 
 ## Workshop package
 

@@ -11,7 +11,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
 GAME = Path(r'F:\Steam\steamapps\common\Barony')
-VERSION = '0.20.3'
+VERSION = '0.20.4'
 FOLDER = 'Dungeon-Delve-' + VERSION
 
 
@@ -147,6 +147,11 @@ def main():
         previous = ROOT / 'framework/dist/github-0.20.2-chest-vaults/player/Dungeon Delve.exe'
         shutil.copy2(previous, primary / 'Dungeon Delve.exe')
         run('previous-0202-root-launcher-updated', ['--install', '--game-dir', primary])
+        assert (primary / 'Dungeon Delve.exe').read_bytes() == root_launcher
+    if root_launcher is not None:
+        previous = ROOT / 'framework/dist/github-0.20.3-vanilla-gates-r2/player/Dungeon Delve.exe'
+        shutil.copy2(previous, primary / 'Dungeon Delve.exe')
+        run('previous-0203-root-launcher-updated', ['--install', '--game-dir', primary])
         assert (primary / 'Dungeon Delve.exe').read_bytes() == root_launcher
     for relative, checksum in protected.items():
         assert digest(primary / relative) == checksum

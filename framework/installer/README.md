@@ -1,6 +1,6 @@
 # Dungeon Delve Windows installer
 
-`Dungeon-Delve-0.20.3-Setup.exe` is a complete offline installer containing the
+`Dungeon-Delve-0.20.4-Setup.exe` is a complete offline installer containing the
 same tested player ZIP as the portable release. Players need Windows x64 with
 .NET Framework 4.5 or later (included with Windows 10/11), an owned compatible
 Steam Barony installation, and write access to its directory. No Python,
@@ -44,10 +44,10 @@ py -3.12 framework/tools/build_installer.py
 py -3.12 tests/regression/check_installer.py
 ```
 
-The builder consumes a verified 0.20.3 release ZIP (pass `--release` for a newly
+The builder consumes a verified 0.20.4 release ZIP (pass `--release` for a newly
 prepared launcher revision). It also accepts older CMD-only archives without
 changing their payload; shortcuts then use their legacy entrypoint. Output defaults
-to `framework/dist/installer-0.20.3/` and refuses an existing output directory.
+to `framework/dist/installer-0.20.4/` and refuses an existing output directory.
 Use `--output` with a fresh directory when rebuilding. It invokes Windows'
 installed .NET Framework C# compiler, embeds the player ZIP and file inventory,
 and writes Setup, a copy of the ZIP, SHA256SUMS.txt (both downloads), README and build
@@ -62,9 +62,9 @@ only after validation and owner approval. No build/test command publishes.
 Automation (does not open a game or create desktop shortcuts):
 
 ```powershell
-Dungeon-Delve-0.20.3-Setup.exe --detect --report detected.json
-Dungeon-Delve-0.20.3-Setup.exe --check --game-dir "F:\Steam\steamapps\common\Barony" --report checked.json
-Dungeon-Delve-0.20.3-Setup.exe --install --game-dir "F:\Steam\steamapps\common\Barony" --report installed.json
+Dungeon-Delve-0.20.4-Setup.exe --detect --report detected.json
+Dungeon-Delve-0.20.4-Setup.exe --check --game-dir "F:\Steam\steamapps\common\Barony" --report checked.json
+Dungeon-Delve-0.20.4-Setup.exe --install --game-dir "F:\Steam\steamapps\common\Barony" --report installed.json
 ```
 
 `--steam-root <path>` may be repeated with `--detect` to scan only specified

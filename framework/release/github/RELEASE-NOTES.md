@@ -1,16 +1,19 @@
-# Dungeon Delve 0.20.3 - vanilla-style gates
+# Dungeon Delve 0.20.4 - Steam invites
 
-Gates now behave like vanilla Barony. They start closed (native inverted gates
-still start open) and their lever sits a few tiles away against a wall, off the
-doorway, instead of right beside the gate. Reward-room gates have one lever
-outside. Any other gate that divides the floor has a lever on each side, and
-either lever opens or closes it, so a closed gate can never trap a player.
+Invite Steam friends instead of sharing an IP address. With Steam running, the
+host's open seats show **INVITE** cards that open Steam's invite dialog. Friends
+can accept the invite, use **Join Game** on the host in their Steam friends list,
+or paste the copied invite code (`steam:<number>`) into the Direct IP box. Invited
+players connect through Steam's relay, so the host needs no port forwarding.
+Direct IP still works exactly as before.
 
-Optional rooms without loot keep their lock and receive a cache chest (or
-gear/treasure when no chest fits) from the existing floor loot budget. Only
-structurally broken doorways are removed.
+Important: friends must already have Dungeon Delve open (from Dungeon Delve.exe)
+when they accept. Steam starts its normal Barony for invites accepted while the
+game is closed, and normal Barony cannot join; it is refused cleanly.
 
-Crowded chests, doorway blockers and native full shops remain fixed. Three
-furnished kiosks per floor, floor loot/rarity pools, XP, timing and death/return
-rules remain. All peers need runtime/content 0.20.3, protocol 35 and API 1.
-Restart from the root Dungeon Delve.exe and begin a new match.
+Steam invites passed automated multi-player tests and a single real-account
+check (real Steam lobby and invite dialog). They have not yet been tested between
+two real Steam accounts, so please report any problems; Direct IP remains the
+fallback. Gameplay, gates, loot and the three floors are unchanged from 0.20.3.
+All peers need runtime/content 0.20.4, protocol 35 and API 1. Restart from the
+root Dungeon Delve.exe.

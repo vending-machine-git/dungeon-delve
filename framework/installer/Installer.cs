@@ -42,7 +42,8 @@ namespace DungeonDelve
                     && hash != "2bad2ea0e639dd2b8f3decc30fba70661eba8c6dd09dcea365d5f1ea19e537fa"
                     && hash != "336755622e56ca41ebf59d371a66c2f495e2a458296cec022884a8f2188abdff"
                     && hash != "8d0352739ec0f121d8b76fc7797e031f69db0bd4f336b4ceca7553d34d552b46"
-                    && hash != "b0cc811417ee214b0c04e873e9682448e92de40d8b8e898f099a813327484aeb")
+                    && hash != "b0cc811417ee214b0c04e873e9682448e92de40d8b8e898f099a813327484aeb"
+                    && hash != "201d70cacdd917328e59403e66d14ffafd34c2267693623fcff09963fea3ce5c")
                     throw new IOException("A different Dungeon Delve.exe already exists beside barony.exe. Rename that file before installing. Nothing was overwritten.");
             }
         }
