@@ -38,7 +38,7 @@ rapidjson::Document world;
 int worldFloor = 0;
 bool nativeGenerating = false;
 std::array<unsigned int, MAXPLAYERS> deathDropOrdinals{};
-struct GateControl { Uint32 lever; bool startsOpen; };
+struct GateControl { std::vector<Uint32> levers; bool startsOpen; };
 std::map<int,GateControl> gateControls;
 constexpr int shopsPerFloor=3, shopStockSize=16;
 constexpr int kioskRadius=2, kioskClearingRadius=3;
@@ -696,6 +696,13 @@ bool adaptOfficial(unsigned seed) {
     }
     int rewardLocks=0,woodLocks=0,preservedGates=0,generatedRewards=0;
     std::set<int> usedDropRewards;
+    std::set<Cell> reservedLeverCells;
+    for(auto key:{"chests","descents","portals"})for(auto& v:world[key].GetArray())
+        reservedLeverCells.insert({v["x"].GetInt(),v["y"].GetInt()});
+    for(auto& kiosk:world["kiosks"].GetArray()) {
+        reservedLeverCells.insert({kiosk["entrance_x"].GetInt(),kiosk["entrance_y"].GetInt()});
+        reservedLeverCells.insert({kiosk["approach_x"].GetInt(),kiosk["approach_y"].GetInt()});
+    }
     for(unsigned groupID=0;groupID<groups.size();++groupID) {
         auto& group=groups[groupID];const bool gate=gateSprite(group.front()->sprite);
         const auto open=flood(spawns[0],mainAccess);
@@ -712,21 +719,6 @@ bool adaptOfficial(unsigned seed) {
         int vaultTiles=0;for(int i=0;i<size*size;++i)if(open[i]>=0 && closed[i]<0)++vaultTiles;
         const bool optional=!essential && open[index(cell(group.front()))]>=0 && vaultTiles>=5 && vaultTiles<=120 && (gate || woodLocks<3);
         auto groupDistance=[&](Cell p){int d=10000;for(auto e:group)d=std::min(d,manhattan(p,cell(e)));return d;};
-        Cell leverSite{-1,-1};
-        if(gate) {
-            const auto& distances=optional ? closed:open;int best=10000;
-            for(auto p:candidates) {
-                const int d=groupDistance(p);
-                if(d<1 || d>6 || d>=best || occupied.count(p) || !safe[index(p)] || distances[index(p)]<0)continue;
-                leverSite=p;best=d;
-            }
-            // An inner, initially open gate may lie inside another reward room.
-            if(leverSite.first<0)for(auto p:candidates) {
-                int d=groupDistance(p);
-                if(d>=1 && d<=6 && !occupied.count(p) && safe[index(p)] && reachable[index(p)]>=0){leverSite=p;break;}
-            }
-            if(leverSite.first<0){printlog("[DELVE] generation rejected: no gate control site");return false;}
-        }
         int reward=-1;const char* rewardKind="none";bool generatedReward=false;
         if(optional) {
             for(rapidjson::SizeType i=0;i<world["chests"].Size();++i) {
@@ -771,7 +763,7 @@ bool adaptOfficial(unsigned seed) {
                     }
                     if(moved) {
                         moved->x=destination.first*16;moved->y=destination.second*16;
-                        occupied.erase(from);occupied.insert(destination);
+                        occupied.erase(from);occupied.insert(destination);reservedLeverCells.insert(destination);
                         safe[index(from)]=mainAccess[index(from)]=true;
                         safe[index(destination)]=mainAccess[index(destination)]=false;
                         c["x"].SetInt(destination.first);c["y"].SetInt(destination.second);
@@ -804,15 +796,72 @@ bool adaptOfficial(unsigned seed) {
                 Cell p=cell(e),q{p.first+side.first,p.second+side.second};
                 if(inside(q) && closed[index(q)]>=0){lockApproaches.push_back(q);break;}
             }
-        } else for(auto e:group)mainAccess[index(cell(e))]=safe[index(cell(e))];
-        Entity* lever=nullptr;
-        if(gate) {
-            lever=raw(17,leverSite);occupied.insert(leverSite);
-            if(open[index(leverSite)]>=0)lockApproaches.push_back(leverSite);
         }
+        // Vanilla-style gate control: gates start closed (inverted native gates
+        // start open) and a lever sits a few tiles away against a wall, off the
+        // doorway lane. A reward gate is controlled only from outside. Any other
+        // gate that splits the floor gets a lever on each side, and every lever
+        // toggles it, so closing a gate can never strand a player.
+        std::vector<Cell> leverSites;
+        if(gate) {
+            const Cell first=cell(group.front()),step=doorStep(group.front()->sprite);
+            auto pickLever=[&](const std::vector<int>& region) {
+                Cell site{-1,-1};int best=1<<30;
+                for(int pass=0;pass<2 && site.first<0;++pass)for(auto p:candidates) {
+                    const int d=groupDistance(p);
+                    if(occupied.count(p) || !safe[index(p)] || region[index(p)]<0 || d<1 || (pass==0 && (d<3 || d>8)) || d>12)continue;
+                    bool wall=false;
+                    for(auto side:sides){Cell q{p.first+side.first,p.second+side.second};if(!inside(q) || !dry[index(q)])wall=true;}
+                    bool lane=false;
+                    for(auto e:group){Cell g=cell(e);if(d<=3 && (step.first ? p.second==g.second:p.first==g.first))lane=true;}
+                    const int score=std::abs(d-5)*2+(wall ? 0:4)+(lane ? 6:0)+(pass ? 20:0);
+                    if(score<best){best=score;site=p;}
+                }
+                // Corridors and small pockets may have no room candidates; use any
+                // free floor tile on that side, nearest the gate.
+                if(site.first<0)for(int x=0;x<size;++x)for(int y=0;y<size;++y) {
+                    Cell p{x,y};
+                    if(!inside(p) || region[index(p)]<0 || occupied.count(p) || doorCells.count(p) || !safe[index(p)])continue;
+                    const int score=groupDistance(p);
+                    if(score>=1 && score<best){best=score;site=p;}
+                }
+                // Tiny pockets between gates: share a tile with a passable prop or
+                // loose loot, never with chests, exits, kiosks or another lever.
+                if(site.first<0)for(int x=0;x<size;++x)for(int y=0;y<size;++y) {
+                    Cell p{x,y};
+                    if(!inside(p) || region[index(p)]<0 || doorCells.count(p) || !safe[index(p)] || reservedLeverCells.count(p))continue;
+                    const int score=groupDistance(p);
+                    if(score>=1 && score<best){best=score;site=p;}
+                }
+                if(site.first<0)printlog("[DELVE] gate side without lever site at %d,%d (%d tiles)",first.first,first.second,
+                    static_cast<int>(std::count_if(region.begin(),region.end(),[](int v){return v>=0;})));
+                return site;
+            };
+            if(reward>=0) leverSites.push_back(pickLever(closed));
+            else {
+                const auto sideA=flood({first.first-step.first,first.second-step.second},mainAccess);
+                const auto sideB=flood({first.first+step.first,first.second+step.second},mainAccess);
+                const bool split=sideA[index({first.first+step.first,first.second+step.second})]<0;
+                for(auto* region:{&sideA,&sideB}) {
+                    if(region==&sideB && !split)break;
+                    if(std::none_of(region->begin(),region->end(),[](int v){return v>=0;}))continue;
+                    leverSites.push_back(pickLever(*region));
+                }
+            }
+            if(leverSites.empty() || std::any_of(leverSites.begin(),leverSites.end(),[](Cell p){return p.first<0;})) {
+                printlog("[DELVE] generation rejected: no gate control site");return false;
+            }
+        }
+        if(reward<0)for(auto e:group)mainAccess[index(cell(e))]=safe[index(cell(e))];
+        std::vector<Uint32> leverIDs;
+        for(auto site:leverSites) {
+            leverIDs.push_back(raw(17,site)->getUID());occupied.insert(site);reservedLeverCells.insert(site);
+            if(open[index(site)]>=0)lockApproaches.push_back(site);
+        }
+        const bool startsOpen=gate && reward<0 && (group.front()->sprite==113 || group.front()->sprite==114);
         for(auto e:group) {
             Cell p=cell(e),step=doorStep(e->sprite);
-            if(gate){gateControls[index(p)]={lever->getUID(),reward<0};++preservedGates;}
+            if(gate){gateControls[index(p)]={leverIDs,startsOpen};++preservedGates;}
             else e->doorForceLockedUnlocked=reward>=0 ? 1:2;
             addPoint("doors",p);
             auto& door=world["doors"][world["doors"].Size()-1];
@@ -823,9 +872,16 @@ bool adaptOfficial(unsigned seed) {
             door.AddMember("reward_generated",generatedReward,allocator);
             door.AddMember("vault_tiles",reward>=0 ? vaultTiles:0,allocator);
             if(gate) {
-                door.AddMember("lever_uid",lever->getUID(),allocator);
-                door.AddMember("lever_x",leverSite.first,allocator);door.AddMember("lever_y",leverSite.second,allocator);
-                door.AddMember("starts_open",reward<0,allocator);
+                door.AddMember("lever_uid",leverIDs.front(),allocator);
+                door.AddMember("lever_x",leverSites.front().first,allocator);door.AddMember("lever_y",leverSites.front().second,allocator);
+                rapidjson::Value levers(rapidjson::kArrayType);
+                for(size_t i=0;i<leverSites.size();++i) {
+                    rapidjson::Value v(rapidjson::kObjectType);
+                    v.AddMember("uid",leverIDs[i],allocator);v.AddMember("x",leverSites[i].first,allocator);v.AddMember("y",leverSites[i].second,allocator);
+                    levers.PushBack(v,allocator);
+                }
+                door.AddMember("levers",levers,allocator);
+                door.AddMember("starts_open",startsOpen,allocator);
             }
         }
     }
@@ -954,9 +1010,13 @@ bool controlGate(Entity& gate) {
     auto control=gateControls.find(key);if(control==gateControls.end())return false;
     gate.gateInverted=0;
     if(multiplayer!=CLIENT) {
-        auto base=uidToEntity(control->second.lever);
-        auto lever=base ? uidToEntity(base->parent):nullptr;
-        const bool pulled=lever && lever->behavior==&actSwitch && lever->skill[0];
+        // Every lever on the gate toggles it, so either side can open or close it.
+        bool pulled=false;
+        for(auto uid:control->second.levers) {
+            auto base=uidToEntity(uid);
+            auto lever=base ? uidToEntity(base->parent):nullptr;
+            if(lever && lever->behavior==&actSwitch && lever->skill[0])pulled=!pulled;
+        }
         const int status=control->second.startsOpen ? !pulled:pulled;
         if(gate.gateStatus!=status) {
             gate.gateStatus=status;
@@ -1040,13 +1100,16 @@ bool smokeKioskAudit() {
             if(e->behavior==&actGate) {
                 if(std::strcmp(v["kind"].GetString(),"gate") || !e->gateInit ||
                     e->gateStatus!=v["starts_open"].GetBool() || e->flags[PASSABLE]!=v["starts_open"].GetBool())return false;
-                auto base=uidToEntity(v["lever_uid"].GetUint()),lever=base ? uidToEntity(base->parent):nullptr;
-                if(!lever || lever->behavior!=&actSwitch || !lever->flags[PASSABLE])return false;
-                const int oldPower=lever->skill[0],oldStatus=e->gateStatus;
-                lever->toggleSwitch();controlGate(*e);
-                const bool toggled=e->gateStatus!=oldStatus;
-                lever->toggleSwitch();controlGate(*e);
-                if(!toggled || lever->skill[0]!=oldPower || e->gateStatus!=oldStatus)return false;
+                if(!v.HasMember("levers") || v["levers"].Empty() || (v["locked"].GetBool() && v["levers"].Size()!=1))return false;
+                for(auto& control:v["levers"].GetArray()) {
+                    auto base=uidToEntity(control["uid"].GetUint()),lever=base ? uidToEntity(base->parent):nullptr;
+                    if(!lever || lever->behavior!=&actSwitch || !lever->flags[PASSABLE])return false;
+                    const int oldPower=lever->skill[0],oldStatus=e->gateStatus;
+                    lever->toggleSwitch();controlGate(*e);
+                    const bool toggled=e->gateStatus!=oldStatus;
+                    lever->toggleSwitch();controlGate(*e);
+                    if(!toggled || lever->skill[0]!=oldPower || e->gateStatus!=oldStatus)return false;
+                }
                 ++actualGates;
             }
             found=true;break;

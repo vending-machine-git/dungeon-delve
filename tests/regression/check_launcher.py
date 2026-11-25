@@ -79,9 +79,9 @@ def main():
     root_layout.mkdir()
     root_executable = root_layout / 'Dungeon Delve.exe'
     shutil.copy2(source.parent / 'Dungeon Delve.exe', root_executable)
-    shutil.copytree(source, root_layout / 'Dungeon-Delve-0.20.2')
+    shutil.copytree(source, root_layout / 'Dungeon-Delve-0.20.3')
     root_checked = run('root-exe-resolves-sibling-support-folder', ['--check'], binary=root_executable)
-    assert all(str(root_layout / 'Dungeon-Delve-0.20.2/mods') in path for path in root_checked['content'])
+    assert all(str(root_layout / 'Dungeon-Delve-0.20.3/mods') in path for path in root_checked['content'])
     compiler = Path(os.environ.get('WINDIR', r'C:\Windows')) / 'Microsoft.NET/Framework64/v4.0.30319/csc.exe'
     harness = evidence / 'LauncherUiSmoke.exe'
     subprocess.run([str(compiler), '/nologo', '/target:winexe', '/out:' + str(harness),

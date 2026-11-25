@@ -24,14 +24,14 @@ namespace DungeonDelve
     internal static class Launcher
     {
         internal static readonly string Root = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        internal const string PayloadFolder = "Dungeon-Delve-0.20.2";
+        internal const string PayloadFolder = "Dungeon-Delve-0.20.3";
 
         internal static string FindPayload()
         {
             string nested = Path.Combine(Root, PayloadFolder);
             string candidate = Directory.Exists(nested) ? nested : Root;
             if (!File.Exists(Path.Combine(candidate, "Launch.ps1")) || !File.Exists(Path.Combine(candidate, "release.json")))
-                throw new IOException("Extract the complete Dungeon Delve ZIP into your Barony folder. Keep Dungeon Delve.exe beside barony.exe and the Dungeon-Delve-0.20.2 supporting folder. Launch.ps1 or release.json is missing.");
+                throw new IOException("Extract the complete Dungeon Delve ZIP into your Barony folder. Keep Dungeon Delve.exe beside barony.exe and the Dungeon-Delve-0.20.3 supporting folder. Launch.ps1 or release.json is missing.");
             return candidate;
         }
 

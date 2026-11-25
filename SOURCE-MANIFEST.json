@@ -1,8 +1,8 @@
 {
   "format_version": 1,
-  "native_version": "0.20.2",
+  "native_version": "0.20.3",
   "framework_api": 1,
-  "protocol": 34,
+  "protocol": 35,
   "upstream": "https://github.com/TurningWheel/Barony",
   "upstream_commit": "not recorded in the supplied workspace",
   "scope": "Current source, build tools and authored content; no retail data or compiled binaries",
@@ -169,11 +169,11 @@
     },
     {
       "path": "framework/installer/Installer.cs",
-      "sha256": "d591d06fcdeb6769f10ac1a07dcf2684e81b4b5d8369c7f516b03d7efe96184a"
+      "sha256": "b4d2e3e96896754e427c551c489459f69f5f3f97b9c8710c9c9e323b1e727332"
     },
     {
       "path": "framework/installer/README.md",
-      "sha256": "67b1f4f1c309a51c182b5ed3881b9b571ed08d6b0ce356004d39be02d342c747"
+      "sha256": "c84ec8d673323ec05b388bde4d4c533751142b6d4ae4dea7a365e5c94e28ea5f"
     },
     {
       "path": "framework/installer/app.manifest",
@@ -189,11 +189,11 @@
     },
     {
       "path": "framework/launcher/Launcher.cs",
-      "sha256": "fa982732294304cc02bc4e1bcc5a471385d7816d6bb07e037e9c6c75a4a22251"
+      "sha256": "ff7a9774d13d448a31122305e2412d1f599f8dc7e8f65aa3a850baa5cd7c205c"
     },
     {
       "path": "framework/launcher/README.md",
-      "sha256": "8468cb7a07d4b4e2cdf73f17747db7b8f8ea798268114ad014e86bec24aa5c61"
+      "sha256": "c18e03a223ddb1af69af6f92182a704bdb96b895ab19456fda9aae153d32fb88"
     },
     {
       "path": "framework/launcher/app.manifest",
@@ -233,23 +233,23 @@
     },
     {
       "path": "framework/release/github/LAUNCHER-README.md",
-      "sha256": "c18bdc1ebf96c66e30bd5bbe3b8278fd202ce69ee8db2ad2f470e46c9c131dfc"
+      "sha256": "b2f02bca748bc31f408b3f45e17b11a1c1125740772a356ea06afcececa3b05d"
     },
     {
       "path": "framework/release/github/PLAYER-README.md",
-      "sha256": "e70c0c5a16dc4b3049ffecafb402e5d52366fb35ecbc7403dedd76132930271d"
+      "sha256": "edf656866903b5a91304146308cf69d3c631b5c978890d7ad11a94f682a8d0ab"
     },
     {
       "path": "framework/release/github/PUBLISH-CHECKLIST.md",
-      "sha256": "336f4f95156bf02c1bd729b5a31642aee0ab05d8cdf502540b5ad299f9c1ad90"
+      "sha256": "c86820eaaa535232e2024be8955f5806c1d4adc96f86d16f0aa21ce803b08902"
     },
     {
       "path": "framework/release/github/RELEASE-NOTES.md",
-      "sha256": "5bea81b23ab293bf824347d29476fbb27722ce2990d2804f88c5d662a1ce74ad"
+      "sha256": "a0240112f1d1afd861266e17de0bf661064b4fe32d6704c2b4e32543147c9377"
     },
     {
       "path": "framework/release/github/REPOSITORY-README.md",
-      "sha256": "3878bc912d7ffa206c549b6b88d27489efad41af26f255198c287c3fd904b1be"
+      "sha256": "30e4fca94f1d7cb0b26cb520d930a471308ef6931664fc7b74ba18a8a9856cbb"
     },
     {
       "path": "framework/release/github/SOURCE.md",
@@ -329,11 +329,11 @@
     },
     {
       "path": "framework/tools/package_github_release.py",
-      "sha256": "1c12e723e7e9585773dc2ebc2af183be1e3a47cef4b1d224505fd719784ca78a"
+      "sha256": "7f272aafee0c1b1198c8743d7f6c059f159cd350963b203b73c4828ab5139561"
     },
     {
       "path": "framework/tools/package_release.py",
-      "sha256": "614fc71a1989648d6b4a6943f8fb1e2fe3d6a4746642b779aceaecda37535f23"
+      "sha256": "afb54d775b907e8b2175360c47854005f2a4261c4c85b10cc22785ba5da68464"
     },
     {
       "path": "framework/tools/prepare_fmod.py",
@@ -341,7 +341,7 @@
     },
     {
       "path": "framework/tools/prepare_source_repository.py",
-      "sha256": "4321f97b9a0f292adabf70970fdf81dd62a5edd06e97448169dae0a041232330"
+      "sha256": "c877342045f18402f21dcb62a03f07419cba110a123b74d31ae0b85e62c177f2"
     },
     {
       "path": "framework/tools/render_floor_diagrams.py",
@@ -417,7 +417,7 @@
     },
     {
       "path": "mods/extraction-raid/README.md",
-      "sha256": "73307a57267341f37338ea33ed6ab7f5b5574ed311976c69b847ae7aa694db6e"
+      "sha256": "4572616b944e259d4f1098ac21042a880d5907433b24e5fac83a24197b2a1bb5"
     },
     {
       "path": "mods/extraction-raid/data/rmf/class_builds.json",
@@ -449,7 +449,7 @@
     },
     {
       "path": "mods/extraction-raid/data/rmf/raid.json",
-      "sha256": "7be813ff2f50633871fb5bcb5c1f833fa402ef045507ad618d67943a168da8b3"
+      "sha256": "0a7aef3f555c7d8f90c791c784a5036462df029b744fdb7eed63e40180b4e9db"
     },
     {
       "path": "mods/extraction-raid/images/rmf/cooldown-disc.png",
@@ -481,7 +481,7 @@
     },
     {
       "path": "mods/extraction-raid/mod.json",
-      "sha256": "ba3ab474d1655ce3dd06b18d7ead447ec34ac0633b5b169ce0058eed3c9088a2"
+      "sha256": "ed2070643dd380532082e10f7a41e8de8978a9f2a08972ce2dedd703e8b7f5ef"
     },
     {
       "path": "mods/extraction-raid/music/rmf/dungeon-floor-2.wav",
@@ -529,15 +529,15 @@
     },
     {
       "path": "mods/vending_machine_framework/README.md",
-      "sha256": "44800693c8aee421bd36ac02b398e39b50f2ab643d4a6c16597c27034465821a"
+      "sha256": "6e4270c6efe66ccb9c8f590f92b3c0e755b9e53b438342f73abd13ba413bec03"
     },
     {
       "path": "mods/vending_machine_framework/data/rmf/framework.json",
-      "sha256": "494450688586a49aabc8d0c37fc58093027f65cb9053722f3a527cb2ffca6db4"
+      "sha256": "9f9cdaabdd4c677181d58581d28b8388d37b87700e0ffd40e2a2b7988ef0058b"
     },
     {
       "path": "mods/vending_machine_framework/mod.json",
-      "sha256": "ce1d743373840f353f1ff10d54cf583a65683d9c879c1efc5b3518dac84e7d4c"
+      "sha256": "0194e82789faef937ac17ba22396a0e907606618c415d0ee856ec392695fd04d"
     },
     {
       "path": "mods/vending_machine_framework/preview.png",
@@ -1485,7 +1485,7 @@
     },
     {
       "path": "src/raid.hpp",
-      "sha256": "a106f583aebb0e8b38bb2e086f51058b1d14b116da7f76245c35f70d1b00d560"
+      "sha256": "39871463940e2d983d41d670cffb946ba12cf70d7e777d37d9b73dc6a88b25d2"
     },
     {
       "path": "src/raid_battle_rules.hpp",
@@ -1497,7 +1497,7 @@
     },
     {
       "path": "src/raid_world.cpp",
-      "sha256": "4e6243a3406a2771527dfe3897e9bd4ab0b0afe973d4cf9817bfac6beae299d3"
+      "sha256": "05a2378f3ea9833e9d88b3f492ba1038dff1b14836c9731a5b0754187daf6a69"
     },
     {
       "path": "src/savepng.cpp",
@@ -1797,7 +1797,7 @@
     },
     {
       "path": "tests/regression/InstallerUiSmoke.cs",
-      "sha256": "626710bebb8aabf8094bf70ef29fd29f5d7ca13a9f9463817e71406fe82413ea"
+      "sha256": "4628f5b07778625fb38acf111585e1983552ff5f63cc24590afa567c5a8da336"
     },
     {
       "path": "tests/regression/LauncherUiSmoke.cs",
@@ -1813,7 +1813,7 @@
     },
     {
       "path": "tests/regression/check_delve_maps.py",
-      "sha256": "a6efb94955000f1782da7a0071f620d10a42d2469d8a7e7a2ca6b5cde8f3b87e"
+      "sha256": "36018237a59800af43def6b3cff7b71382ec34f23b5669e0f5eaf0541eb3b279"
     },
     {
       "path": "tests/regression/check_dlc_entitlements.py",
@@ -1821,11 +1821,11 @@
     },
     {
       "path": "tests/regression/check_github_release.py",
-      "sha256": "588243503be9fe69f132b3b739116f70be663b4faa36d8028cbbf46451853ed3"
+      "sha256": "73ff014dcd431ae8831e3c37411ef51bf56428a691b4fb484da19e6a730fc7a2"
     },
     {
       "path": "tests/regression/check_installer.py",
-      "sha256": "96befcc8a240ce6c764c92a3ff5701c26a042d11b5f26e973920c746407723c9"
+      "sha256": "2b534de82d5f05f7c5665bdfa8829a83107a04bc539d5018f2a3f5e492de8531"
     },
     {
       "path": "tests/regression/check_intro_audio.py",
@@ -1833,7 +1833,7 @@
     },
     {
       "path": "tests/regression/check_launcher.py",
-      "sha256": "6370ec6a3d8655c0481bc6b6b401796fc3a5236007c9b5fcb1c6e5f08afa13c0"
+      "sha256": "8f6b8573e6fbeab78c0ae86376008c9e11edf6a016f638e97f94c6523c713169"
     },
     {
       "path": "tests/regression/check_packages.py",
@@ -1869,7 +1869,7 @@
     },
     {
       "path": "tests/smoke/check_delve_generation.py",
-      "sha256": "ddad59055124618c1d2cce7586b8a9ee9d0a4219e78d072df09be35cb6de55ea"
+      "sha256": "410f993b1393b61f0e4a898b901a01d8b63035b0598fe9b956f1caf074b336f7"
     },
     {
       "path": "tests/smoke/dlc_ownership.py",

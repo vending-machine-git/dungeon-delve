@@ -1,6 +1,6 @@
 {
-  "version": "0.20.2",
-  "protocol": 34,
+  "version": "0.20.3",
+  "protocol": 35,
   "api_version": 1,
   "platform": "windows-x64",
   "distribution": "github-combined-portable",
@@ -10,9 +10,9 @@
   "narration_revision": "depop-dungeon-1",
   "distribution_revision": "exe-launcher-2",
   "install_layout": "game-root-launcher",
-  "launcher_sha256": "b0cc811417ee214b0c04e873e9682448e92de40d8b8e898f099a813327484aeb",
+  "launcher_sha256": "201d70cacdd917328e59403e66d14ffafd34c2267693623fcff09963fea3ce5c",
   "game_sha256": "8566da37bc39ea5a1ed08a8ad57608af4f019fb415869258fb3c1d310b4419e4",
-  "runtime_sha256": "bb79de44fc7211ffd4463bbe40f89bd898a82bf0241a8518245a8e34ec1c780e",
+  "runtime_sha256": "bffe195af690fc0ff33461cc91aff2e7605e9941d1eb2292f1501eabcb1760b4",
   "game_dlls": [
     {
       "name": "fmod.dll",
@@ -61,7 +61,7 @@
       "files": [
         {
           "path": "data/rmf/framework.json",
-          "sha256": "494450688586a49aabc8d0c37fc58093027f65cb9053722f3a527cb2ffca6db4"
+          "sha256": "9f9cdaabdd4c677181d58581d28b8388d37b87700e0ffd40e2a2b7988ef0058b"
         },
         {
           "path": "LICENSE.txt",
@@ -69,7 +69,7 @@
         },
         {
           "path": "mod.json",
-          "sha256": "ce1d743373840f353f1ff10d54cf583a65683d9c879c1efc5b3518dac84e7d4c"
+          "sha256": "0194e82789faef937ac17ba22396a0e907606618c415d0ee856ec392695fd04d"
         },
         {
           "path": "preview.png",
@@ -77,7 +77,7 @@
         },
         {
           "path": "README.md",
-          "sha256": "44800693c8aee421bd36ac02b398e39b50f2ab643d4a6c16597c27034465821a"
+          "sha256": "6e4270c6efe66ccb9c8f590f92b3c0e755b9e53b438342f73abd13ba413bec03"
         }
       ]
     },
@@ -114,7 +114,7 @@
         },
         {
           "path": "data/rmf/raid.json",
-          "sha256": "7be813ff2f50633871fb5bcb5c1f833fa402ef045507ad618d67943a168da8b3"
+          "sha256": "0a7aef3f555c7d8f90c791c784a5036462df029b744fdb7eed63e40180b4e9db"
         },
         {
           "path": "images/rmf/cooldown-disc.png",
@@ -150,7 +150,7 @@
         },
         {
           "path": "mod.json",
-          "sha256": "ba3ab474d1655ce3dd06b18d7ead447ec34ac0633b5b169ce0058eed3c9088a2"
+          "sha256": "ed2070643dd380532082e10f7a41e8de8978a9f2a08972ce2dedd703e8b7f5ef"
         },
         {
           "path": "music/rmf/dungeon-floor-2.wav",
@@ -174,7 +174,7 @@
         },
         {
           "path": "README.md",
-          "sha256": "73307a57267341f37338ea33ed6ab7f5b5574ed311976c69b847ae7aa694db6e"
+          "sha256": "4572616b944e259d4f1098ac21042a880d5907433b24e5fac83a24197b2a1bb5"
         }
       ]
     }
