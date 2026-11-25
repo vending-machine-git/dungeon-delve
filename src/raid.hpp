@@ -10,7 +10,7 @@ namespace Raid
 {
 	constexpr unsigned char joinCapability = 0x02;
 	constexpr unsigned int startFlag = 1u << 31;
-	constexpr unsigned char protocolVersion = 34;
+	constexpr unsigned char protocolVersion = 35;
 	enum class Outcome : unsigned char { Playing, Descended, PendingExtraction, Extracted, Slain, Abandoned };
 
 	bool parseArgument(const char* argument);

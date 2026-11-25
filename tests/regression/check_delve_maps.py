@@ -17,7 +17,7 @@ def main():
     assert config['shopkeepers']['stock_rarity'] == 'floor-loot-weights'
     assert config['shopkeepers']['footprint_tiles'] == [5, 5]
     assert config['shopkeepers']['mob_relationship'] == 'mutually-neutral'
-    assert config['shopkeepers']['raid_protocol'] == 34
+    assert config['shopkeepers']['raid_protocol'] == 35
     assert config['descent_sites_per_floor'] == 1 and config['portal_sites_per_floor'] == 3
     assert config['portal_unlock_seconds_remaining'] == [60, 0, 0]
     assert config['final_hatch_seconds_remaining'] == 60 and config['victory_portals'] == 3

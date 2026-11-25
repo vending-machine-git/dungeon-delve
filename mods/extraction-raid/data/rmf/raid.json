@@ -67,8 +67,8 @@
     ],
     "mob_relationship": "mutually-neutral",
     "player_aggression": "native",
-    "implemented_by_runtime": "0.20.2",
-    "raid_protocol": 34,
+    "implemented_by_runtime": "0.20.3",
+    "raid_protocol": 35,
     "count_per_floor": 3,
     "minimum_spacing_tiles": 22,
     "stock_slots": 16,
@@ -146,8 +146,8 @@
     ]
   },
   "generation_quality": {
-    "implemented_by_runtime": "0.20.2",
-    "raid_protocol": 34,
+    "implemented_by_runtime": "0.20.3",
+    "raid_protocol": 35,
     "native_full_shops": false,
     "chest_minimum_manhattan_spacing_tiles": 4,
     "chest_door_clearance_tiles": 2,

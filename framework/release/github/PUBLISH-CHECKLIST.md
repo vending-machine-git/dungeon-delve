@@ -1,4 +1,4 @@
-# GitHub owner publication checklist - 0.20.2
+# GitHub owner publication checklist - 0.20.3
 
 Prepared locally, never published automatically. This replaces Workshop as the
 selected player-distribution route. Native FMOD audio is restored; gameplay
@@ -10,17 +10,17 @@ rules/protocol are unchanged. Do not replace the published 0.17.1 assets in plac
 2. Run `py -3.12 tests/regression/check_github_release.py` and existing package
    checks. Record the actual result rather than claiming WAN/subscriber testing.
 3. Create a GitHub repository under the intended owner/name. Upload **only** the
-   contents of `framework/dist/github-0.20.2/repository/`, including `.gitignore`.
+   contents of `framework/dist/github-0.20.3/repository/`, including `.gitignore`.
    The generated repository now includes the owner-approved clean source tree.
    Do not upload local evidence, saves, SDK caches, DLLs, the `player/` staging
    directory or binaries to Git history. Source belongs in main; include it in
    a release only if the owner separately requests that.
-4. Create a release/tag `v0.20.2`. Use the prepared RELEASE-NOTES.md and attach
-   `Dungeon-Delve-0.20.2-windows-x64.zip` and `SHA256SUMS.txt` from the output
+4. Create a release/tag `v0.20.3`. Use the prepared RELEASE-NOTES.md and attach
+   `Dungeon-Delve-0.20.3-windows-x64.zip` and `SHA256SUMS.txt` from the output
    directory. GitHub's automatic source archives are NOT playable packages.
    For an installer, build with `framework/tools/build_installer.py` or pass
    `--installer` when packaging. Run `tests/regression/check_installer.py`
-   against that output, then attach `Dungeon-Delve-0.20.2-Setup.exe` as well.
+   against that output, then attach `Dungeon-Delve-0.20.3-Setup.exe` as well.
    Use the installer's combined SHA256SUMS.txt covering both EXE and ZIP.
    Keep the published ZIP unchanged when adding an installer for that same ZIP;
    obtain owner approval before uploading assets/updating release metadata.

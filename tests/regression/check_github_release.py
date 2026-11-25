@@ -12,7 +12,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
 GAME = Path(r'F:\Steam\steamapps\common\Barony')
-VERSION = '0.20.2'
+VERSION = '0.20.3'
 
 
 def digest(path):
@@ -21,7 +21,7 @@ def digest(path):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--release', type=Path, default=ROOT / 'framework/dist/github-0.20.2')
+    parser.add_argument('--release', type=Path, default=ROOT / 'framework/dist/github-0.20.3')
     parser.add_argument('--launch', action='store_true', help='open/close production runtime; back up saves/config first')
     args = parser.parse_args()
     release_root = args.release.resolve()

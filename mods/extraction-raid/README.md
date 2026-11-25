@@ -1,11 +1,12 @@
-# Dungeon Delve - Battle Royale 0.20.2
+# Dungeon Delve - Battle Royale 0.20.3
 
-0.20.2 preserves native gate and iron-door models and populates valid optional
-reward rooms before assigning their barriers. Empty rooms receive gear or treasure
-from the existing floor loot budget. Native gates have reachable lever controls;
-through-routes stay open. Only structurally broken doorways are removed. Chest
-spacing, doorway clearance and the three furnished kiosks remain.
-All peers need protocol 34.
+0.20.3 makes gates behave like vanilla: they start closed and their lever sits a
+few tiles away against a wall. Gates that divide the floor have a lever on each
+side, and either lever toggles them. Empty optional rooms keep their lock and get
+a cache chest (or gear/treasure) from the existing floor loot budget. Only
+structurally broken doorways are removed. Chest spacing, doorway clearance and
+the three furnished kiosks remain.
+All peers need protocol 35.
 
 Private 2-4 player PvPvE through the Mines, Jungle and Crystal Caves. Loot, build
 your character, outlast rivals and claim a final-floor exit. Death is not the end:
@@ -14,11 +15,11 @@ Experimental Windows x64 release. Unofficial; not a Turning Wheel release.
 
 ## Combined GitHub release (current)
 
-Download **Dungeon-Delve-0.20.2-windows-x64.zip** from the project's GitHub
+Download **Dungeon-Delve-0.20.3-windows-x64.zip** from the project's GitHub
 Releases page. It already includes Dungeon Delve and vending_machine framework;
 no Workshop subscription or separate framework download is required. Extract
 into the owned Barony installation, then run
-**Dungeon-Delve-0.20.2/Play-Dungeon-Delve.cmd**. Extracting elsewhere also supports
+**Dungeon-Delve-0.20.3/Play-Dungeon-Delve.cmd**. Extracting elsewhere also supports
 Steam-library discovery. Retail files/saves remain untouched. Follow the README
 at the combined ZIP's root for checksums, compatibility, updates and removal.
 Use matching releases on every peer; private Direct IP only.
@@ -29,12 +30,12 @@ The separate-package route below is retained for reference, not required for
 the combined GitHub download. Gameplay/networking restrictions still apply.
 
 1. Own/install/run the Steam Windows edition of **Barony**, tested build **5.0.2**.
-2. Subscribe to **vending_machine framework 0.20.2** and **Dungeon Delve 0.20.2**.
-3. Separately download **vending_machine-framework-0.20.2-windows.zip** from the
+2. Subscribe to **vending_machine framework 0.20.3** and **Dungeon Delve 0.20.3**.
+3. Separately download **vending_machine-framework-0.20.3-windows.zip** from the
    framework Workshop page's release link. Extract outside Barony's game folder.
 4. Follow its README and run **Play-Dungeon-Delve.cmd**. No Python/compiler needed.
 5. Host/join a fresh private **Direct IP** lobby; everyone joins before starting.
-   All peers need runtime/content **0.20.2**, protocol **34**, framework API **1**.
+   All peers need runtime/content **0.20.3**, protocol **35**, framework API **1**.
 
 **Subscribing alone cannot enable this native mode.** Launching retail Barony
 from Steam does not enable it. The separately downloaded launcher checks the
@@ -111,14 +112,14 @@ portals open at timeout. Other metadata mainly describes native rules, not scrip
 Keep everyone on matching unmodified packages when reporting issues.
 
 The portable launcher creates a fresh session for every launch under
-`%LOCALAPPDATA%\vending_machine_framework\0.20.2\sessions\`.
+`%LOCALAPPDATA%\vending_machine_framework\0.20.3\sessions\`.
 Retail saves/config are not copied or edited. Match results/logs remain there;
 progress is not a resumable campaign. Read the runtime README for manual paths,
 checksums, updates and uninstall. Report versions/reproduction/session logs with
 private IPs/usernames removed. Close games before deleting isolated sessions.
 Unsubscribe and remove the separate runtime to uninstall; retail stays untouched.
 
-Windows x64 Steam 5.0.2 only. 0.20.2 restores native FMOD gameplay effects/music
+Windows x64 Steam 5.0.2 only. 0.20.3 restores native FMOD gameplay effects/music
 using the owner's verified game DLL. Supplied lobby music/narration use SDL.
 Steamworks/EOS networking remain disabled; no public-server hardening or automatic runtime updater.
 

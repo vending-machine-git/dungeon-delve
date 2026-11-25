@@ -69,13 +69,33 @@ def check_generation(layout):
         assert (x-step[0], y-step[1]) in opened and (x+step[0], y+step[1]) in opened, 'Door faces a wall or blocked tile'
         assert xy(door) in opened
         if door['kind'] == 'gate':
-            assert (door['lever_x'], door['lever_y']) in opened, 'Gate has no reachable lever'
+            levers = [xy(lever) for lever in door['levers']]
+            assert levers and levers[0] == (door['lever_x'], door['lever_y'])
+            assert all(lever in opened for lever in levers), 'Gate has no reachable lever'
+            assert all(max(abs(lever[0]-x), abs(lever[1]-y)) >= 1 for lever in levers)
             if door['locked']:
-                assert (door['lever_x'], door['lever_y']) in closed, 'Closed gate control is behind another barrier'
-            assert door['starts_open'] != door['locked']
+                assert len(levers) == 1 and levers[0] in closed, 'Closed gate control is behind another barrier'
+                assert not door['starts_open'], 'Reward gate starts open'
         if not door['locked']:
             assert door['reward_index'] == -1
             continue
+    # A closed unlocked gate must never strand anyone: each side it separates
+    # holds a lever that toggles it.
+    for group in groups.values():
+        door = group[0]
+        if door['kind'] != 'gate' or door['locked']:
+            continue
+        cells = {xy(d) for d in group}
+        step = (1, 0) if door['axis'] == 0 else (0, 1)
+        x, y = xy(door)
+        blocked_walk = walkable - locks - cells
+        side_a = flood((x-step[0], y-step[1]), blocked_walk)
+        side_b = flood((x+step[0], y+step[1]), blocked_walk)
+        levers = {xy(lever) for lever in door['levers']}
+        if side_a:
+            assert levers & side_a, 'Gate side has no lever'
+        if side_b and (x-step[0], y-step[1]) not in side_b:
+            assert levers & side_b, 'Gate side has no lever'
     for group in locked_groups:
         door = group[0]
         group_cells = {xy(d) for d in group}
