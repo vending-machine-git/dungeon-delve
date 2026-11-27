@@ -417,7 +417,7 @@
     },
     {
       "path": "mods/extraction-raid/README.md",
-      "sha256": "0cdd39d70cd80a24511d4e8441fbb9bf1d24de1a9f5c84003f396bc7c25604b4"
+      "sha256": "25c96dc50b9f840c4acb5dab6831948212c931f25d95374858ddbbe229e632d4"
     },
     {
       "path": "mods/extraction-raid/data/rmf/class_builds.json",
@@ -1481,7 +1481,7 @@
     },
     {
       "path": "src/raid.cpp",
-      "sha256": "44074d4e9553e97769e01139bdc3c5c62481e8176827fd2b024fd7a8091620c5"
+      "sha256": "ae53072de4870d3c943a82e6c971a38826d3ffb3ccec2dc4b29f3e81611edfa7"
     },
     {
       "path": "src/raid.hpp",
@@ -1541,7 +1541,7 @@
     },
     {
       "path": "src/smoke/DelveBattleAudit.inc",
-      "sha256": "a0b91bd9b1cead1c56dde0d3a4b4ce2203ef21c45ab525d1e985679280a904ab"
+      "sha256": "4919ef4adb0425b78b37391718880b33eef587b0daf1d23a5a7e70e1ff247b06"
     },
     {
       "path": "src/smoke/DelveBoulderAudit.inc",
@@ -1573,7 +1573,7 @@
     },
     {
       "path": "src/smoke/SmokeHooksDelve.cpp",
-      "sha256": "f130e4e2414d384f76174c7241a2e707b00dd48b73b1cd733f84f8fd85e9be68"
+      "sha256": "2772461d938e838a3802a6aa79e67015d4083a6cc41bd696b8f95f6a6f441583"
     },
     {
       "path": "src/smoke/SmokeHooksGear.cpp",
@@ -1885,7 +1885,7 @@
     },
     {
       "path": "tests/smoke/run_delve_smoke.py",
-      "sha256": "e031571fa7051f9eafe28060c75c3dc32d882282c2c1c9cc8cba01e5b1f04342"
+      "sha256": "97e9d77afd335cf13f531a635d1c0720aaa85cb2448e27330ffb0693f4d006e6"
     },
     {
       "path": "tests/smoke/run_dlc_matrix_smoke.py",

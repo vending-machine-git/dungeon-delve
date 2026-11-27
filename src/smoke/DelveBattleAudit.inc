@@ -32,6 +32,22 @@ Entity* battleExit(int ordinal) {
     }
     return nullptr;
 }
+bool battleRemovedExit(const std::string& name, const char* label) {
+    const auto marker = sync + "/battle-removed-" + name;
+    Uint32 uid = 0;
+    std::ifstream input(marker);
+    if (!(input >> uid) || uidToEntity(uid)) return false;
+    const auto acknowledged = marker + "-" + std::to_string(clientnum);
+    if (!std::filesystem::exists(acknowledged)) {
+        check(true, label);
+        std::ofstream(acknowledged) << 1;
+    }
+    return true;
+}
+bool battleFinalExitRemoved() {
+    return scenario == "battle-wipe" || scenario.rfind("battle-", 0) != 0
+        || battleRemovedExit("final", "battle_final_exit_removed");
+}
 void battleHost() {
     for (auto node = map.entities->first; node; node = node->next) {
         auto entity = static_cast<Entity*>(node->element);
@@ -136,23 +152,34 @@ void battleHost() {
             check(::Raid::outcome(1) == O::Slain, "battle_monster_cannot_descend_with_loot");
             // Return the fixture actor so it cannot body-block a one-tile hatch approach.
             check(players[1]->entity->teleporterMove(monsterX,monsterY,2),"battle_monster_releases_exit_approach");
-            auto exit = battleExit(1); move(0, *exit); selectedEntity[0] = exit; ::Raid::useExit(*exit);
+            auto exit = battleExit(1);
+            const auto uid = exit->getUID();
+            move(0, *exit); move(2, *exit);
+            selectedEntity[0] = client_selected[2] = exit;
+            ::Raid::useExit(*exit);
             check(::Raid::outcome(0) == O::Descended, "battle_early_descent_native_use");
-            move(2, *exit); client_selected[2] = exit; ::Raid::useExit(*exit);
             check(::Raid::outcome(2) == O::Playing, "battle_descent_single_use");
+            check(!uidToEntity(uid) && !battleExit(1) && !client_selected[2], "battle_used_hatch_removed_immediately");
+            std::ofstream(sync + "/battle-removed-hatch") << uid;
             ::Raid::setSmokeElapsed(299); ::Raid::useExit(*battleExit(2));
             check(battleExit(2)->flags[INVISIBLE], "battle_portal_hidden_before_last_minute");
             ::Raid::setSmokeElapsed(300); ::Raid::useExit(*battleExit(2));
             check(!battleExit(2)->flags[INVISIBLE] && battleExit(3)->flags[INVISIBLE]
                 && battleExit(4)->flags[INVISIBLE], "battle_one_portal_at_one_minute_left");
+            std::ofstream(sync + "/battle-removed-portal") << battleExit(2)->getUID();
             publish(2, battleExit(2)); phase = 2;
         } else if (phase == 2 && ::Raid::outcome(2) == O::Descended) {
+            check(!battleExit(2), "battle_used_portal_removed");
+            for (int player = 1; player < peers; ++player)
+                for (const auto name : {"hatch", "portal"})
+                    if (!std::filesystem::exists(sync + "/battle-removed-" + name + "-" + std::to_string(player))) return;
             ::Raid::setSmokeElapsed(359);
             ::Raid::useExit(*battleExit(3)); ::Raid::useExit(*battleExit(4));
             check(battleExit(3)->flags[INVISIBLE] && battleExit(4)->flags[INVISIBLE], "battle_overtime_portals_hidden_before_zero");
             ::Raid::setSmokeElapsed(360);
             ::Raid::useExit(*battleExit(3)); ::Raid::useExit(*battleExit(4));
             check(!battleExit(3)->flags[INVISIBLE] && !battleExit(4)->flags[INVISIBLE], "battle_two_more_portals_at_zero");
+            check(!battleExit(1) && !battleExit(2), "battle_spent_exits_stay_removed_at_timeout");
             publish(3, battleExit(3)); phase = 3;
         }
     } else if (currentlevel == 2) {
@@ -256,10 +283,15 @@ void battleHost() {
         if (scenario == "battle-wipe") {
             for (int player = 0; player < peers; ++player) stats[player]->HP = 0;
         } else if (scenario == "battle-host-win") {
-            auto exit = battleExit(1); move(0, *exit); selectedEntity[0] = exit; ::Raid::useExit(*exit);
+            auto exit = battleExit(1);
+            std::ofstream(sync + "/battle-removed-final") << exit->getUID();
+            move(0, *exit); selectedEntity[0] = exit; ::Raid::useExit(*exit);
         } else {
-            auto exit = battleExit(4); move(1, *exit); client_selected[1] = exit; ::Raid::useExit(*exit);
+            auto exit = battleExit(4);
+            std::ofstream(sync + "/battle-removed-final") << exit->getUID();
+            move(1, *exit); client_selected[1] = exit; ::Raid::useExit(*exit);
             check(::Raid::outcome(1) == O::PendingExtraction, "battle_guest_first_claim_reserved");
+            check(exit->flags[INVISIBLE] && !exit->light, "battle_pending_victory_hidden_without_light");
             auto rivalExit = battleExit(2); move(0, *rivalExit); selectedEntity[0] = rivalExit; ::Raid::useExit(*rivalExit);
             check(::Raid::outcome(0) == O::Playing && ::Raid::outcome(1) == O::PendingExtraction,
                 "battle_other_exit_cannot_steal_pending_victory");
@@ -269,6 +301,10 @@ void battleHost() {
     }
 }
 void battleGuest() {
+    if (currentlevel == 1) {
+        battleRemovedExit("hatch", "battle_guest_used_hatch_removed");
+        battleRemovedExit("portal", "battle_guest_used_portal_removed");
+    }
     static int floorSeen = 0;
     static int progressionFloor = 0;
     static Uint32 progressionLoadedAt = 0;

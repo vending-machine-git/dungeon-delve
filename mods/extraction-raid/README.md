@@ -68,6 +68,7 @@ abilities by default (rebind Delve Ability 1/2 under Settings).
   56 regular enemies and a guardian. Jungle/Crystal Caves replace five/nine weaker
   enemies with trolls. Combat/proficiency XP is **1.75x**.
 - Each floor has **one single-use hatch** and **three single-use portal sites**.
+  Used hatches and portals disappear for everyone; rivals must find another exit.
   Floors 1-2: hatch available immediately; one portal opens at **1:00 remaining**
   (5:00 elapsed), two more at timeout (6:00 elapsed). These lead to the next floor.
 - Final floor: hatch and first portal open at **1:00 remaining**, two more portals

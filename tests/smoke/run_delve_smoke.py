@@ -359,11 +359,19 @@ def scenario(args, name):
                           'battle_dead_guest_retains_progression', 'battle_wipe_retains_progression'):
                 assert 'check PASS ' + label in logs['host'], label
             assert logs['host'].count('check PASS battle_wipe_returns_starters') == 4
+            for label in ('battle_used_hatch_removed_immediately', 'battle_used_portal_removed',
+                          'battle_spent_exits_stay_removed_at_timeout'):
+                assert 'check PASS ' + label in logs['host'], label
+            if expected_winner >= 0:
+                assert all('check PASS battle_final_exit_removed' in log for log in logs.values())
             if name == 'battle-royale':
                 assert 'check PASS battle_guest_first_claim_reserved' in logs['host']
+                assert 'check PASS battle_pending_victory_hidden_without_light' in logs['host']
                 assert 'check PASS battle_other_exit_cannot_steal_pending_victory' in logs['host']
             assert logs['host'].count('floor_return slot=') == 5
             for role in ('client1', 'client2', 'client3'):
+                assert 'check PASS battle_guest_used_hatch_removed' in logs[role]
+                assert 'check PASS battle_guest_used_portal_removed' in logs[role]
                 assert 'check PASS battle_guest_storm_wall_replicated' in logs[role]
                 assert logs[role].count('check PASS battle_guest_retains_progression') == 2
         elif name == 'storm-wipe':

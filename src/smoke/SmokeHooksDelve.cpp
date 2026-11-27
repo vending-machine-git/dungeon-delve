@@ -887,6 +887,7 @@ void tick() {
     if (scenario=="narration") { narrationFloors(); return; }
     if (scenario=="restart") { restartMatch(); return; }
     if(::Raid::matchComplete()) {
+        if (!battleFinalExitRemoved()) return;
         if (scenario == "results" && !done) {
             auto root = gameUIFrame[clientnum];
             auto gameover = root ? root->findFrame("gameover") : nullptr;

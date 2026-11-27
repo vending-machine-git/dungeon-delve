@@ -185,10 +185,20 @@ bool bankLocalGear() {
     printlog("[RAID] extraction committed slot=%d seed=%u", clientnum, mapseed);
     messagePlayer(clientnum, MESSAGE_MISC, "Victory! You claimed the final exit."); return true;
 }
+void consumeExit(Entity& exit) {
+    // Native deletion replicates to every peer and removes the minimap marker.
+    // Clear simultaneous selections before freeing the entity.
+    for (int p = 0; p < MAXPLAYERS; ++p) {
+        if (selectedEntity[p] == &exit) selectedEntity[p] = nullptr;
+        if (client_selected[p] == &exit) client_selected[p] = nullptr;
+    }
+    exit.removeLightField();
+    list_RemoveNode(exit.mynode);
+}
 void finishExtraction(int p, Uint32 worth, Uint32 gold) {
     lastStanding = p;
     outcomes[p] = Outcome::Extracted; results[p].worth = worth; results[p].gold = gold;
-    if (auto exit = uidToEntity(pendingPortal[p])) { exit->skill[24] = -1; serverUpdateEntitySkill(exit, 24); }
+    if (auto exit = uidToEntity(pendingPortal[p])) consumeExit(*exit);
     park(p); complete = true;
     for (int rival = 0; rival < MAXPLAYERS; ++rival)
         if (rival != p && results[rival].participant && outcomes[rival] != Outcome::Abandoned) {
@@ -473,13 +483,15 @@ void useExit(Entity& exit) {
         if (std::hypot(player.x-exit.x, player.y-exit.y) > TOUCHRANGE) continue;
         selectedEntity[p] = client_selected[p] = nullptr;
         if (!victoryExit) {
-            exit.skill[24] = -1; serverUpdateEntitySkill(&exit, 24);
+            consumeExit(exit);
             outcomes[p] = Outcome::Descended; park(p); messagePlayer(p, MESSAGE_MISC, "Descended. Waiting safely for the remaining rivals.");
             printlog("[DELVE] descended slot=%d floor=%d", p, floorNumber); sendState(); break;
         }
         exit.skill[24] = p+1; pendingPortal[p] = exit.getUID(); pendingSince[p] = ticks;
         returnTiles[p] = {static_cast<int>(player.x)/16, static_cast<int>(player.y)/16};
         outcomes[p] = Outcome::PendingExtraction; park(p); serverUpdateEntitySkill(&exit, 24);
+        exit.flags[INVISIBLE] = true; serverUpdateEntityFlag(&exit, INVISIBLE);
+        exit.removeLightField();
         if (p == clientnum) { if (bankLocalGear()) finishExtraction(p, results[p].worth, results[p].gold); else releasePortal(p); }
         else {
             std::memcpy(net_packet->data, "REXT", 4); SDLNet_Write32(uniqueGameKey, &net_packet->data[4]);
