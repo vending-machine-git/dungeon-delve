@@ -417,7 +417,7 @@
     },
     {
       "path": "mods/extraction-raid/README.md",
-      "sha256": "c7ca6d87a6158d2e5e2143a052584f3c4099c2a000751d44f24c563e153acfcf"
+      "sha256": "0811a776f2b751337f9e4ee9cf05285df4237b878cdfb64cb31729b011b8929f"
     },
     {
       "path": "mods/extraction-raid/data/rmf/class_builds.json",
@@ -1105,7 +1105,7 @@
     },
     {
       "path": "src/interface/shopgui.cpp",
-      "sha256": "8a580f4380696107e3a444c19a29236fa8361858b5a7afa046db934348bd72ca"
+      "sha256": "15482fb4d3b97951a4a2f1eeea870e01a4ad21fc0675902c15fb641e2274937c"
     },
     {
       "path": "src/interface/ui.hpp",
@@ -1557,7 +1557,7 @@
     },
     {
       "path": "src/smoke/DelveShopAudit.inc",
-      "sha256": "496bba05740c32f73d0c3967452e512d7d2da664a0f1b7ddbb45cce7e80af507"
+      "sha256": "045602ba4dc55b694aaa20d72bd6010f83f03822207683596cb27d20b0dc259a"
     },
     {
       "path": "src/smoke/DelveSpellbookAudit.inc",
@@ -1885,7 +1885,7 @@
     },
     {
       "path": "tests/smoke/run_delve_smoke.py",
-      "sha256": "8f68873f90954110e79a2377b5c8d3dea2f7b400168c4d20b854eb4bf00df118"
+      "sha256": "a28e1a7ec85ce5a956e4a1e90062e3981353aed02fd05c376b76080cdec9cd93"
     },
     {
       "path": "tests/smoke/run_dlc_matrix_smoke.py",

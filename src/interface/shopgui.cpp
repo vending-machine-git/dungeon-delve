@@ -16,6 +16,7 @@
 #include "../items.hpp"
 #include "../shops.hpp"
 #include "../player.hpp"
+#include "../raid.hpp"
 #include "interface.hpp"
 #include "../colors.hpp"
 #include "../ui/Field.hpp"
@@ -871,6 +872,7 @@ void Player::ShopGUI_t::setItemDisplayNameAndPrice(Item* item)
 	if ( !item || item->type == SPELL_ITEM )
 	{
 		clearItemDisplayed();
+		return;
 	}
 	auto bgFrame = shopFrame->findFrame("shop base");
 	Field* buyOrSellPrompt = nullptr;
@@ -1027,6 +1029,28 @@ void Player::ShopGUI_t::setItemDisplayNameAndPrice(Item* item)
 		}
 		updateSlotFrameFromItem(itemSlotFrame, item);
 		item->count = oldQty;
+	}
+
+	// Inspect Delve stock and sale items with the same effects/rolls as inventory.
+	if ( Raid::active() && bOpen && isInteractable && !itemUnknownPreventPurchase
+		&& player.bControlEnabled && !gamePaused && !player.usingCommand()
+		&& !player.GUI.isDropdownActive()
+		&& !inputs.getUIInteraction(player.playernum)->selectedItem
+		&& !player.inventoryUI.bIsTooltipDelayed() )
+	{
+		const auto bounds = shopFrame->getAbsoluteSize();
+		const bool flipped = (player.inventoryUI.inventoryPanelJustify == Player::PANEL_JUSTIFY_RIGHT)
+			!= player.inventoryUI.bCompactView;
+		const int x = bounds.x - player.camera_virtualx1() + (flipped ? -8 : bounds.w + 8);
+		const int y = bounds.y - player.camera_virtualy1() + 8;
+		player.hud.updateFrameTooltip(item, x, y,
+			flipped ? Player::PANEL_JUSTIFY_RIGHT : Player::PANEL_JUSTIFY_LEFT);
+		// The shop's own card supplies the buy/sell action and actual quoted price.
+		player.inventoryUI.tooltipPromptFrame->setDisabled(true);
+		auto pos = player.inventoryUI.tooltipFrame->getSize();
+		pos.x = std::max(0, std::min(pos.x, player.camera_virtualWidth() - pos.w));
+		pos.y = std::max(0, pos.y);
+		player.inventoryUI.tooltipFrame->setSize(pos);
 	}
 }
 

@@ -396,6 +396,8 @@ def scenario(args, name):
             assert logs['host'].count('check PASS shops_host_removes_exact_rarity_item_and_charges_gold')==9
             assert logs['client1'].count('check PASS shops_guest_exact_stock_appearance_status_quantity_and_slots')==9
             assert logs['client1'].count('check PASS shops_guest_native_purchase_preserves_rarity_and_rolls')==9
+            for check_name in ('shops_hover_actual_effects_and_rolls', 'shops_hover_visible_beside_shop', 'shops_hover_keeps_native_price_and_purchase_prompt'):
+                assert logs['client1'].count('check PASS '+check_name)==9, 'Missing shop hover checks: '+check_name
             assert all('check FAIL' not in log for log in logs.values())
             for floor in (1,2,3):
                 check_tuned_roster(json.loads((run/'host'/f'delve-generated-floor{floor}.json').read_text()),floor)

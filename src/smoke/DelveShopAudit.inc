@@ -167,15 +167,48 @@ void shopNetworkAudit() {
             std::ifstream input(expectedPath);std::string expected((std::istreambuf_iterator<char>(input)),{});
             if(shopStockSnapshot(*shopInv[clientnum])!=expected)return;
             check(true,"shops_guest_exact_stock_appearance_status_quantity_and_slots");
-            std::ofstream(std::filesystem::path(sync)/"shop-view")<<tag;stage=1;
+            stage=1;
         }
-        if(stage==1 && std::filesystem::exists(std::filesystem::path(sync)/("shop-captured-"+tag))) {
+        if(stage==1 || stage==2) {
             Item* selected=nullptr;
             for(auto node=shopInv[clientnum]->first;node;node=node->next) {
                 auto item=static_cast<Item*>(node->element);
                 if(!selected || DelveRarity::stored(*item)>DelveRarity::stored(*selected))selected=item;
             }
             if(!selected)return;
+            auto& player=*players[clientnum];auto& shop=player.shopGUI;auto& ui=player.inventoryUI;
+            if(!shop.bOpen || !shop.isInteractable || !ui.tooltipFrame)return;
+            player.GUI.activateModule(Player::GUI_t::MODULE_SHOP);
+            shop.selectShopSlot(selected->x,selected->y);
+            if(auto slot=shop.getShopSlotFrame(selected->x,selected->y)) {
+                const auto rect=slot->getAbsoluteSize();
+                // Set only this process's virtual pointer, without moving the desktop mouse.
+                mousex=omousex=(rect.x+rect.w/2)*xres/Frame::virtualScreenX;
+                mousey=omousey=(rect.y+rect.h/2)*yres/Frame::virtualScreenY;
+                auto mouse=inputs.getVirtualMouse(clientnum);
+                mouse->x=mouse->ox=mousex;mouse->y=mouse->oy=mousey;
+            }
+            // Wait for the ordinary inventory hover path to render the stock item.
+            auto tooltip=ui.tooltipFrame;
+            if(tooltip->isDisabled() || ui.itemTooltipDisplay.uid!=selected->uid || tooltip->getOpacity()<99)return;
+            if(stage==1) {
+                auto attributes=tooltip->findFrame("inventory mouse tooltip attributes frame")->findField("inventory mouse tooltip attributes text");
+                const auto summary=DelveRarity::summary(*selected);
+                const auto unwrapped=[](std::string text) {
+                    text.erase(std::remove_if(text.begin(),text.end(),[](char ch){return ch==' ' || ch=='\n' || ch=='\r' || ch=='\t';}),text.end());
+                    return text;
+                };
+                check(summary.empty() || (!attributes->isDisabled() && unwrapped(attributes->getText()).find(unwrapped(summary))!=std::string::npos),
+                    "shops_hover_actual_effects_and_rolls");
+                const auto bounds=tooltip->getSize(),panel=shop.shopFrame->getSize();
+                check(bounds.x>=0 && bounds.y>=0 && bounds.x+bounds.w<=player.camera_virtualWidth()
+                    && bounds.y+bounds.h<=player.camera_virtualHeight()
+                    && (bounds.x>=panel.x+panel.w || bounds.x+bounds.w<=panel.x),"shops_hover_visible_beside_shop");
+                check(shop.itemPrice==selected->buyValue(clientnum) && ui.tooltipPromptFrame->isDisabled(),"shops_hover_keeps_native_price_and_purchase_prompt");
+                printlog("[SMOKE][DELVE] shop_hover floor=%d ordinal=%d type=%d text=%s",floor,ordinal,int(selected->type),attributes->getText());
+                std::ofstream(std::filesystem::path(sync)/"shop-view")<<tag;stage=2;
+            }
+            if(!std::filesystem::exists(std::filesystem::path(sync)/("shop-captured-"+tag)))return;
             const std::string key=shopItemKey(*selected,false);const Item reference=*selected;
             const int before=purchasedPieces(stats[clientnum]->inventory,reference);
             stats[clientnum]->GOLD=1000000;bool consumed=false;

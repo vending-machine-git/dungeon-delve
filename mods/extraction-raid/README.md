@@ -81,6 +81,9 @@ abilities by default (rebind Delve Ability 1/2 under Settings).
   Each shop has **16 randomized stock slots** from that floor's loot pools and
   uses the **same per-floor rarity odds** listed below. Equipment, potions, magic
   and gems are identified; native prices apply. Opening a shop never rerolls stock.
+  Hover or select stock to see its effects, rarity and exact rolls in the full
+  item tooltip beside the shop. The same details are available for sales and
+  buyback; the shop card retains the actual price and buy/sell controls.
   Shopkeepers and mobs ignore one another, including retaliation and ally alerts.
   Player aggression still uses native shopkeeper rules.
 - Death scatters physical loot, retaining rarity/rolls. **Level, partial XP,
