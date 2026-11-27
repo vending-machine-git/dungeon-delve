@@ -251,6 +251,16 @@ void normalTick() {
     int originalINT = stats[0]->INT;
     stats[0]->setProficiencyUnsafe(PRO_SORCERY, 0);stats[0]->INT = 0;
     number(d,"normal_skill_penalty_retained",isSpellcasterBeginner(0,h,PRO_SORCERY));
+    stats[0]->setProficiencyUnsafe(PRO_SORCERY,100);
+    const int nativeCastTicks = std::max(10, static_cast<int>(getSpellPropertyFromID(
+        spell_t::SPELLPROP_MODIFIED_SPELL_CAST_TIME, SPELL_FIREBALL, h, nullptr, h) * 20));
+    const int oldPose = h->skill[9], oldCastTime = h->playerCastTimeAnim;
+    spellcasting_animation_manager_t castProbe{};
+    fireOffSpellAnimation(&castProbe, h->getUID(), &spell_fireball, false, false);
+    number(d,"normal_spell_preparation_retained",castProbe.times_to_circle == nativeCastTicks
+        && h->playerCastTimeAnim == nativeCastTicks + 20);
+    spellcastAnimationUpdate(0,oldPose,oldCastTime);
+    stats[0]->setProficiencyUnsafe(PRO_SORCERY,0);
     number(d,"normal_tooltip_penalty_retained",!DelveBuilds::skillPenaltiesDisabled(SPELL_FORCEBOLT));
     number(d,"normal_passives_inert",DelvePassives::speedMultiplier(0)==1.0 && DelvePassives::modifyHealth(*h,-10)==-10);
     auto originalMask = stats[0]->mask;

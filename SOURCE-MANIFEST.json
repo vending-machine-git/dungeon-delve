@@ -417,7 +417,7 @@
     },
     {
       "path": "mods/extraction-raid/README.md",
-      "sha256": "25c96dc50b9f840c4acb5dab6831948212c931f25d95374858ddbbe229e632d4"
+      "sha256": "c7ca6d87a6158d2e5e2143a052584f3c4099c2a000751d44f24c563e153acfcf"
     },
     {
       "path": "mods/extraction-raid/data/rmf/class_builds.json",
@@ -1189,7 +1189,7 @@
     },
     {
       "path": "src/magic/act_HandMagic.cpp",
-      "sha256": "a601f6414635e146f36530e211cba85c4c5d9d44ae93a6fd8a45fb9bca3f9358"
+      "sha256": "4db13ca82362bd863516288d496d1dcc2bcfa9181b03ee0b3fb3c15fbb6f8085"
     },
     {
       "path": "src/magic/actmagic.cpp",
@@ -1561,11 +1561,11 @@
     },
     {
       "path": "src/smoke/DelveSpellbookAudit.inc",
-      "sha256": "405bc27dd954e205590e1c4b1262b568364550db174d620e8cbd38043a90f19b"
+      "sha256": "6a4bc1b4c1433168dd07c28b0a1f9107f31c10e0523c116252ee146247056940"
     },
     {
       "path": "src/smoke/SmokeHooksBalance.cpp",
-      "sha256": "2ec850b70c9c082feee516e805fdbce88650f13a4254815a63d8dd9ed870dd5f"
+      "sha256": "8dab10baf5ce8239a1784412353ade8aa8877919e14e9983a72276191fc0532c"
     },
     {
       "path": "src/smoke/SmokeHooksCommon.hpp",
@@ -1785,7 +1785,7 @@
     },
     {
       "path": "tests/balance/run_balance_audit.py",
-      "sha256": "57ad3c2131c99ad68d1a80e8df789af3489ae56131cbb8c0265ec4d3dfb4fe7f"
+      "sha256": "7e438498b12801bec0c88521d8beaa086ff8f9592030a3e346a08a2bcfdbf8e4"
     },
     {
       "path": "tests/balance/run_balance_suite.py",
@@ -1885,7 +1885,7 @@
     },
     {
       "path": "tests/smoke/run_delve_smoke.py",
-      "sha256": "97e9d77afd335cf13f531a635d1c0720aaa85cb2448e27330ffb0693f4d006e6"
+      "sha256": "8f68873f90954110e79a2377b5c8d3dea2f7b400168c4d20b854eb4bf00df118"
     },
     {
       "path": "tests/smoke/run_dlc_matrix_smoke.py",

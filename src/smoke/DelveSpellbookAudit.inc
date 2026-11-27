@@ -49,6 +49,27 @@ void spellbookAudit(int player) {
     check(existed || fireball->delveImprint.bookType == SPELLBOOK_FIREBALL,
         "spellbook_first_read_creates_memorized_variant");
     const auto oldImprint = fireball->delveImprint;
+    auto checkCastTime = [&](spell_t* spell, bool usingBook, const char* label) {
+        const int nativeTicks = std::max(10, static_cast<int>(getSpellPropertyFromID(
+            spell_t::SPELLPROP_MODIFIED_SPELL_CAST_TIME, spell->ID, source, nullptr, source) * 20));
+        const int speed = DelveAffixes::capped(DelveAffixes::Kind::CastingSpeed,
+            DelveRarity::total(*stats[player], DelveAffixes::Kind::CastingSpeed)
+            + value(source, spell, Kind::Speed, usingBook));
+        const int expectedTicks = nativeTicks * 2 * 100 / (100 + speed);
+        const int oldPose = source->skill[9], oldCastTime = source->playerCastTimeAnim;
+        spellcasting_animation_manager_t probe{};
+        fireOffSpellAnimation(&probe, source->getUID(), spell, usingBook, false);
+        check(probe.times_to_circle == expectedTicks && probe.mana_cost == getCostOfSpell(spell, source, usingBook)
+            && source->playerCastTimeAnim == expectedTicks + 20, label);
+        printlog("[DELVE-CAST-TEST] slot=%d spell=%d book=%d native=%d slowed=%d speed=%d actual=%d",
+            player, spell->ID, usingBook, nativeTicks, nativeTicks * 2, speed, probe.times_to_circle);
+        spellcastAnimationUpdate(player, oldPose, oldCastTime);
+    };
+    {
+        spell_t plain = spell_fireball;
+        plain.delveImprint = {};
+        checkCastTime(&plain, false, "spell_cast_base_preparation_double_vanilla");
+    }
     players[player]->magic.equipSpell(fireball);
     const int countBefore = list_Size(&players[player]->magic.spellList);
     auto book = newItem(SPELLBOOK_FIREBALL, EXCELLENT, 1, 1, 123, true, nullptr);
@@ -61,6 +82,7 @@ void spellbookAudit(int player) {
     check(players[player]->magic.selectedSpell() == fireball && list_Size(&players[player]->magic.spellList) == countBefore,
         "spellbook_replacement_keeps_selection_and_single_spell");
     const auto copied = copySpell(fireball);
+    checkCastTime(fireball, false, "spell_cast_learned_speed_bonus_after_slower_base");
     if (multiplayer == CLIENT) {
         std::ofstream(sync + "/spellbook-cast-expected") << static_cast<int>(expected.seed);
         castSpell(source->getUID(), fireball, false, false);
@@ -118,6 +140,7 @@ void spellbookAudit(int player) {
     auto oldShield = stats[player]->shield;
     stats[player]->shield = book;
     book->beatitude = 1; DelveRarity::assign(*book, Tier::Legendary, 13);
+    checkCastTime(fireball, true, "spell_cast_held_book_speed_bonus_after_slower_base");
     {
         spell_t plain = spell_fireball;
         Scope context(source, &plain);

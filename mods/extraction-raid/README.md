@@ -273,7 +273,9 @@ roll seeds use these updated ranges on evaluation; no additional roll is added.
 
 Attack speed speeds charged melee preparation and ranged draw/reload/throw
 timing; it does not speed every frame of a melee animation. Casting speed
-shortens native spell preparation. Spell efficiency rounds costs up, never
+shortens spell preparation. Dungeon Delve's base spell preparation takes
+**2x vanilla**, before equipment and spellbook casting-speed bonuses. This
+applies to memorized and book-cast spells. Spell efficiency rounds costs up, never
 turning a positive cost into a free spell, and does not discount gold, sustained
 spell upkeep or class-ability costs. Armor penetration reduces positive armor
 in native melee/arrow/thrown weapon calculations, not magic resistance.

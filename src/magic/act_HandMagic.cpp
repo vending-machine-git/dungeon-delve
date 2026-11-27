@@ -1075,6 +1075,8 @@ void fireOffSpellAnimation(spellcasting_animation_manager_t* animation_manager, 
 		}
 	}
 	animation_manager->times_to_circle = std::max(HANDMAGIC_TICKS_PER_CIRCLE / 2, animation_manager->times_to_circle);
+	// Delve doubles vanilla spell preparation before casting-speed bonuses.
+	if ( Raid::active() ) animation_manager->times_to_circle *= 2;
 	animation_manager->times_to_circle = animation_manager->times_to_circle * 100 / (100 +
         DelveAffixes::capped(DelveAffixes::Kind::CastingSpeed, DelveRarity::total(*stat, DelveAffixes::Kind::CastingSpeed)
         + DelveSpellRolls::value(caster, spell, DelveSpellRolls::Kind::Speed, usingSpellbook)));

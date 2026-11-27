@@ -400,6 +400,11 @@ def scenario(args, name):
             for floor in (1,2,3):
                 check_tuned_roster(json.loads((run/'host'/f'delve-generated-floor{floor}.json').read_text()),floor)
         elif name == 'rarity':
+            for role in processes:
+                for label in ('spell_cast_base_preparation_double_vanilla',
+                              'spell_cast_learned_speed_bonus_after_slower_base',
+                              'spell_cast_held_book_speed_bonus_after_slower_base'):
+                    assert 'check PASS ' + label in logs[role], (role, label)
             assert 'check PASS rarity_host_complete' in logs['host']
             assert 'check PASS rarity_guest_complete' in logs['client1']
             assert all('check FAIL' not in text for text in logs.values())
