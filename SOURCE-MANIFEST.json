@@ -237,19 +237,19 @@
     },
     {
       "path": "framework/release/github/PLAYER-README.md",
-      "sha256": "904c45ab4b8c78edc088f5f63b575834c22724bf7e639cd95c7088a25bc3ec8a"
+      "sha256": "a88da043c4b5ebd8550d4c5b5a12bb1b992ad581f40638fae63b27fff628c17c"
     },
     {
       "path": "framework/release/github/PUBLISH-CHECKLIST.md",
-      "sha256": "76249f5a69a5a887ae03b0a8fd428eceee2062bfc6381dfa4114781143fdfb0a"
+      "sha256": "23b3e626847d2c35c56cbb3e8c64d16a37fa6bc61dcd4bb5e96528d7cd06e105"
     },
     {
       "path": "framework/release/github/RELEASE-NOTES.md",
-      "sha256": "5ca921c6d382fa1e0e2d538483a24ac22d83e8bed599fb6ff975a7d597e4739f"
+      "sha256": "b10e11663f2836c52b13ea57c296e3ad684a0d3c1b58a479306be93e1e206c9c"
     },
     {
       "path": "framework/release/github/REPOSITORY-README.md",
-      "sha256": "7d2d97f962931b43efb66e2f7c3366af671df2fd5782a18d01424a512b54a749"
+      "sha256": "c9db222e731070fd94359227b2b3f4c1e905d37cfe288c224fbcc59955da2f45"
     },
     {
       "path": "framework/release/github/SOURCE.md",
@@ -329,11 +329,11 @@
     },
     {
       "path": "framework/tools/package_github_release.py",
-      "sha256": "7f272aafee0c1b1198c8743d7f6c059f159cd350963b203b73c4828ab5139561"
+      "sha256": "505cdf8ee87d19e5dbba5e96f269a90970d264cc56b6da24a00c6b0a61811d2b"
     },
     {
       "path": "framework/tools/package_release.py",
-      "sha256": "af73d94e4e44f2e300f4ce85561fc886e057157d2bdce3a072c275e3e7a2d69c"
+      "sha256": "1c9562ffbccf48ffa3f6eb281d2b3c11445090f65218b422ff0afd4e3166f2b8"
     },
     {
       "path": "framework/tools/prepare_fmod.py",

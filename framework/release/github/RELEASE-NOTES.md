@@ -1,17 +1,39 @@
-# Dungeon Delve 0.20.5 - Monster changes
+# Dungeon Delve 0.20.5 - Full Windows Release (November 27)
 
-- **No more monster infighting.** Dungeon monsters ignore each other and only
-  attack adventurers. A stray hit from another monster no longer starts a fight.
-  Your own summons and followers still fight monsters to protect you.
-- **Floor 2 (Jungle):** most skeletons are replaced by goblins. Delve goblins
-  only use axes and maces, so far fewer enemies on this floor shoot at you.
-- **Floor 3 (Crystal Caves):** skeletons are gone. Expect spiders, scorpions and
-  insectoids alongside the existing trolls, goblins and ghouls. Insectoids are
-  tuned for Delve (level 10, about 85-95 HP, no thrown daggers, only 1 in 10 with
-  a bow) but keep their acid spray; spiders keep their web spray. The floor is a
-  bit harder than before.
+The complete current Dungeon Delve package for private 2-4 player Barony games.
+This release supersedes all earlier downloads and includes every shipped update.
 
-Floor 1, the floor guardians, loot, Steam invites and Direct IP are unchanged.
-The host runs all monsters, but everyone should update so the rules match:
-all peers need runtime/content 0.20.5, protocol 35 and API 1. Restart from the
-root Dungeon Delve.exe.
+- Merchant stock, buyback and sale items show full native item tooltips with
+  effects, rarity and exact rolls, alongside the usual prices and trading controls.
+- Used hatches and portals disappear for everyone, including their lights and
+  minimap markers. Other players must find an unused exit.
+- Spell preparation takes twice vanilla time before equipment/spellbook speed
+  bonuses. Normal campaigns and overcharge-repeat behavior retain native rules.
+- Includes the latest monster rosters and disabled monster infighting, furnished
+  merchant kiosks, reward rooms/chest vaults, gates, remastered narration, Steam
+  invites/relay and Direct IP support.
+
+Download **Dungeon-Delve-0.20.5-Setup.exe** (recommended) or the complete
+**Dungeon-Delve-0.20.5-windows-x64.zip**. Verify it against **SHA256SUMS.txt**.
+Setup detects your Barony directory; alternatively extract the ZIP directly
+into the folder containing **barony.exe**. Open **Dungeon Delve.exe** beside it.
+No earlier mod release or Workshop subscription is required.
+
+**Updating:** close Dungeon Delve on every PC. Rename an existing
+**Dungeon-Delve-0.20.5** supporting folder before installing/extracting this
+complete package. Updating only the launcher will not update gameplay.
+All peers need this November 27 full release (`v0.20.5-full.1`), including players
+who already have the older 0.20.5. Runtime/content 0.20.5, protocol 35, API 1;
+distribution revision **full-windows-20261127-1**.
+
+Requires an owned compatible Steam Windows Barony 5.0.2 installation and Windows
+x64. The launcher copies verified DLLs from your own game. Retail files, personal
+saves and configuration are preserved; game assets/DLLs are not distributed.
+Everyone must have Dungeon Delve open before accepting a Steam invite. Two real
+Steam accounts and WAN/human balance acceptance remain unverified.
+
+Validated production runtime: `6b16284211284040c306b5ace4f2c33164c55ec7713008e007697b984b13f667`.
+Native merchant, spell-timing, normal-campaign scope and all three four-player
+battle cases pass. Installer, launcher and package checks pass.
+Source is available in the repository; GitHub's automatic source archives are
+not the playable download. Unofficial; not affiliated with Turning Wheel.

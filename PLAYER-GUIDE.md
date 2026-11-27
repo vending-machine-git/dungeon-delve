@@ -5,6 +5,11 @@ the native runtime and mod content. Requires an owned compatible Steam Barony
 5.0.2 installation, Windows x64 and .NET Framework 4.5+ (included with Windows 10/11).
 Private 2-4 player games through Steam invites or Direct IP; protocol 35, framework API 1.
 
+November 27 full release: `v0.20.5-full.1`. Merchant browsing shows full item
+effects, rarity and exact rolls. Used hatches/portals disappear for every peer.
+Spell preparation takes twice vanilla time before equipment/spellbook bonuses.
+Every player must install this updated build, including users of older 0.20.5.
+
 ## Install with Setup
 
 1. Install Barony through Steam, run it once, then keep Steam running.
@@ -20,7 +25,7 @@ Setup verifies the owned game and DLLs. It adds the launcher to the game directo
 and puts supporting files into Dungeon-Delve-0.20.5. Personal saves, configuration,
 retail executable and assets are not replaced. No admin request, auto-updater or
 background service. A modified/same-version supporting folder is preserved;
-rename it before a full reinstall, or add the standalone root launcher instead.
+rename it before installing the full updated package.
 An unrelated existing Dungeon Delve.exe is preserved and installation is refused.
 
 ## Extract the ZIP instead
@@ -49,6 +54,11 @@ It finds the adjacent supporting folder automatically. A complete portable copy
 also works outside the game directory through Steam discovery.
 
 ## Existing complete 0.20.5 installation
+
+Close Dungeon Delve on every PC. Rename the existing Dungeon-Delve-0.20.5
+supporting folder, then run the new Setup or extract the complete new ZIP into
+the Barony directory. Copying only Dungeon Delve.exe does not update gameplay.
+The new release.json identifies distribution revision full-windows-20261127-1.
 
 If Dungeon Delve.exe is missing, copy it from the root of the full ZIP to sit
 beside retail barony.exe, with the existing Dungeon-Delve-0.20.5 supporting folder
@@ -110,7 +120,7 @@ in the last minute; the first accepted claim wins. Full current rules are in
 `mods/extraction-raid/README.md`; its historical Workshop installation section
 does not apply to this combined GitHub release.
 
-Windows x64 only, private Direct IP, limited WAN/human balance testing; not a
+Windows x64 only, private Steam invites or Direct IP, limited WAN/human balance testing; not a
 hardened public server. Steam invites only (no public matchmaking); no EOS. Native
 FMOD gameplay effects/music are enabled; fmod.dll is copied from your owned game,
 never redistributed. Supplied Delve lobby music/narration use SDL. DLC is optional; genuine per-player DLC

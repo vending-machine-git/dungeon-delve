@@ -13,8 +13,8 @@ Run normal Barony once, then keep Steam running.
 
 ### Recommended: installer
 
-1. Download [Dungeon-Delve-0.20.5-Setup.exe](https://github.com/vending-machine-git/dungeon-delve/releases/download/v0.20.5/Dungeon-Delve-0.20.5-Setup.exe)
-   and [SHA256SUMS.txt](https://github.com/vending-machine-git/dungeon-delve/releases/download/v0.20.5/SHA256SUMS.txt).
+1. Download [Dungeon-Delve-0.20.5-Setup.exe](https://github.com/vending-machine-git/dungeon-delve/releases/download/v0.20.5-full.1/Dungeon-Delve-0.20.5-Setup.exe)
+   and [SHA256SUMS.txt](https://github.com/vending-machine-git/dungeon-delve/releases/download/v0.20.5-full.1/SHA256SUMS.txt).
    Compare the download's SHA256 with its entry in that file.
 2. Run Setup and select the Barony game folder containing **barony.exe**.
    Automatic detection and **Browse** are available. Find the folder in Steam:
@@ -29,7 +29,7 @@ Steam's normal Play button still starts vanilla Barony.
 
 ### Alternative: extract the ZIP into the main game directory
 
-1. Download [Dungeon-Delve-0.20.5-windows-x64.zip](https://github.com/vending-machine-git/dungeon-delve/releases/download/v0.20.5/Dungeon-Delve-0.20.5-windows-x64.zip)
+1. Download [Dungeon-Delve-0.20.5-windows-x64.zip](https://github.com/vending-machine-git/dungeon-delve/releases/download/v0.20.5-full.1/Dungeon-Delve-0.20.5-windows-x64.zip)
    and check its SHA256 against the release's checksum file.
 2. Right-click the ZIP, choose **Extract All**, and set the destination to the
    **Barony folder containing barony.exe**. Extract the ZIP's contents directly
@@ -60,6 +60,14 @@ the main Barony folder, copy it from the root of the full ZIP to sit beside
 **barony.exe**, next to the **Dungeon-Delve-0.20.5** supporting folder. The EXE
 cannot run alone from Downloads.
 
+### Updating an earlier install
+
+Close Dungeon Delve on every PC. In the Barony folder, rename an existing
+**Dungeon-Delve-0.20.5** supporting folder before running the new Setup or
+extracting the full ZIP. This release replaces the earlier 0.20.5 runtime too;
+copying only the launcher will not update gameplay. All players need the
+**November 27 full release** (`v0.20.5-full.1`).
+
 ### Start a match with friends
 
 Everyone uses the same release and launches the mod's EXE. Host or join a fresh
@@ -81,6 +89,9 @@ Personal campaign saves are not imported.
 ## Compatibility and limitations
 
 - Current release: 0.20.5, protocol 35, vending_machine framework API 1.
+- November 27 full release: merchant item effects/rarity/exact rolls, used exits
+  disappear for everyone, and spell preparation takes twice vanilla time before
+  equipment or spellbook bonuses. Every player must install this updated build.
 - 0.20.5: monsters no longer fight each other; Jungle uses mostly melee goblins
   instead of skeletons; Crystal Caves adds spiders, scorpions and Delve-tuned
   insectoids.

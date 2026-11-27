@@ -8,11 +8,13 @@
   "audio_backend": "fmod",
   "audio_version": "2.02.14",
   "narration_revision": "depop-dungeon-1",
-  "distribution_revision": "exe-launcher-2",
+  "distribution_revision": "full-windows-20261127-1",
   "install_layout": "game-root-launcher",
-  "launcher_sha256": "476c689710c6cacba2ec0827db746a182b26d053e247119d0cd7c46a2b1e9a1d",
+  "release_tag": "v0.20.5-full.1",
+  "runtime_source_commit": "87d2ca2371bab3d27a2749c3059c197e2965b208",
+  "launcher_sha256": "a0df9d04994eba06fac18435a829c821badb4cac2616656a5747fbf7c5ba366c",
   "game_sha256": "8566da37bc39ea5a1ed08a8ad57608af4f019fb415869258fb3c1d310b4419e4",
-  "runtime_sha256": "92b283f106c34ba86223568d2ae254cca9ccc25897bbc01a543236f3f302dcda",
+  "runtime_sha256": "6b16284211284040c306b5ace4f2c33164c55ec7713008e007697b984b13f667",
   "game_dlls": [
     {
       "name": "fmod.dll",
@@ -174,7 +176,7 @@
         },
         {
           "path": "README.md",
-          "sha256": "0cdd39d70cd80a24511d4e8441fbb9bf1d24de1a9f5c84003f396bc7c25604b4"
+          "sha256": "0811a776f2b751337f9e4ee9cf05285df4237b878cdfb64cb31729b011b8929f"
         }
       ]
     }

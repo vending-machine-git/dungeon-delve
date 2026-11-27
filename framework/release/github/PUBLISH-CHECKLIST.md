@@ -15,15 +15,16 @@ rules/protocol are unchanged. Do not replace the published 0.17.1 assets in plac
    Do not upload local evidence, saves, SDK caches, DLLs, the `player/` staging
    directory or binaries to Git history. Source belongs in main; include it in
    a release only if the owner separately requests that.
-4. Create a release/tag `v0.20.5`. Use the prepared RELEASE-NOTES.md and attach
+4. Create a release/tag `v0.20.5-full.1`. Use the prepared RELEASE-NOTES.md and attach
    `Dungeon-Delve-0.20.5-windows-x64.zip` and `SHA256SUMS.txt` from the output
    directory. GitHub's automatic source archives are NOT playable packages.
    For an installer, build with `framework/tools/build_installer.py` or pass
    `--installer` when packaging. Run `tests/regression/check_installer.py`
    against that output, then attach `Dungeon-Delve-0.20.5-Setup.exe` as well.
    Use the installer's combined SHA256SUMS.txt covering both EXE and ZIP.
-   Keep the published ZIP unchanged when adding an installer for that same ZIP;
-   obtain owner approval before uploading assets/updating release metadata.
+   The owner authorized the November 27 consolidation: publish the verified
+   full release, then remove earlier GitHub releases after download verification.
+   Preserve historical source tags and local restore archives.
 5. Test downloads while logged out, verify the downloaded ZIP checksum, and
    extract it into the Barony folder on a clean second PC/account with no
    Workshop subscriptions/developer tools. Extract directly into the game root
